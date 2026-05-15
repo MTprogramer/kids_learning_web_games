@@ -1416,3 +1416,107 @@
   .aa-question-text { font-size: 0.85rem; }
   .aa-action-btn { min-height: 78px; }
 }
+
+/* ── PREP FAZI ── */
+.aa-prep-info {
+  font-family: var(--rt-font-body);
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  color: var(--rt-yellow-dim);
+  text-align: center;
+  text-transform: uppercase;
+  margin-top: 8px;
+  padding: 8px 16px;
+  border: 1px dashed rgba(200,146,26,0.35);
+  animation: aa-pulse 1.6s ease-in-out infinite;
+}
+@keyframes aa-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* ── CHOICE FAZI — AKSİYON İNDİKATÖRÜ ── */
+.aa-action-indicator {
+  width: 100%;
+  max-width: 560px;
+  padding: 8px 16px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(107,58,31,0.4);
+  background: rgba(12,10,4,0.5);
+}
+.aa-action-indicator-text {
+  font-family: var(--rt-font-body);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rt-text-faded);
+}
+.aa-action-indicator-text.attack {
+  color: var(--rt-pink);
+}
+.aa-action-indicator-text.defend {
+  color: var(--rt-cyan);
+}
+
+/* ── HEDEF SEÇİM ── */
+.aa-target-label {
+  font-family: var(--rt-font-body);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rt-yellow-dim);
+  margin-bottom: 12px;
+  text-align: center;
+}
+.aa-target-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  width: 100%;
+}
+.aa-target-box {
+  flex: 1 1 140px;
+  max-width: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 12px;
+  background: var(--rt-panel-light);
+  border: 2px solid var(--rt-border-color);
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+  color: var(--rt-text);
+}
+.aa-target-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 3px 5px 0 rgba(0,0,0,0.4);
+  border-color: var(--rt-pink);
+}
+.aa-target-box.selected {
+  background: var(--rt-pink);
+  color: var(--rt-panel-light);
+  border-color: var(--rt-pink-dim);
+}
+.aa-target-name {
+  font-family: var(--rt-font-body);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  font-weight: bold;
+  text-align: center;
+  word-break: break-word;
+}
+.aa-target-stats {
+  display: flex;
+  gap: 12px;
+  font-family: var(--rt-font-num);
+  font-size: 1rem;
+}
+.aa-target-stat.atk { color: var(--rt-pink); }
+.aa-target-stat.def { color: var(--rt-cyan); }
+.aa-target-box.selected .aa-target-stat.atk,
+.aa-target-box.selected .aa-target-stat.def { color: var(--rt-panel-light); }
