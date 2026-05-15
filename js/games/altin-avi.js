@@ -15,6 +15,7 @@ const AltinAvi = (() => {
   const STARTING_GOLD = 100;
   const CHOICE_DURATION_MS = 20000;
   const REVEAL_DURATION_MS = 5000;
+  const PREP_DURATION_MS = 5000;
   const CODE_CHARS = 'ABCDEFGHJKLMNPRSTUVYZ';
 
   // Hız bonusu: doğru cevap verenlere sıraya göre dağıtılır
@@ -469,13 +470,16 @@ const AltinAvi = (() => {
 
     if (phaseKey !== lastRenderedPhase) {
       lastRenderedPhase = phaseKey;
-      if (state !== 'PLAYING' || phase === 'CHOICE') myChoice = null;
+      // Reset myChoice only at PREP start (new round) — action carries from PREP into CHOICE
+      if (state !== 'PLAYING' || phase === 'PREP') myChoice = null;
       if (state === 'WAITING') renderWaitingRoom();
       else if (state === 'FINISHED') renderFinalScreen();
+      else if (phase === 'PREP') renderPrepPhase();
       else if (phase === 'CHOICE') renderChoicePhase();
       else if (phase === 'REVEAL') renderRevealPhase();
     } else {
       if (state === 'WAITING') updateWaitingPlayers();
+      else if (phase === 'PREP') updatePrepPhase();
       else if (phase === 'CHOICE') updateChoicePhase();
       else if (phase === 'REVEAL') updateLeaderboardOnly();
     }
@@ -554,14 +558,143 @@ const AltinAvi = (() => {
     }
   }
 
+  // ── PREP PHASE ──
+  function renderPrepPhase() {
+    clearContainer();
+    if (!myChoice) myChoice = { answer: null, answerTime: null, action: null, targetId: null };
+
+    const topBar = h('div', { class: 'aa-game-top' },
+      h('div', { class: 'aa-round-info' },
+        h('span', { class: 'aa-round-label', text: 'ROUND' }),
+        h('span', { class: 'aa-round-num' },
+          pad2(roomData.currentRound),
+          ' / ' + pad2(roomData.totalRounds ?? TOTAL_ROUNDS)
+        )
+      ),
+      h('div', { class: 'aa-timer-wrap' },
+        h('div', { class: 'aa-timer-bar' },
+          h('div', { class: 'aa-timer-fill', id: 'aa-timer-fill' })
+        ),
+        h('span', { class: 'aa-timer-num', id: 'aa-timer-num', text: '5' })
+      ),
+      h('button', {
+        class: 'aa-leave-btn',
+        onClick: () => { if (confirm('Oyundan ayrılmak istediğine emin misin?')) leaveAndExit(); }
+      }, '🚪')
+    );
+
+    const leaderboard = h('div', { class: 'aa-leaderboard', id: 'aa-leaderboard' });
+
+    const actions = [
+      { key: 'attack', icon: '🪙', name: 'KAP', desc: 'rakibin altınını kap' },
+      { key: 'defend', icon: '⛨', name: 'SAVUN', desc: 'gelene direnç' }
+    ];
+    const actionRow = h('div', { class: 'aa-action-row', id: 'aa-action-row' });
+    actions.forEach(a => {
+      const btn = h('button', {
+        class: 'aa-action-btn' + (myChoice && myChoice.action === a.key ? ' selected' : ''),
+        data: { action: a.key },
+        onClick: () => selectAction(a.key)
+      },
+        h('span', { class: 'aa-action-icon', text: a.icon }),
+        h('span', { class: 'aa-action-name', text: a.name }),
+        h('span', { class: 'aa-action-desc', text: a.desc })
+      );
+      actionRow.appendChild(btn);
+    });
+    const actionSection = h('div', { class: 'aa-action-section' },
+      h('div', { class: 'aa-action-label', text: 'HAMLENİ SEÇ:' }),
+      actionRow
+    );
+
+    const me = roomData.players && roomData.players[myId];
+    const myAtk = me ? (me.atkLevel || START_ATK) : START_ATK;
+    const myDef = me ? (me.defLevel || START_DEF) : START_DEF;
+    const myGold = me ? (me.gold || 0) : 0;
+    const statsSection = h('div', { class: 'aa-stats-section' },
+      h('div', { class: 'aa-stats-grid' },
+        h('div', { class: 'aa-stat-card attack' },
+          h('div', { class: 'aa-stat-icon', text: '🗡' }),
+          h('div', { class: 'aa-stat-name', text: 'ATK' }),
+          h('div', { class: 'aa-stat-level' }, 'LV ', h('span', { id: 'aa-atk-level', class: 'aa-stat-num', text: String(myAtk) })),
+          h('button', { class: 'aa-upgrade-btn', id: 'aa-upgrade-atk', onClick: upgradeAttack },
+            '+1 (', h('span', { id: 'aa-atk-cost', text: String(upgradeCost(myAtk)) }), ' $)')
+        ),
+        h('div', { class: 'aa-stat-card defend' },
+          h('div', { class: 'aa-stat-icon', text: '🛡' }),
+          h('div', { class: 'aa-stat-name', text: 'DEF' }),
+          h('div', { class: 'aa-stat-level' }, 'LV ', h('span', { id: 'aa-def-level', class: 'aa-stat-num', text: String(myDef) })),
+          h('button', { class: 'aa-upgrade-btn', id: 'aa-upgrade-def', onClick: upgradeDefend },
+            '+1 (', h('span', { id: 'aa-def-cost', text: String(upgradeCost(myDef)) }), ' $)')
+        ),
+        h('div', { class: 'aa-stat-card gold' },
+          h('div', { class: 'aa-stat-icon', text: '$' }),
+          h('div', { class: 'aa-stat-name', text: 'ALTIN' }),
+          h('div', { class: 'aa-stat-level' }, h('span', { id: 'aa-my-gold-line', class: 'aa-stat-num gold-num', text: String(myGold) }))
+        )
+      )
+    );
+
+    const prepInfo = h('div', { class: 'aa-prep-info', text: 'Soru yakında geliyor...' });
+
+    container.appendChild(h('div', { class: 'aa-game' },
+      topBar, leaderboard, actionSection, statsSection, prepInfo
+    ));
+
+    updatePrepPhase();
+    startPrepTimer();
+  }
+
+  function startPrepTimer() {
+    if (timerRafId) cancelAnimationFrame(timerRafId);
+    const fill = container.querySelector('#aa-timer-fill');
+    const num = container.querySelector('#aa-timer-num');
+    function tick() {
+      if (!roomData || roomData.roundPhase !== 'PREP') return;
+      const startedAt = roomData.prepStartedAt;
+      if (!startedAt) { timerRafId = requestAnimationFrame(tick); return; }
+      const elapsed = Date.now() - startedAt;
+      const remaining = Math.max(0, PREP_DURATION_MS - elapsed);
+      const pct = (remaining / PREP_DURATION_MS) * 100;
+      if (fill) fill.style.width = pct + '%';
+      if (num) num.textContent = String(Math.ceil(remaining / 1000));
+      if (remaining > 0) timerRafId = requestAnimationFrame(tick);
+    }
+    tick();
+  }
+
+  function updatePrepPhase() {
+    renderLeaderboard();
+    const me = roomData.players && roomData.players[myId];
+    if (!me) return;
+    const myGold = me.gold || 0;
+    const myAtk = me.atkLevel || START_ATK;
+    const myDef = me.defLevel || START_DEF;
+    const atkCost = upgradeCost(myAtk);
+    const defCost = upgradeCost(myDef);
+    const setText = (id, val) => {
+      const el = container.querySelector('#' + id);
+      if (el) el.textContent = String(val);
+    };
+    setText('aa-my-gold-line', myGold);
+    setText('aa-atk-level', myAtk);
+    setText('aa-def-level', myDef);
+    setText('aa-atk-cost', atkCost);
+    setText('aa-def-cost', defCost);
+    const atkBtn = container.querySelector('#aa-upgrade-atk');
+    const defBtn = container.querySelector('#aa-upgrade-def');
+    if (atkBtn) atkBtn.disabled = myGold < atkCost;
+    if (defBtn) defBtn.disabled = myGold < defCost;
+  }
+
   async function startGame() {
     if (!isHost) return;
     try {
       await roomRef.update({
         state: 'PLAYING',
         currentRound: 1,
-        roundPhase: 'CHOICE',
-        roundStartedAt: Date.now()
+        roundPhase: 'PREP',
+        prepStartedAt: Date.now()
       });
     } catch (e) {
       console.error('startGame error', e);
@@ -575,12 +708,15 @@ const AltinAvi = (() => {
     const q = roomData.questions[roomData.currentRound - 1];
     if (!q) { console.error('No question for round', roomData.currentRound); return; }
 
-    // Top bar
+    // Carry action from PREP; initialize only if needed
+    if (!myChoice) myChoice = { answer: null, answerTime: null, action: null, targetId: null };
+
+    const dur = roomData?.choiceDurationMs ?? CHOICE_DURATION_MS;
     const topBar = h('div', { class: 'aa-game-top' },
       h('div', { class: 'aa-round-info' },
         h('span', { class: 'aa-round-label', text: 'ROUND' }),
         h('span', { class: 'aa-round-num' },
-          h('span', { id: 'aa-round-cur', text: pad2(roomData.currentRound) }),
+          pad2(roomData.currentRound),
           ' / ' + pad2(roomData.totalRounds ?? TOTAL_ROUNDS)
         )
       ),
@@ -588,7 +724,7 @@ const AltinAvi = (() => {
         h('div', { class: 'aa-timer-bar' },
           h('div', { class: 'aa-timer-fill', id: 'aa-timer-fill' })
         ),
-        h('span', { class: 'aa-timer-num', id: 'aa-timer-num', text: '20' })
+        h('span', { class: 'aa-timer-num', id: 'aa-timer-num', text: String(Math.ceil(dur / 1000)) })
       ),
       h('button', {
         class: 'aa-leave-btn',
@@ -598,7 +734,17 @@ const AltinAvi = (() => {
 
     const leaderboard = h('div', { class: 'aa-leaderboard', id: 'aa-leaderboard' });
 
-    // Soru kartı
+    // Action indicator (selected during PREP)
+    const chosenAction = myChoice.action;
+    const actionIndicator = h('div', { class: 'aa-action-indicator' },
+      chosenAction === 'attack'
+        ? h('span', { class: 'aa-action-indicator-text attack', text: '🪙 KAP — rakibin altınını kap' })
+        : chosenAction === 'defend'
+        ? h('span', { class: 'aa-action-indicator-text defend', text: '⛨ SAVUN — gelene direnç' })
+        : h('span', { class: 'aa-action-indicator-text', text: '— PAS (PREP\'te hamle seçilmedi)' })
+    );
+
+    // Question card — options container reused for target selection after answer
     const optsRoot = h('div', { class: 'aa-options', id: 'aa-options' });
     q.options.forEach((opt, idx) => {
       const letter = String.fromCharCode(65 + idx);
@@ -617,104 +763,23 @@ const AltinAvi = (() => {
       optsRoot
     );
 
-    // Aksiyon butonları — sadece 2: Saldır / Savun (lider OTOMATİK hedeflenir)
-    const actions = [
-      { key: 'attack', icon: '🪙', name: 'KAP', desc: 'rakibin altınını kap' },
-      { key: 'defend', icon: '⛨', name: 'SAVUN', desc: 'gelene direnç' }
-    ];
-    const actionRow = h('div', { class: 'aa-action-row', id: 'aa-action-row' });
-    actions.forEach(a => {
-      const btn = h('button', {
-        class: 'aa-action-btn',
-        data: { action: a.key },
-        onClick: () => selectAction(a.key)
-      },
-        h('span', { class: 'aa-action-icon', text: a.icon }),
-        h('span', { class: 'aa-action-name', text: a.name }),
-        h('span', { class: 'aa-action-desc', text: a.desc })
-      );
-      actionRow.appendChild(btn);
-    });
-    const actionSection = h('div', { class: 'aa-action-section' },
-      h('div', { class: 'aa-action-label', text: 'HAMLENİ SEÇ:' }),
-      actionRow
-    );
-
-    // Güçlendirme paneli: ATK ve DEF seviyelerini altınla yükselt
-    const statsSection = h('div', { class: 'aa-stats-section' },
-      h('div', { class: 'aa-stats-grid' },
-        h('div', { class: 'aa-stat-card attack' },
-          h('div', { class: 'aa-stat-icon', text: '🗡' }),
-          h('div', { class: 'aa-stat-name', text: 'ATK' }),
-          h('div', { class: 'aa-stat-level' },
-            'LV ',
-            h('span', { id: 'aa-atk-level', class: 'aa-stat-num', text: '1' })
-          ),
-          h('button', {
-            class: 'aa-upgrade-btn',
-            id: 'aa-upgrade-atk',
-            onClick: upgradeAttack
-          },
-            '+1 (',
-            h('span', { id: 'aa-atk-cost', text: '5' }),
-            ' $)'
-          )
-        ),
-        h('div', { class: 'aa-stat-card defend' },
-          h('div', { class: 'aa-stat-icon', text: '🛡' }),
-          h('div', { class: 'aa-stat-name', text: 'DEF' }),
-          h('div', { class: 'aa-stat-level' },
-            'LV ',
-            h('span', { id: 'aa-def-level', class: 'aa-stat-num', text: '1' })
-          ),
-          h('button', {
-            class: 'aa-upgrade-btn',
-            id: 'aa-upgrade-def',
-            onClick: upgradeDefend
-          },
-            '+1 (',
-            h('span', { id: 'aa-def-cost', text: '5' }),
-            ' $)'
-          )
-        ),
-        h('div', { class: 'aa-stat-card gold' },
-          h('div', { class: 'aa-stat-icon', text: '$' }),
-          h('div', { class: 'aa-stat-name', text: 'ALTIN' }),
-          h('div', { class: 'aa-stat-level' },
-            h('span', { id: 'aa-my-gold-line', class: 'aa-stat-num gold-num', text: '0' })
-          )
-        )
-      )
-    );
-
-    const submitBtn = h('button', {
-      class: 'aa-submit-btn',
-      id: 'aa-submit-btn',
-      disabled: 'disabled',
-      onClick: sendChoice
-    }, 'CONFIRM');
-
     const waiting = h('div', {
       class: 'aa-waiting-others',
       id: 'aa-waiting-others',
       style: { display: 'none' }
     }, '> SYNC.. DİĞER OYUNCULAR BEKLENİYOR..');
 
-    const game = h('div', { class: 'aa-game' },
-      topBar, leaderboard, questionCard, actionSection, statsSection, submitBtn, waiting
-    );
-    container.appendChild(game);
-
-    myChoice = { answer: null, answerTime: null, action: null };
+    container.appendChild(h('div', { class: 'aa-game' },
+      topBar, leaderboard, actionIndicator, questionCard, waiting
+    ));
 
     updateChoicePhase();
     startChoiceTimer();
   }
 
   function selectAnswer(idx) {
-    if (!myChoice) myChoice = { answer: null, answerTime: null, action: null };
+    if (!myChoice) myChoice = { answer: null, answerTime: null, action: null, targetId: null };
     if (isMyChoiceLocked()) return;
-    // Cevap ilk defa veriliyorsa timestamp kaydet
     if (myChoice.answer === null && roomData && roomData.roundStartedAt) {
       myChoice.answerTime = Math.max(0, Date.now() - roomData.roundStartedAt);
     }
@@ -722,17 +787,67 @@ const AltinAvi = (() => {
     container.querySelectorAll('.aa-option-btn').forEach(b => {
       b.classList.toggle('selected', parseInt(b.dataset.idx, 10) === idx);
     });
-    updateSubmitState();
+
+    // KAP seçilmişse hedef seçim UI'ı göster; diğer durumlarda hemen gönder
+    if (myChoice.action === 'attack') {
+      renderTargetSelection();
+    } else {
+      sendChoice();
+    }
   }
 
   function selectAction(actionName) {
-    if (!myChoice) myChoice = { answer: null, answerTime: null, action: null };
-    if (isMyChoiceLocked()) return;
+    if (!myChoice) myChoice = { answer: null, answerTime: null, action: null, targetId: null };
     myChoice.action = actionName;
     container.querySelectorAll('.aa-action-btn').forEach(b => {
       b.classList.toggle('selected', b.dataset.action === actionName);
     });
-    updateSubmitState();
+  }
+
+  function renderTargetSelection() {
+    const optsRoot = container.querySelector('#aa-options');
+    if (!optsRoot) return;
+    while (optsRoot.firstChild) optsRoot.removeChild(optsRoot.firstChild);
+
+    const others = playersArray().filter(p => p.id !== myId);
+    if (others.length === 0) { sendChoice(); return; }
+
+    // Shuffle and take up to 3 random targets
+    const shuffled = others.slice().sort(() => Math.random() - 0.5).slice(0, 3);
+
+    optsRoot.appendChild(h('div', { class: 'aa-target-label', text: '▶ HEDEF SEÇ:' }));
+    const grid = h('div', { class: 'aa-target-grid' });
+    shuffled.forEach(p => {
+      const box = h('div', { class: 'aa-target-box',
+        onClick: () => {
+          myChoice.targetId = p.id;
+          container.querySelectorAll('.aa-target-box').forEach(b => b.classList.remove('selected'));
+          box.classList.add('selected');
+          sendChoice();
+        }
+      },
+        h('div', { class: 'aa-target-name', text: p.name }),
+        h('div', { class: 'aa-target-stats' },
+          h('span', { class: 'aa-target-stat atk', text: '⚔ ' + (p.atkLevel || 1) }),
+          h('span', { class: 'aa-target-stat def', text: '🛡 ' + (p.defLevel || 1) })
+        )
+      );
+      grid.appendChild(box);
+    });
+    optsRoot.appendChild(grid);
+  }
+
+  function autoSubmitOnTimeout() {
+    if (isMyChoiceLocked()) return;
+    if (!myChoice) myChoice = { answer: null, answerTime: null, action: null, targetId: null };
+    // KAP + hedef seçilmemişse rastgele seç
+    if (myChoice.action === 'attack' && !myChoice.targetId) {
+      const others = playersArray().filter(p => p.id !== myId);
+      if (others.length > 0) {
+        myChoice.targetId = others[Math.floor(Math.random() * others.length)].id;
+      }
+    }
+    if (myChoice.answer !== null) sendChoice();
   }
 
   // Yükseltme: transaction ile atomik
@@ -792,7 +907,6 @@ const AltinAvi = (() => {
   }
 
   async function sendChoice() {
-    // Cevap zorunlu, aksiyon opsiyonel (pas mümkün)
     if (!myChoice || myChoice.answer === null) return;
     if (!myRoomCode) return;
     try {
@@ -800,6 +914,7 @@ const AltinAvi = (() => {
         answer: myChoice.answer,
         answerTime: myChoice.answerTime !== null ? myChoice.answerTime : (roomData?.choiceDurationMs ?? CHOICE_DURATION_MS),
         action: myChoice.action || 'pass',
+        targetId: myChoice.targetId || null,
         round: roomData.currentRound
       };
       await db.ref('rooms/altin-avi/' + myRoomCode + '/players/' + myId + '/currentChoice').set(payload);
@@ -820,47 +935,10 @@ const AltinAvi = (() => {
 
   function updateChoicePhase() {
     renderLeaderboard();
-    // Statlar
     const me = roomData.players && roomData.players[myId];
-    const myGold = me ? (me.gold || 0) : 0;
-    const myAtk = me ? (me.atkLevel || START_ATK) : START_ATK;
-    const myDef = me ? (me.defLevel || START_DEF) : START_DEF;
-    const atkCost = upgradeCost(myAtk);
-    const defCost = upgradeCost(myDef);
-
-    const setText = (id, val) => {
-      const el = container.querySelector('#' + id);
-      if (el) el.textContent = String(val);
-    };
-    setText('aa-my-gold-line', myGold);
-    setText('aa-atk-level', myAtk);
-    setText('aa-def-level', myDef);
-    setText('aa-atk-cost', atkCost);
-    setText('aa-def-cost', defCost);
-
-    // Yükseltme butonlarını disable et altın yetmiyorsa
-    const atkBtn = container.querySelector('#aa-upgrade-atk');
-    const defBtn = container.querySelector('#aa-upgrade-def');
-    if (atkBtn) atkBtn.disabled = myGold < atkCost;
-    if (defBtn) defBtn.disabled = myGold < defCost;
-
     if (me && me.currentChoice && me.currentChoice.round === roomData.currentRound) {
-      container.querySelectorAll('.aa-option-btn').forEach(b => {
-        if (parseInt(b.dataset.idx, 10) === me.currentChoice.answer) b.classList.add('selected');
-      });
-      container.querySelectorAll('.aa-action-btn').forEach(b => {
-        if (b.dataset.action === me.currentChoice.action) b.classList.add('selected');
-      });
       lockMyChoiceUI();
     }
-  }
-
-  function updateSubmitState() {
-    const submitBtn = container.querySelector('#aa-submit-btn');
-    if (!submitBtn) return;
-    // Sadece cevap yeterli, aksiyon opsiyonel
-    const ready = myChoice && myChoice.answer !== null;
-    submitBtn.disabled = !ready;
   }
 
   function updateLeaderboardOnly() {
@@ -871,6 +949,7 @@ const AltinAvi = (() => {
     if (timerRafId) cancelAnimationFrame(timerRafId);
     const fill = container.querySelector('#aa-timer-fill');
     const num = container.querySelector('#aa-timer-num');
+    let autoSubmitted = false;
     function tick() {
       if (!roomData || roomData.roundPhase !== 'CHOICE') return;
       const startedAt = roomData.roundStartedAt;
@@ -881,7 +960,12 @@ const AltinAvi = (() => {
       const pct = (remaining / dur) * 100;
       if (fill) fill.style.width = pct + '%';
       if (num) num.textContent = String(Math.ceil(remaining / 1000));
-      if (remaining > 0) timerRafId = requestAnimationFrame(tick);
+      if (remaining > 0) {
+        timerRafId = requestAnimationFrame(tick);
+      } else if (!autoSubmitted) {
+        autoSubmitted = true;
+        autoSubmitOnTimeout();
+      }
     }
     tick();
   }
@@ -983,49 +1067,87 @@ const AltinAvi = (() => {
       summary.appendChild(card);
     }
 
-    // Savaş özetleri: bana ilgili olanı (ya saldıranım ya hedefim)
-    const battles = result.battles || {};
+    // Savaş özetleri: bana ilgili olanlar (saldıran ya da hedef)
+    const perPlayer = result.perPlayer || {};
     const myBattleSummary = h('div', { class: 'aa-battle-summary' });
     let hasBattleInfo = false;
 
-    Object.keys(battles).forEach(targetId => {
-      const battle = battles[targetId];
-      const target = result.perPlayer[targetId];
-      const iAmTarget = targetId === myId;
-      const iAmAttacker = (battle.attackers || []).indexOf(myId) >= 0;
-      if (!iAmTarget && !iAmAttacker) return;
+    // Benim saldırım
+    const myRes = perPlayer[myId];
+    if (myRes && myRes.effectiveAttack && myRes.target) {
       hasBattleInfo = true;
-
-      const title = iAmTarget
-        ? 'SALDIRI ALDIN · ' + (battle.attackers || []).length + ' SALDIRAN'
-        : 'HEDEF: ' + (target ? target.name.toUpperCase() : 'LİDER');
-
-      const transferAmt = battle.transfer || 0;
-      const outcomeText = battle.outcome === 'attack'
-        ? '▲ SALDIRI KAZANDI · ' + transferAmt + '$ ÇALINDI'
-        : battle.outcome === 'defend'
-        ? '▼ SAVUNMA KAZANDI · ' + transferAmt + '$ KAYIP'
+      const tgt = perPlayer[myRes.target];
+      const outcomeText = myRes.battleOutcome === 'win'
+        ? '▲ SALDIRI KAZANDI · ' + myRes.transfer + '$ ÇALINDI'
+        : myRes.battleOutcome === 'win_empty'
+        ? '▲ KAZANDIN AMA HEDEF BATTI · 0$'
+        : myRes.battleOutcome === 'loss'
+        ? '▼ SAVUNMA KAZANDI · ' + myRes.transfer + '$ KAYIP'
         : '◆ BERABERE ◆';
 
-      myBattleSummary.appendChild(h('div', { class: 'aa-battle-title', text: title }));
+      myBattleSummary.appendChild(h('div', { class: 'aa-battle-title' },
+        'HEDEF: ', h('span', { text: tgt ? tgt.name.toUpperCase() : '?' })
+      ));
       myBattleSummary.appendChild(
         h('div', { class: 'aa-battle-vs' },
           h('div', { class: 'aa-battle-side attack' },
             h('div', { class: 'aa-battle-side-label', text: 'ATK' }),
-            h('div', { class: 'aa-battle-side-value', text: String(battle.totalATK || 0) })
+            h('div', { class: 'aa-battle-side-value', text: String(myRes.atkLevel || 1) })
           ),
           h('div', { class: 'aa-battle-vs-mid', text: 'VS' }),
           h('div', { class: 'aa-battle-side defend' },
             h('div', { class: 'aa-battle-side-label', text: 'DEF' }),
-            h('div', { class: 'aa-battle-side-value', text: String(battle.defense || 0) })
+            h('div', { class: 'aa-battle-side-value', text: String(myRes.def || 0) })
           )
         )
       );
       myBattleSummary.appendChild(
         h('div', {
-          class: 'aa-battle-result ' +
-            (battle.outcome === 'attack' ? 'atk-wins' :
-             battle.outcome === 'defend' ? 'def-wins' : 'tie')
+          class: 'aa-battle-result ' + (
+            (myRes.battleOutcome === 'win' || myRes.battleOutcome === 'win_empty') ? 'atk-wins' :
+            myRes.battleOutcome === 'loss' ? 'def-wins' : 'tie'
+          )
+        }, outcomeText)
+      );
+    }
+
+    // Bana yapılan saldırılar
+    Object.keys(perPlayer).forEach(attackerId => {
+      if (attackerId === myId) return;
+      const att = perPlayer[attackerId];
+      if (!att.effectiveAttack || att.target !== myId) return;
+      hasBattleInfo = true;
+
+      const outcomeText = att.battleOutcome === 'win'
+        ? '▲ SALDIRI KAZANDI · ' + att.transfer + '$ ÇALINDI'
+        : att.battleOutcome === 'win_empty'
+        ? '▲ SALDIRAN KAZANDI AMA BATIN · 0$'
+        : att.battleOutcome === 'loss'
+        ? '▼ SAVUNMAN TUTTU · ' + att.transfer + '$ KAZANDIN'
+        : '◆ BERABERE ◆';
+
+      myBattleSummary.appendChild(h('div', { class: 'aa-battle-title' },
+        h('span', { text: att.name.toUpperCase() }), ' sana saldırdı'
+      ));
+      myBattleSummary.appendChild(
+        h('div', { class: 'aa-battle-vs' },
+          h('div', { class: 'aa-battle-side attack' },
+            h('div', { class: 'aa-battle-side-label', text: 'ATK' }),
+            h('div', { class: 'aa-battle-side-value', text: String(att.atkLevel || 1) })
+          ),
+          h('div', { class: 'aa-battle-vs-mid', text: 'VS' }),
+          h('div', { class: 'aa-battle-side defend' },
+            h('div', { class: 'aa-battle-side-label', text: 'DEF' }),
+            h('div', { class: 'aa-battle-side-value', text: String(att.def || 0) })
+          )
+        )
+      );
+      myBattleSummary.appendChild(
+        h('div', {
+          class: 'aa-battle-result ' + (
+            (att.battleOutcome === 'win' || att.battleOutcome === 'win_empty') ? 'atk-wins' :
+            att.battleOutcome === 'loss' ? 'def-wins' : 'tie'
+          )
         }, outcomeText)
       );
     });
@@ -1118,6 +1240,17 @@ const AltinAvi = (() => {
     if (!isHost || !roomData) return;
     if (roomData.state !== 'PLAYING') return;
     const phase = roomData.roundPhase;
+
+    if (phase === 'PREP') {
+      const prepElapsed = Date.now() - (roomData.prepStartedAt || 0);
+      if (prepElapsed >= PREP_DURATION_MS) {
+        try {
+          await roomRef.update({ roundPhase: 'CHOICE', roundStartedAt: Date.now() });
+        } catch (e) { console.error('PREP→CHOICE error', e); }
+      }
+      return;
+    }
+
     const startedAt = roomData.roundStartedAt;
     if (!startedAt) return;
     const elapsed = Date.now() - startedAt;
@@ -1161,14 +1294,13 @@ const AltinAvi = (() => {
       const ids = Object.keys(players);
       if (ids.length === 0) return;
 
-      // Lider: tüm oyuncuların en çok altını olan. Eşitlik durumunda joinedAt'e göre tutarlı.
+      // Lider: lastResult için bilgi, artık saldırı hedefi değil
       const sorted = ids.map(id => players[id]).sort((a, b) => {
         const d = (b.gold || 0) - (a.gold || 0);
         if (d !== 0) return d;
         return (a.joinedAt || 0) - (b.joinedAt || 0);
       });
       const leaderId = sorted[0] ? sorted[0].id : null;
-      const secondId = sorted[1] ? sorted[1].id : null;
 
       // 1) Per-player normalize
       const perPlayer = {};
@@ -1179,18 +1311,25 @@ const AltinAvi = (() => {
         const rawAction = c && c.action ? c.action : 'pass';
         const action = (rawAction === 'attack' || rawAction === 'defend') ? rawAction : 'pass';
         const answerTime = c && typeof c.answerTime === 'number' ? c.answerTime : null;
+        const targetId = c && c.targetId ? c.targetId : null;
         const correct = answer !== null && answer === q.correctIdx;
+        // Saldırı geçerli: doğru cevap + attack + hedef seçilmiş + hedef oyuncu var
+        const effectiveAttack = correct && action === 'attack' && targetId && !!players[targetId];
         perPlayer[id] = {
           name: p.name,
           atkLevel: p.atkLevel || START_ATK,
           defLevel: p.defLevel || START_DEF,
-          answer, action, answerTime, correct,
+          answer, action, answerTime, correct, targetId, effectiveAttack,
           rank: null,
           speedBonus: 0,
           battleDelta: 0,
           delta: 0,
           target: null,
-          targetName: null
+          targetName: null,
+          def: 0,
+          diff: 0,
+          transfer: 0,
+          battleOutcome: 'none'
         };
       });
 
@@ -1204,52 +1343,55 @@ const AltinAvi = (() => {
         perPlayer[id].speedBonus = bonusForRank(rank);
       });
 
-      // 3) Çatışma: saldıranlar lideri hedefler (lider sensen secondId)
-      const attackerIds = ids.filter(id => perPlayer[id].action === 'attack');
-      const battlesByTarget = {};
+      // 3) 1v1 Çatışma — her saldıran kendi seçtiği hedefe karşı bağımsız
+      // Working gold: hedef altını birden fazla saldırıya karşı doğru biriktirir
+      const workingGold = {};
+      ids.forEach(id => { workingGold[id] = players[id].gold || 0; });
+
+      // Hızlı doğru cevap verenler önce saldırır (answerTime'a göre sırala)
+      const attackerIds = ids
+        .filter(id => perPlayer[id].effectiveAttack)
+        .sort((a, b) => (perPlayer[a].answerTime || 0) - (perPlayer[b].answerTime || 0));
+
       attackerIds.forEach(aid => {
-        const targetId = (aid === leaderId) ? secondId : leaderId;
-        if (!targetId || targetId === aid) return;
         const me = perPlayer[aid];
-        me.target = targetId;
-        me.targetName = players[targetId] ? players[targetId].name : '?';
-        if (!battlesByTarget[targetId]) battlesByTarget[targetId] = { attackers: [], totalATK: 0 };
-        battlesByTarget[targetId].attackers.push(aid);
-        battlesByTarget[targetId].totalATK += me.atkLevel;
-      });
+        const tId = me.targetId;
+        const target = perPlayer[tId];
+        if (!target) return;
 
-      // Her hedef için: totalATK vs hedef DEF (sadece savun seçtiyse aktif)
-      Object.keys(battlesByTarget).forEach(targetId => {
-        const battle = battlesByTarget[targetId];
-        const target = perPlayer[targetId];
-        const targetDefending = target.action === 'defend';
-        const defense = targetDefending ? target.defLevel : 0;
-        const totalATK = battle.totalATK;
-        const diff = totalATK - defense;
-        const transfer = Math.abs(diff) * TRANSFER_PER_DIFF;
+        me.target = tId;
+        me.targetName = players[tId] ? players[tId].name : '?';
 
-        battle.defense = defense;
-        battle.targetDefending = targetDefending;
-        battle.diff = diff;
-        battle.transfer = transfer;
-        battle.outcome = diff > 0 ? 'attack' : diff < 0 ? 'defend' : 'tie';
+        // Savun seçtiyse defLevel aktif, aksi halde 0
+        const def = target.action === 'defend' ? target.defLevel : 0;
+        const diff = me.atkLevel - def;
+        const baseTransfer = Math.abs(diff) * TRANSFER_PER_DIFF;
+
+        me.def = def;
+        me.diff = diff;
 
         if (diff > 0) {
-          // Saldıranlar kazandı: hedef -transfer, paylaşım ATK oranında
-          target.battleDelta -= transfer;
-          battle.attackers.forEach(aid => {
-            const share = Math.floor(transfer * (perPlayer[aid].atkLevel / totalATK));
-            perPlayer[aid].battleDelta += share;
-          });
+          // Saldırı kazandı: hedeften al (hedefin 0 altını varsa hiçbir şey gelmez)
+          const actual = Math.min(baseTransfer, workingGold[tId]);
+          me.battleDelta += actual;
+          target.battleDelta -= actual;
+          workingGold[aid] += actual;
+          workingGold[tId] = Math.max(0, workingGold[tId] - actual);
+          me.battleOutcome = actual > 0 ? 'win' : 'win_empty';
+          me.transfer = actual;
         } else if (diff < 0) {
-          // Savun kazandı: saldıranlar -transfer (ATK oranında), savun +transfer
-          target.battleDelta += transfer;
-          battle.attackers.forEach(aid => {
-            const loss = Math.floor(transfer * (perPlayer[aid].atkLevel / totalATK));
-            perPlayer[aid].battleDelta -= loss;
-          });
+          // Savunma kazandı: saldıran kaybeder, savunmacı alır
+          const actual = Math.min(baseTransfer, workingGold[aid]);
+          me.battleDelta -= actual;
+          target.battleDelta += actual;
+          workingGold[aid] = Math.max(0, workingGold[aid] - actual);
+          workingGold[tId] += actual;
+          me.battleOutcome = 'loss';
+          me.transfer = actual;
+        } else {
+          me.battleOutcome = 'tie';
+          me.transfer = 0;
         }
-        // diff === 0: kimse delta almaz
       });
 
       // 4) Toplam delta = hız bonusu + battleDelta
@@ -1263,7 +1405,6 @@ const AltinAvi = (() => {
       ids.forEach(id => {
         const oldGold = players[id].gold || 0;
         const newGold = Math.max(0, oldGold + perPlayer[id].delta);
-        // Gerçek delta clamp sonrası
         perPlayer[id].appliedDelta = newGold - oldGold;
         perPlayer[id].newGold = newGold;
         updates['players/' + id + '/gold'] = newGold;
@@ -1273,8 +1414,7 @@ const AltinAvi = (() => {
         round: r,
         correctIdx: q.correctIdx,
         leaderId: leaderId || null,
-        perPlayer,
-        battles: battlesByTarget
+        perPlayer
       };
       updates['roundPhase'] = 'REVEAL';
       updates['roundStartedAt'] = Date.now();
@@ -1296,8 +1436,8 @@ const AltinAvi = (() => {
       }
       const updates = {
         currentRound: r + 1,
-        roundPhase: 'CHOICE',
-        roundStartedAt: Date.now()
+        roundPhase: 'PREP',
+        prepStartedAt: Date.now()
       };
       const players = roomData.players || {};
       Object.keys(players).forEach(id => {
