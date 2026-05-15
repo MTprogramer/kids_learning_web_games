@@ -812,26 +812,31 @@ const AltinAvi = (() => {
     const others = playersArray().filter(p => p.id !== myId);
     if (others.length === 0) { sendChoice(); return; }
 
-    // Shuffle and take up to 3 random targets
     const shuffled = others.slice().sort(() => Math.random() - 0.5).slice(0, 3);
 
     optsRoot.appendChild(h('div', { class: 'aa-target-label', text: '▶ HEDEF SEÇ:' }));
     const grid = h('div', { class: 'aa-target-grid' });
-    shuffled.forEach(p => {
-      const box = h('div', { class: 'aa-target-box',
+    shuffled.forEach((p) => {
+      // İsim ve istatistikler seçimden önce gizli
+      const nameEl = h('div', { class: 'aa-target-name', text: '???' });
+      const atkEl = h('span', { class: 'aa-target-stat atk', text: '⚔ ?' });
+      const defEl = h('span', { class: 'aa-target-stat def', text: '🛡 ?' });
+      const statsEl = h('div', { class: 'aa-target-stats' }, atkEl, defEl);
+
+      const box = h('div', { class: 'aa-target-box aa-target-hidden',
         onClick: () => {
+          if (myChoice.targetId) return; // zaten seçildi
           myChoice.targetId = p.id;
+          // Seçim sonrası isim ve istatistikleri göster
+          nameEl.textContent = p.name;
+          atkEl.textContent = '⚔ ' + (p.atkLevel || 1);
+          defEl.textContent = '🛡 ' + (p.defLevel || 1);
           container.querySelectorAll('.aa-target-box').forEach(b => b.classList.remove('selected'));
           box.classList.add('selected');
-          sendChoice();
+          box.classList.remove('aa-target-hidden');
+          setTimeout(() => sendChoice(), 700);
         }
-      },
-        h('div', { class: 'aa-target-name', text: p.name }),
-        h('div', { class: 'aa-target-stats' },
-          h('span', { class: 'aa-target-stat atk', text: '⚔ ' + (p.atkLevel || 1) }),
-          h('span', { class: 'aa-target-stat def', text: '🛡 ' + (p.defLevel || 1) })
-        )
-      );
+      }, nameEl, statsEl);
       grid.appendChild(box);
     });
     optsRoot.appendChild(grid);

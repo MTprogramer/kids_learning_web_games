@@ -1520,3 +1520,14 @@
 .aa-target-stat.def { color: var(--rt-cyan); }
 .aa-target-box.selected .aa-target-stat.atk,
 .aa-target-box.selected .aa-target-stat.def { color: var(--rt-panel-light); }
+
+/* Seçim öncesi gizli durum */
+.aa-target-hidden .aa-target-name {
+  font-size: 1.6rem;
+  letter-spacing: 0.2em;
+  color: var(--rt-text-faded);
+}
+.aa-target-hidden .aa-target-stat {
+  color: var(--rt-text-faded);
+  filter: blur(2px);
+}
