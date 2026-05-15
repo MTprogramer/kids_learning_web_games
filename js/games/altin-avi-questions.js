@@ -1,0 +1,112 @@
+/* ============================================
+   Altın Avı — Bilişim Teknolojileri Soru Bankası
+   ~90 soru, zorluk 1-3 (kolay/orta/zor)
+   4-10 yaş için uyarlanmış
+   ============================================ */
+
+const ALTIN_AVI_QUESTIONS = [
+  // ---- Donanım: Klavye & Mouse ----
+  { q: 'Klavyede en uzun tuş hangisidir?', options: ['Boşluk (Space)', 'Enter', 'Shift', 'Tab'], correctIdx: 0, difficulty: 1 },
+  { q: 'Mouse (fare) kaç tane düğmeye sahiptir genelde?', options: ['1', '2', '2 ve bir tekerlek', '4'], correctIdx: 2, difficulty: 1 },
+  { q: 'Yazıyı bir satır aşağıya geçirmek için hangi tuş kullanılır?', options: ['Tab', 'Enter', 'Shift', 'Esc'], correctIdx: 1, difficulty: 1 },
+  { q: 'Bir harfi büyük yazmak için hangi tuş basılı tutulur?', options: ['Ctrl', 'Alt', 'Shift', 'Tab'], correctIdx: 2, difficulty: 1 },
+  { q: 'Yanlış yazılan harfi silmek için hangi tuş kullanılır?', options: ['Enter', 'Backspace', 'Shift', 'Space'], correctIdx: 1, difficulty: 1 },
+  { q: 'Mouse imlecini ekranda hareket ettirince ne olur?', options: ['Ses çıkar', 'İmleç hareket eder', 'Bilgisayar kapanır', 'Yazı silinir'], correctIdx: 1, difficulty: 1 },
+  { q: 'Klavyede sayılar genelde nerede bulunur?', options: ['Sadece üstte', 'Sadece yanda', 'Üstte ve sağ yanda', 'Hiç sayı yoktur'], correctIdx: 2, difficulty: 1 },
+  { q: 'Klavyedeki "Esc" tuşu ne işe yarar?', options: ['Kaydetmek', 'İptal/çıkış', 'Büyük harf', 'Boşluk'], correctIdx: 1, difficulty: 2 },
+  { q: '"Caps Lock" tuşuna basınca ne olur?', options: ['Bilgisayar kapanır', 'Hep büyük harf yazılır', 'Sesi açar', 'İmleç kaybolur'], correctIdx: 1, difficulty: 2 },
+  { q: 'Sağ tıklayınca ne açılır genelde?', options: ['Oyun', 'Seçenekler menüsü', 'İnternet', 'Mikrofon'], correctIdx: 1, difficulty: 2 },
+
+  // ---- Donanım: Diğer ----
+  { q: 'Bilgisayarın görüntü gösterdiği ekrana ne denir?', options: ['Monitör', 'Klavye', 'Fare', 'Kasa'], correctIdx: 0, difficulty: 1 },
+  { q: 'Bilgisayarın "beyni" olarak adlandırılan parça hangisidir?', options: ['RAM', 'CPU (İşlemci)', 'Klavye', 'Hoparlör'], correctIdx: 1, difficulty: 2 },
+  { q: 'RAM bilgisayarda ne işe yarar?', options: ['Görüntü gösterir', 'Geçici hafıza tutar', 'Ses çıkarır', 'Yazı yazar'], correctIdx: 1, difficulty: 3 },
+  { q: 'Bilgilerin kalıcı olarak saklandığı parça hangisidir?', options: ['Mouse', 'Hard Disk (HDD/SSD)', 'Monitör', 'Klavye'], correctIdx: 1, difficulty: 2 },
+  { q: 'Kağıda yazı veya resim çıkartan aygıt hangisidir?', options: ['Hoparlör', 'Yazıcı', 'Klavye', 'Kamera'], correctIdx: 1, difficulty: 1 },
+  { q: 'Bilgisayardan ses dinlemek için kişisel olarak ne kullanılır?', options: ['Kulaklık', 'Klavye', 'Yazıcı', 'Mouse'], correctIdx: 0, difficulty: 1 },
+  { q: 'Görüntülü konuşma için bilgisayara ne takılır?', options: ['Yazıcı', 'Webcam (Kamera)', 'Hoparlör', 'Klavye'], correctIdx: 1, difficulty: 1 },
+  { q: 'Ses kaydı yapmak için hangi aygıt gerekir?', options: ['Mikrofon', 'Hoparlör', 'Yazıcı', 'Monitör'], correctIdx: 0, difficulty: 1 },
+  { q: 'USB bellek ne işe yarar?', options: ['Görüntü gösterir', 'Dosya taşır/saklar', 'Ses verir', 'İnternete bağlar'], correctIdx: 1, difficulty: 2 },
+  { q: 'Dizüstü bilgisayarın diğer adı nedir?', options: ['Tablet', 'Laptop', 'Akıllı saat', 'Konsol'], correctIdx: 1, difficulty: 1 },
+  { q: 'Dokunmatik ekranı olan, klavyesiz cihaza ne denir?', options: ['Laptop', 'Masaüstü PC', 'Tablet', 'Yazıcı'], correctIdx: 2, difficulty: 1 },
+  { q: 'Bilgisayarın elektrikle çalışması için ne lazım?', options: ['Hoparlör', 'Güç kablosu/Şarj', 'Klavye', 'Webcam'], correctIdx: 1, difficulty: 1 },
+  { q: 'Dokunabildiğimiz fiziksel parçalara ne denir?', options: ['Yazılım', 'Donanım', 'İnternet', 'Bulut'], correctIdx: 1, difficulty: 2 },
+  { q: 'Programlara ve uygulamalara genel olarak ne denir?', options: ['Donanım', 'Yazılım', 'Tuş', 'Kablo'], correctIdx: 1, difficulty: 2 },
+  { q: 'Aşağıdakilerden hangisi donanımdır?', options: ['Word', 'Chrome', 'Klavye', 'Oyun'], correctIdx: 2, difficulty: 2 },
+
+  // ---- İnternet ----
+  { q: '"WWW" kısaltması neyin baş harfleridir?', options: ['World Wide Web', 'Web World Wide', 'Wide World Web', 'World Web Wide'], correctIdx: 0, difficulty: 2 },
+  { q: 'İnternet sitelerini açtığımız programa ne denir?', options: ['Yazıcı', 'Tarayıcı (Browser)', 'Hesap Makinesi', 'Paint'], correctIdx: 1, difficulty: 1 },
+  { q: 'Aşağıdakilerden hangisi bir web tarayıcısıdır?', options: ['Word', 'Chrome', 'Paint', 'Excel'], correctIdx: 1, difficulty: 1 },
+  { q: 'İnternette bilgi aramak için en çok hangisi kullanılır?', options: ['Word', 'Paint', 'Google', 'VLC'], correctIdx: 2, difficulty: 1 },
+  { q: 'Video izlemek için en çok kullanılan site hangisidir?', options: ['Google', 'YouTube', 'Word', 'Paint'], correctIdx: 1, difficulty: 1 },
+  { q: 'E-posta nedir?', options: ['Elektronik mektup', 'Bir oyun', 'Bilgisayar parçası', 'Tuş'], correctIdx: 0, difficulty: 1 },
+  { q: 'Bir e-posta adresinde mutlaka olması gereken işaret hangisidir?', options: ['?', '#', '@', '!'], correctIdx: 2, difficulty: 2 },
+  { q: 'Bir web sitesinin adresine ne denir?', options: ['Şifre', 'URL (Adres)', 'Dosya', 'Klasör'], correctIdx: 1, difficulty: 2 },
+  { q: 'Bir web sayfasındaki tıklanabilir adrese ne denir?', options: ['Link (Bağlantı)', 'Mouse', 'Klavye', 'Fare'], correctIdx: 0, difficulty: 2 },
+  { q: 'İnternetten bilgisayara dosya almaya ne denir?', options: ['Yükleme', 'İndirme (Download)', 'Silme', 'Açma'], correctIdx: 1, difficulty: 2 },
+  { q: 'Kendi dosyamızı internete koymaya ne denir?', options: ['İndirme', 'Yükleme (Upload)', 'Silme', 'Yazdırma'], correctIdx: 1, difficulty: 2 },
+  { q: 'WiFi ne işe yarar?', options: ['Kablosuz internet bağlantısı', 'Ses verir', 'Görüntü gösterir', 'Yazı yazar'], correctIdx: 0, difficulty: 1 },
+  { q: '"@" işaretine Türkçe ne denir?', options: ['Yıldız', 'Et işareti', 'Çarpı', 'Soru'], correctIdx: 1, difficulty: 3 },
+  { q: 'İnternette anlık mesajlaşmaya ne örnek verilebilir?', options: ['Yazıcı', 'WhatsApp', 'Paint', 'Klavye'], correctIdx: 1, difficulty: 1 },
+  { q: 'Bir web sayfasını telefonla taranınca açan kareli kod nedir?', options: ['Barkod', 'QR Kod', 'Mors', 'Renk kodu'], correctIdx: 1, difficulty: 2 },
+  { q: 'Online ders/toplantı için en çok hangisi kullanılır?', options: ['Word', 'Zoom', 'Paint', 'VLC'], correctIdx: 1, difficulty: 1 },
+
+  // ---- Yazılım & İşletim ----
+  { q: 'Bilgisayarda dosyaların saklandığı yere ne denir?', options: ['Klasör (Folder)', 'Klavye', 'Mouse', 'Ekran'], correctIdx: 0, difficulty: 1 },
+  { q: 'Çalışmamızı kaybetmemek için ne yapmalıyız?', options: ['Kapatmak', 'Kaydetmek', 'Yazdırmak', 'Silmek'], correctIdx: 1, difficulty: 1 },
+  { q: 'Kaydetmek için klasik kısayol hangisidir?', options: ['Ctrl + S', 'Ctrl + C', 'Ctrl + V', 'Alt + F4'], correctIdx: 0, difficulty: 2 },
+  { q: 'Kopyalamak için klasik kısayol hangisidir?', options: ['Ctrl + V', 'Ctrl + C', 'Ctrl + Z', 'Ctrl + X'], correctIdx: 1, difficulty: 2 },
+  { q: 'Yapıştırmak için klasik kısayol hangisidir?', options: ['Ctrl + C', 'Ctrl + V', 'Ctrl + Z', 'Ctrl + X'], correctIdx: 1, difficulty: 2 },
+  { q: 'Bir işlemi geri almak için kısayol hangisidir?', options: ['Ctrl + Z', 'Ctrl + C', 'Ctrl + V', 'Ctrl + S'], correctIdx: 0, difficulty: 2 },
+  { q: 'Bir nesneyi kesip taşımak için kısayol hangisidir?', options: ['Ctrl + S', 'Ctrl + V', 'Ctrl + X', 'Ctrl + Y'], correctIdx: 2, difficulty: 3 },
+  { q: 'Açık olan bir pencereyi kapatmak için kısayol nedir?', options: ['Alt + F4', 'Ctrl + S', 'Ctrl + C', 'Shift + Tab'], correctIdx: 0, difficulty: 3 },
+  { q: 'Bilgisayar açılınca gelen ilk ekrana ne denir?', options: ['Masaüstü', 'Klavye', 'Tarayıcı', 'Hoparlör'], correctIdx: 0, difficulty: 1 },
+  { q: 'Masaüstündeki küçük resimlerin adı nedir?', options: ['Boya', 'Simge (İkon)', 'Yazı', 'Tuş'], correctIdx: 1, difficulty: 1 },
+  { q: 'Sildiğimiz dosyalar geçici olarak nereye gider?', options: ['Klasöre', 'Geri Dönüşüm Kutusu', 'Yazıcıya', 'Klavyeye'], correctIdx: 1, difficulty: 2 },
+  { q: 'Bir dosyayı çift tıklayınca ne olur?', options: ['Silinir', 'Açılır', 'Renk değişir', 'Bilgisayar kapanır'], correctIdx: 1, difficulty: 1 },
+  { q: 'Dosya adındaki nokta sonrası (.jpg, .txt) neyi belirtir?', options: ['Boyutunu', 'Dosya türünü', 'Tarihi', 'Sahibini'], correctIdx: 1, difficulty: 3 },
+  { q: 'Bir fotoğraf dosyasının uzantısı genelde hangisidir?', options: ['.exe', '.jpg', '.txt', '.zip'], correctIdx: 1, difficulty: 2 },
+  { q: 'Müzik dosyasının uzantısı genelde hangisidir?', options: ['.txt', '.mp3', '.jpg', '.docx'], correctIdx: 1, difficulty: 2 },
+  { q: 'Bilgisayarda resim çizmek için kullanılan klasik program?', options: ['Word', 'Paint', 'Chrome', 'VLC'], correctIdx: 1, difficulty: 1 },
+  { q: 'Yazı yazmak için kullanılan program hangisidir?', options: ['Paint', 'Word', 'Chrome', 'Mouse'], correctIdx: 1, difficulty: 1 },
+  { q: 'Hesap yapmak için kullanılan bilgisayar programı?', options: ['Hesap Makinesi', 'Paint', 'Word', 'Chrome'], correctIdx: 0, difficulty: 1 },
+  { q: 'Aşağıdakilerden hangisi işletim sistemidir?', options: ['Chrome', 'Windows', 'Word', 'YouTube'], correctIdx: 1, difficulty: 2 },
+  { q: 'Telefonlarda yaygın kullanılan işletim sistemi hangisidir?', options: ['Word', 'Android', 'Excel', 'Paint'], correctIdx: 1, difficulty: 2 },
+  { q: 'iPhone telefonların işletim sistemi nedir?', options: ['Android', 'iOS', 'Windows', 'Linux'], correctIdx: 1, difficulty: 3 },
+
+  // ---- Güvenlik ----
+  { q: 'Hesap güvenliği için en önemlisi nedir?', options: ['Renkli ekran', 'Güçlü şifre', 'Yüksek ses', 'Büyük klavye'], correctIdx: 1, difficulty: 1 },
+  { q: 'Şifrenizi kiminle paylaşmak güvenlidir?', options: ['Herkese', 'Arkadaşlara', 'Hiç kimseyle (sadece aileyle gerekirse)', 'İnternette'], correctIdx: 2, difficulty: 1 },
+  { q: 'Bilgisayara zarar veren kötü programlara ne denir?', options: ['Virüs', 'Yazıcı', 'Klavye', 'Klasör'], correctIdx: 0, difficulty: 1 },
+  { q: 'Virüslerden korunmak için ne kullanılır?', options: ['Antivirüs programı', 'Yazıcı', 'Hoparlör', 'Webcam'], correctIdx: 0, difficulty: 1 },
+  { q: 'Tanımadığınız e-postadaki linke ne yapmalısınız?', options: ['Hemen tıkla', 'Tıklama, bir büyüğüne sor', 'Şifreni gir', 'Bilgilerini paylaş'], correctIdx: 1, difficulty: 2 },
+  { q: 'İnternette tanımadığınız biriyle ne yapmamalı?', options: ['Adınızı paylaşmamalı', 'Sürekli konuşmalı', 'Adres vermeli', 'Fotoğraf göndermeli'], correctIdx: 0, difficulty: 1 },
+  { q: 'Güvenli bir web sitesinin adresi nasıl başlar?', options: ['http://', 'https://', 'www.', 'ftp://'], correctIdx: 1, difficulty: 3 },
+  { q: 'İyi bir şifrede ne olmalıdır?', options: ['Sadece "1234"', 'Doğum tarihi', 'Harf, sayı ve özel karakter karışımı', 'Sadece adın'], correctIdx: 2, difficulty: 2 },
+  { q: 'Bilgisayarınız garip davranıyorsa ne olabilir?', options: ['Çok güzel', 'Virüs bulaşmış olabilir', 'Hızlanmış', 'Renk değişmiş'], correctIdx: 1, difficulty: 2 },
+  { q: 'Kişisel bilgilerinizi (TC, adres) internette paylaşmak doğru mu?', options: ['Evet, herkese', 'Hayır, gizli tutulmalı', 'Sadece pazar günü', 'Sadece bayramda'], correctIdx: 1, difficulty: 1 },
+
+  // ---- Genel & Kavramlar ----
+  { q: 'Bilgisayar ne işe yarar?', options: ['Sadece oyun', 'Bilgi işler, saklar ve paylaşır', 'Sadece müzik', 'Sadece yemek'], correctIdx: 1, difficulty: 1 },
+  { q: 'Robot ile bilgisayar arasındaki en büyük fark nedir?', options: ['Aynı şeyler', 'Robot hareket eder, bilgisayar genelde sabit', 'Robot yer', 'Bilgisayar konuşur'], correctIdx: 1, difficulty: 2 },
+  { q: 'Akıllı telefon ile normal telefon arasındaki fark nedir?', options: ['Akıllı telefon internete bağlanır', 'Renk farkı', 'Boy farkı', 'Hiç fark yok'], correctIdx: 0, difficulty: 1 },
+  { q: 'Bilgisayar verilerini neyle ölçeriz?', options: ['Kilo', 'Byte (Bayt)', 'Metre', 'Litre'], correctIdx: 1, difficulty: 3 },
+  { q: '1 kilobayt (KB) kaç bayttır?', options: ['10', '100', '1024 (yaklaşık 1000)', '1 milyon'], correctIdx: 2, difficulty: 3 },
+  { q: '1 megabayt (MB) kaç kilobayta yakındır?', options: ['10', '100', '1000', '1 milyon'], correctIdx: 2, difficulty: 3 },
+  { q: 'Yapay zeka (AI) ne demektir?', options: ['Akıllı insan', 'Bilgisayarın insan gibi öğrenmesi', 'Yeni klavye', 'Renkli ekran'], correctIdx: 1, difficulty: 3 },
+  { q: 'Kodlama (programlama) ne demektir?', options: ['Bilgisayara talimat vermek', 'Resim çizmek', 'Yemek yapmak', 'Spor yapmak'], correctIdx: 0, difficulty: 2 },
+  { q: 'Bulut depolama nedir?', options: ['Gökyüzündeki bulutlar', 'Dosyaları internette saklamak', 'Yağmurlu hava', 'Yeni klavye'], correctIdx: 1, difficulty: 3 },
+  { q: 'Aşağıdakilerden hangisi giriş aygıtıdır?', options: ['Yazıcı', 'Klavye', 'Monitör', 'Hoparlör'], correctIdx: 1, difficulty: 2 },
+  { q: 'Aşağıdakilerden hangisi çıkış aygıtıdır?', options: ['Klavye', 'Mouse', 'Yazıcı', 'Mikrofon'], correctIdx: 2, difficulty: 2 },
+  { q: 'İlk elektronik bilgisayar yaklaşık ne zaman yapılmıştır?', options: ['1900', '1940 civarı', '2000', '2020'], correctIdx: 1, difficulty: 3 },
+  { q: 'Bilgisayar açıldığında ilk yüklenen şey nedir?', options: ['Oyun', 'İşletim sistemi', 'Yazıcı', 'Klavye'], correctIdx: 1, difficulty: 2 },
+  { q: 'Bilgisayarın çalışma süresini uzatmak için ne yapılır?', options: ['Sürekli açık tutmak', 'Düzenli güncelleme ve bakım', 'Düşürmek', 'Soğukta tutmak'], correctIdx: 1, difficulty: 2 },
+  { q: 'Bilgisayar başında uzun süre kalırsak hangisi olur?', options: ['Hiçbir şey', 'Göz ve sırt yorulur, mola vermeliyiz', 'Daha zeki oluruz', 'Boyumuz uzar'], correctIdx: 1, difficulty: 1 },
+  { q: 'Bir bilgisayarı kapatmadan önce ne yapılmalı?', options: ['Hemen fişi çek', 'Açık dosyaları kaydedip düzgün kapat', 'Bilgisayarı sars', 'Mouse\'u sakla'], correctIdx: 1, difficulty: 1 },
+  { q: 'Klavyede F1 tuşu genelde ne için kullanılır?', options: ['Yardım', 'Kapatma', 'Açma', 'Sesi açma'], correctIdx: 0, difficulty: 3 },
+  { q: 'Bilgisayar oyunlarında kullanılan kontrol aleti?', options: ['Yazıcı', 'Joystick / Gamepad', 'Klavye yazıcı', 'Modem'], correctIdx: 1, difficulty: 1 },
+  { q: 'Modem ne işe yarar?', options: ['Sadece ses verir', 'İnternet bağlantısı sağlar', 'Yazı yazar', 'Resim çizer'], correctIdx: 1, difficulty: 2 },
+];
+
+window.ALTIN_AVI_QUESTIONS = ALTIN_AVI_QUESTIONS;

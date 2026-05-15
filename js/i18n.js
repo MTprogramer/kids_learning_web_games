@@ -33,6 +33,7 @@ const TR = {
         'ates-buz': 'Ateş & Buz',
         'space-waves': 'SpaceWaves',
         'egim': 'Eğim',
+        'altin-avi': 'Altın Avı',
     },
 
     // Multiplayer strings
@@ -122,6 +123,7 @@ const TR = {
         'penalti': 'Kaleye şut çek!',
         'penalti-mp': 'Rakibine penaltı at!',
         'tuval': 'Hayal et ve boya!',
+        'altin-avi': 'Soruyu cevapla, akıllı seç, en çok altın topla!',
     },
 
     // Kod Macerasi stringleri
