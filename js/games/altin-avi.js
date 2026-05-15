@@ -29,6 +29,13 @@ const AltinAvi = (() => {
   const UPGRADE_COST_PER_LEVEL = 5;
   const TRANSFER_PER_DIFF = 10; // |ATK - DEF| * 10 = transfer miktarı
 
+  // ── Host ayar seçimleri (createRoom öncesi doldurulur) ──
+  let pendingSettings = {
+    maxPlayers: 30,
+    totalRounds: 50,
+    choiceDurationMs: 20000,
+  };
+
   // ── State ──
   let container = null;
   let myId = null;
@@ -173,6 +180,68 @@ const AltinAvi = (() => {
     return Math.max(SPEED_BONUS_MIN, SPEED_BONUS_FIRST - (rank - 1));
   }
 
+  // ── AYAR SEÇİCİ ──
+  function renderSettingRow(label, options, getValue, onSelect) {
+    const row = h('div', { class: 'aa-setting-row' },
+      h('span', { class: 'aa-setting-label', text: label })
+    );
+    const btnGroup = h('div', { class: 'aa-setting-options' });
+    options.forEach(opt => {
+      const btn = h('button', {
+        class: 'aa-btn aa-setting-btn' + (getValue() === opt.value ? ' aa-setting-btn-active' : ''),
+        onClick: () => {
+          onSelect(opt.value);
+          btnGroup.querySelectorAll('.aa-setting-btn').forEach(b => b.classList.remove('aa-setting-btn-active'));
+          btn.classList.add('aa-setting-btn-active');
+        }
+      }, opt.label);
+      btnGroup.appendChild(btn);
+    });
+    row.appendChild(btnGroup);
+    return row;
+  }
+
+  function renderRoomSettings() {
+    lastRenderedPhase = 'SETTINGS';
+    clearContainer();
+
+    const card = h('div', { class: 'aa-entry-card' },
+      h('div', { class: 'aa-entry-header' },
+        h('div', { class: 'aa-coin-big', text: '$' }),
+        h('h2', { class: 'aa-entry-title', text: 'ODA AYARLARI' })
+      ),
+      h('div', { class: 'aa-settings-form' },
+        renderSettingRow(
+          'MAKS OYUNCU',
+          [2,5,10,15,20,30].map(v => ({ value: v, label: String(v) })),
+          () => pendingSettings.maxPlayers,
+          v => { pendingSettings.maxPlayers = v; }
+        ),
+        renderSettingRow(
+          'SORU SAYISI',
+          [10,20,30,50].map(v => ({ value: v, label: String(v) })),
+          () => pendingSettings.totalRounds,
+          v => { pendingSettings.totalRounds = v; }
+        ),
+        renderSettingRow(
+          'SORU SÜRESİ',
+          [10,15,20,30].map(v => ({ value: v * 1000, label: v + 's' })),
+          () => pendingSettings.choiceDurationMs,
+          v => { pendingSettings.choiceDurationMs = v; }
+        )
+      ),
+      h('div', { class: 'aa-entry-buttons' },
+        h('button', {
+          class: 'aa-btn aa-btn-primary',
+          onClick: createRoom
+        }, '◆ ODA KUR'),
+        h('button', { class: 'aa-back-btn', onClick: renderEntryMenu }, '◂◂ GERİ')
+      )
+    );
+
+    container.appendChild(h('div', { class: 'aa-entry' }, card));
+  }
+
   // ── ENTRY MENU ──
   function renderEntryMenu() {
     lastRenderedPhase = 'ENTRY';
@@ -205,7 +274,7 @@ const AltinAvi = (() => {
       h('div', { class: 'aa-entry-buttons' },
         h('button', {
           class: 'aa-btn aa-btn-primary',
-          onClick: () => { if (ensureName()) createRoom(); }
+          onClick: () => { if (ensureName()) renderRoomSettings(); }
         }, '◆ ODA AÇ'),
         h('button', {
           class: 'aa-btn aa-btn-secondary',
@@ -273,8 +342,8 @@ const AltinAvi = (() => {
       }
       if (exists) { toast('Oda kodu üretilemedi, tekrar dene.'); renderEntryMenu(); return; }
 
-      const questions = pickRandomQuestions(TOTAL_ROUNDS);
-      if (questions.length < TOTAL_ROUNDS) {
+      const questions = pickRandomQuestions(pendingSettings.totalRounds);
+      if (questions.length < pendingSettings.totalRounds) {
         toast('Soru bankası eksik!'); renderEntryMenu(); return;
       }
 
@@ -282,9 +351,9 @@ const AltinAvi = (() => {
         code,
         state: 'WAITING',
         hostId: myId,
-        maxPlayers: MAX_PLAYERS,
-        minPlayers: MIN_PLAYERS,
-        totalRounds: TOTAL_ROUNDS,
+        maxPlayers: pendingSettings.maxPlayers,
+        totalRounds: pendingSettings.totalRounds,
+        choiceDurationMs: pendingSettings.choiceDurationMs,
         currentRound: 1,
         roundPhase: 'CHOICE',
         roundStartedAt: null,
@@ -314,7 +383,7 @@ const AltinAvi = (() => {
       if (!room) { toast('Oda bulunamadı!'); renderEntryMenu(); return; }
       if (room.state !== 'WAITING') { toast('Oyun çoktan başladı!'); renderEntryMenu(); return; }
       const pcount = room.players ? Object.keys(room.players).length : 0;
-      if (pcount >= MAX_PLAYERS) { toast('Oda dolu!'); renderEntryMenu(); return; }
+      if (pcount >= (room.maxPlayers ?? MAX_PLAYERS)) { toast('Oda dolu!'); renderEntryMenu(); return; }
 
       await db.ref('rooms/altin-avi/' + code + '/players/' + myId).set(makePlayer(myName));
       myRoomCode = code;
@@ -336,7 +405,7 @@ const AltinAvi = (() => {
       snap.forEach(child => {
         const r = child.val();
         const pcount = r && r.players ? Object.keys(r.players).length : 0;
-        if (!targetCode && pcount < MAX_PLAYERS) targetCode = r.code;
+        if (!targetCode && pcount < (r.maxPlayers ?? MAX_PLAYERS)) targetCode = r.code;
       });
       if (targetCode) await joinRoom(targetCode);
       else await createRoom();
@@ -428,9 +497,9 @@ const AltinAvi = (() => {
         h('span', {},
           'OYUNCU ',
           h('span', { id: 'aa-pcount', text: '0' }),
-          ' / ' + MAX_PLAYERS
+          h('span', { id: 'aa-maxplayers-display', text: ' / ' + (roomData?.maxPlayers ?? MAX_PLAYERS) })
         ),
-        h('span', { class: 'aa-pmin', text: 'MIN ' + MIN_PLAYERS })
+        h('span', { class: 'aa-room-settings-info', id: 'aa-room-settings-info' })
       ),
       h('div', { class: 'aa-players-grid', id: 'aa-players-grid' }),
       h('div', { class: 'aa-waiting-actions' },
@@ -464,12 +533,21 @@ const AltinAvi = (() => {
       grid.appendChild(chip);
     });
 
+    // Ayar özeti güncelle
+    const settingsInfo = container.querySelector('#aa-room-settings-info');
+    if (settingsInfo && roomData) {
+      const dur = Math.round((roomData.choiceDurationMs ?? CHOICE_DURATION_MS) / 1000);
+      settingsInfo.textContent = (roomData.totalRounds ?? TOTAL_ROUNDS) + ' SORU · ' + dur + 's';
+    }
+    const maxDisplay = container.querySelector('#aa-maxplayers-display');
+    if (maxDisplay && roomData) {
+      maxDisplay.textContent = ' / ' + (roomData.maxPlayers ?? MAX_PLAYERS);
+    }
+
     if (isHost) {
       startBtn.style.display = '';
-      startBtn.disabled = players.length < MIN_PLAYERS;
-      hint.textContent = players.length < MIN_PLAYERS
-        ? (MIN_PLAYERS - players.length) + ' OYUNCU DAHA GEREK'
-        : '> ' + players.length + ' OYUNCU HAZIR <';
+      startBtn.disabled = false;
+      hint.textContent = players.length + ' OYUNCU HAZIR';
     } else {
       startBtn.style.display = 'none';
       hint.textContent = 'HOST BEKLENİYOR...';
@@ -478,8 +556,6 @@ const AltinAvi = (() => {
 
   async function startGame() {
     if (!isHost) return;
-    const pcount = playerCount();
-    if (pcount < MIN_PLAYERS) { toast('En az ' + MIN_PLAYERS + ' oyuncu gerek!'); return; }
     try {
       await roomRef.update({
         state: 'PLAYING',
@@ -505,7 +581,7 @@ const AltinAvi = (() => {
         h('span', { class: 'aa-round-label', text: 'ROUND' }),
         h('span', { class: 'aa-round-num' },
           h('span', { id: 'aa-round-cur', text: pad2(roomData.currentRound) }),
-          ' / ' + pad2(TOTAL_ROUNDS)
+          ' / ' + pad2(roomData.totalRounds ?? TOTAL_ROUNDS)
         )
       ),
       h('div', { class: 'aa-timer-wrap' },
@@ -722,7 +798,7 @@ const AltinAvi = (() => {
     try {
       const payload = {
         answer: myChoice.answer,
-        answerTime: myChoice.answerTime !== null ? myChoice.answerTime : CHOICE_DURATION_MS,
+        answerTime: myChoice.answerTime !== null ? myChoice.answerTime : (roomData?.choiceDurationMs ?? CHOICE_DURATION_MS),
         action: myChoice.action || 'pass',
         round: roomData.currentRound
       };
@@ -800,8 +876,9 @@ const AltinAvi = (() => {
       const startedAt = roomData.roundStartedAt;
       if (!startedAt) { timerRafId = requestAnimationFrame(tick); return; }
       const elapsed = Date.now() - startedAt;
-      const remaining = Math.max(0, CHOICE_DURATION_MS - elapsed);
-      const pct = (remaining / CHOICE_DURATION_MS) * 100;
+      const dur = roomData?.choiceDurationMs ?? CHOICE_DURATION_MS;
+      const remaining = Math.max(0, dur - elapsed);
+      const pct = (remaining / dur) * 100;
       if (fill) fill.style.width = pct + '%';
       if (num) num.textContent = String(Math.ceil(remaining / 1000));
       if (remaining > 0) timerRafId = requestAnimationFrame(tick);
@@ -858,7 +935,7 @@ const AltinAvi = (() => {
     const topBar = h('div', { class: 'aa-game-top' },
       h('div', { class: 'aa-round-info' },
         h('span', { class: 'aa-round-label', text: 'ROUND' }),
-        h('span', { class: 'aa-round-num', text: pad2(result.round) + ' / ' + pad2(TOTAL_ROUNDS) })
+        h('span', { class: 'aa-round-num', text: pad2(result.round) + ' / ' + pad2(roomData.totalRounds ?? TOTAL_ROUNDS) })
       ),
       h('div', { class: 'aa-reveal-label', text: '◆ SONUÇLAR ◆' }),
       h('button', {
@@ -1053,7 +1130,7 @@ const AltinAvi = (() => {
         const c = players[id].currentChoice;
         return c && c.round === r;
       });
-      if (allChosen || elapsed >= CHOICE_DURATION_MS) {
+      if (allChosen || elapsed >= (roomData.choiceDurationMs ?? CHOICE_DURATION_MS)) {
         await resolveRound();
       }
     } else if (phase === 'REVEAL') {
@@ -1213,7 +1290,7 @@ const AltinAvi = (() => {
     if (!roomRef || !roomData) return;
     try {
       const r = roomData.currentRound;
-      if (r >= TOTAL_ROUNDS) {
+      if (r >= (roomData.totalRounds ?? TOTAL_ROUNDS)) {
         await roomRef.update({ state: 'FINISHED' });
         return;
       }

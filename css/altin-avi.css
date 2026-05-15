@@ -176,6 +176,63 @@
 .aa-btn-primary:hover:not(:disabled) { box-shadow: 0 6px 0 var(--rt-yellow-dim); }
 .aa-btn-primary:active:not(:disabled) { box-shadow: 0 1px 0 var(--rt-yellow-dim); }
 
+/* ── AYAR SEÇİCİ ── */
+.aa-settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.aa-setting-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.aa-setting-label {
+  font-family: var(--rt-font-body);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  color: var(--rt-text-dim);
+  text-transform: uppercase;
+}
+.aa-setting-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.aa-setting-btn {
+  font-family: var(--rt-font-num);
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  padding: 8px 16px;
+  min-height: 40px;
+  border-radius: 2px;
+  background: var(--rt-panel-light);
+  color: var(--rt-text);
+  border: 2px solid rgba(107,58,31,0.4);
+  box-shadow: 0 2px 0 rgba(107,58,31,0.3);
+}
+.aa-setting-btn:hover:not(:disabled) {
+  border-color: var(--rt-yellow);
+  color: var(--rt-yellow-dim);
+  box-shadow: 0 3px 0 var(--rt-yellow-dim);
+}
+.aa-setting-btn-active,
+.aa-setting-btn-active:hover {
+  background: var(--rt-yellow) !important;
+  color: var(--rt-bg-deep) !important;
+  border-color: var(--rt-yellow-dim) !important;
+  box-shadow: 0 2px 0 var(--rt-yellow-dim) !important;
+}
+
+/* Lobi ayar özeti */
+.aa-room-settings-info {
+  font-family: var(--rt-font-body);
+  font-size: 0.55rem;
+  color: var(--rt-yellow-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .aa-btn-secondary {
   background: var(--rt-cyan);
   color: var(--rt-panel-light);
