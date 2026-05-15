@@ -638,7 +638,9 @@ const AltinAvi = (() => {
     const prepInfo = h('div', { class: 'aa-prep-info', text: 'Soru yakında geliyor...' });
 
     container.appendChild(h('div', { class: 'aa-game' },
-      topBar, leaderboard, actionSection, statsSection, prepInfo
+      topBar,
+      leaderboard,
+      h('div', { class: 'aa-game-main' }, actionSection, statsSection, prepInfo)
     ));
 
     updatePrepPhase();
@@ -770,7 +772,9 @@ const AltinAvi = (() => {
     }, '> SYNC.. DİĞER OYUNCULAR BEKLENİYOR..');
 
     container.appendChild(h('div', { class: 'aa-game' },
-      topBar, leaderboard, actionIndicator, questionCard, waiting
+      topBar,
+      leaderboard,
+      h('div', { class: 'aa-game-main' }, actionIndicator, questionCard, waiting)
     ));
 
     updateChoicePhase();
@@ -1160,9 +1164,7 @@ const AltinAvi = (() => {
     container.appendChild(h('div', { class: 'aa-game aa-reveal-phase' },
       topBar,
       leaderboard,
-      questionCard,
-      summary,
-      hasBattleInfo ? myBattleSummary : null
+      h('div', { class: 'aa-game-main' }, questionCard, summary, hasBattleInfo ? myBattleSummary : null)
     ));
 
     renderLeaderboard();
