@@ -160,7 +160,7 @@ const AltinAvi = (() => {
     if (typeof App !== 'undefined' && App.showHub) App.showHub();
   }
   function actionLabel(a) {
-    if (a === 'attack') return '⚔ SALDIR';
+    if (a === 'attack') return '🪙 KAP';
     if (a === 'defend') return '⛨ SAVUN';
     return '— PAS';
   }
@@ -196,10 +196,10 @@ const AltinAvi = (() => {
       h('div', { class: 'aa-entry-header' },
         h('div', { class: 'aa-coin-big', text: '$' }),
         h('h2', { class: 'aa-entry-title', text: 'ALTIN AVI' }),
-        h('p', { class: 'aa-entry-sub', text: '5-30 OYUNCU · BT TURNUVASI' })
+        h('p', { class: 'aa-entry-sub', text: '5-30 OYUNCU · ALTIN AVI' })
       ),
       h('div', { class: 'aa-entry-name' },
-        h('label', { for: 'aa-name-input', text: 'INSERT NAME:' }),
+        h('label', { for: 'aa-name-input', text: 'MACERACI ADI:' }),
         nameInput
       ),
       h('div', { class: 'aa-entry-buttons' },
@@ -543,7 +543,7 @@ const AltinAvi = (() => {
 
     // Aksiyon butonları — sadece 2: Saldır / Savun (lider OTOMATİK hedeflenir)
     const actions = [
-      { key: 'attack', icon: '⚔', name: 'SALDIR', desc: 'lideri hedefle' },
+      { key: 'attack', icon: '🪙', name: 'KAP', desc: 'rakibin altınını kap' },
       { key: 'defend', icon: '⛨', name: 'SAVUN', desc: 'gelene direnç' }
     ];
     const actionRow = h('div', { class: 'aa-action-row', id: 'aa-action-row' });
@@ -560,7 +560,7 @@ const AltinAvi = (() => {
       actionRow.appendChild(btn);
     });
     const actionSection = h('div', { class: 'aa-action-section' },
-      h('div', { class: 'aa-action-label', text: '> SELECT MODE' }),
+      h('div', { class: 'aa-action-label', text: 'HAMLENİ SEÇ:' }),
       actionRow
     );
 
@@ -568,7 +568,7 @@ const AltinAvi = (() => {
     const statsSection = h('div', { class: 'aa-stats-section' },
       h('div', { class: 'aa-stats-grid' },
         h('div', { class: 'aa-stat-card attack' },
-          h('div', { class: 'aa-stat-icon', text: '⚔' }),
+          h('div', { class: 'aa-stat-icon', text: '🗡' }),
           h('div', { class: 'aa-stat-name', text: 'ATK' }),
           h('div', { class: 'aa-stat-level' },
             'LV ',
@@ -585,7 +585,7 @@ const AltinAvi = (() => {
           )
         ),
         h('div', { class: 'aa-stat-card defend' },
-          h('div', { class: 'aa-stat-icon', text: '⛨' }),
+          h('div', { class: 'aa-stat-icon', text: '🛡' }),
           h('div', { class: 'aa-stat-name', text: 'DEF' }),
           h('div', { class: 'aa-stat-level' },
             'LV ',
