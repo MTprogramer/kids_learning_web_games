@@ -83,6 +83,7 @@ const App = (() => {
         { id: 'satranc', game: SatrancMP },
         { id: 'penalti-mp', game: PenaltiMP },
         { id: 'ates-buz', game: AtesBuz },
+        { id: 'altin-avi', game: AltinAvi },
     ];
 
     let currentView = 'splash';
@@ -400,6 +401,12 @@ const App = (() => {
 
         const gameArea = document.getElementById('game-area');
         gameArea.innerHTML = '';
+
+        // Altın Avı kendi lobisini yönetir (5-30 kişilik, 1v1 Lobby uygun değil)
+        if (game.id === 'altin-avi') {
+            game.init(gameArea, {});
+            return;
+        }
 
         Lobby.show(game.id, gameArea, {
             onGameStart: (data) => {
