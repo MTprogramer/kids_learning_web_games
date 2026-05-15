@@ -41,6 +41,7 @@
 .aa-loading {
   position: relative;
   min-height: 100%;
+  width: 100%;
   background:
     radial-gradient(ellipse at top, #2A1F08 0%, var(--rt-bg) 55%, var(--rt-bg-deep) 100%);
   padding: 24px 20px;
@@ -1530,4 +1531,48 @@
 .aa-target-hidden .aa-target-stat {
   color: var(--rt-text-faded);
   filter: blur(2px);
+}
+
+/* ── DESKTOP LAYOUT (≥900px) ── */
+@media (min-width: 900px) {
+  .aa-entry-card { max-width: 560px; }
+
+  .aa-waiting-card { max-width: 960px; }
+  .aa-players-grid { grid-template-columns: repeat(5, 1fr); }
+
+  /* OYUN FAZI: iki sütun — sol leaderboard, sağ içerik */
+  .aa-game {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 32px;
+    padding: 32px 48px;
+  }
+
+  .aa-game-top {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  /* Sol sütun: skor tablosu */
+  .aa-leaderboard {
+    flex: 0 0 280px;
+    position: sticky;
+    top: 16px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+
+  /* Sağ sütun: soru, aksiyonlar, istatistikler */
+  .aa-game-main {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 680px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .aa-final-card { max-width: 840px; }
 }
