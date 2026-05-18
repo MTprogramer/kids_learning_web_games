@@ -34,6 +34,7 @@ const TR = {
         'space-waves': 'SpaceWaves',
         'egim': 'Eğim',
         'altin-avi': 'Altın Avı',
+        'buz-kulesi': 'Buz Kulesi',
     },
 
     // Multiplayer strings
