@@ -29,6 +29,7 @@ const TR = {
         'penalti': 'Penaltı',
         'penalti-mp': 'Penaltı Online',
         'tuval': 'Tuval',
+        'sayilarla-boyama': 'Sayılarla Boyama',
         'zipla-topla': 'Zıpla Topla',
         'ates-buz': 'Ateş & Buz',
         'space-waves': 'SpaceWaves',
@@ -124,6 +125,7 @@ const TR = {
         'penalti': 'Kaleye şut çek!',
         'penalti-mp': 'Rakibine penaltı at!',
         'tuval': 'Hayal et ve boya!',
+        'sayilarla-boyama': 'Numarayı seç, aynı numaralı kutuları boya!',
         'altin-avi': 'Soruyu cevapla, akıllı seç, en çok altın topla!',
     },
 

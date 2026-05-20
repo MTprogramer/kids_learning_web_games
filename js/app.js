@@ -53,6 +53,7 @@ const App = (() => {
                 { game: RenkEslestirme, color: 'var(--renk-color)' },
                 { game: Boyama, color: 'var(--boyama-color)' },
                 { game: Tuval, color: 'var(--tuval-color)' },
+                { game: SayilarlaBoyama, color: 'var(--sayilarla-boyama-color)' },
             ]
         },
         {
