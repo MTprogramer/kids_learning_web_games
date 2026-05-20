@@ -1540,16 +1540,23 @@
   .aa-waiting-card { max-width: 960px; }
   .aa-players-grid { grid-template-columns: repeat(5, 1fr); }
 
-  /* OYUN FAZI: iki sütun — sol leaderboard, sağ içerik */
+  /* OYUN FAZI: üstte tam genişlik şerit, altında iki sütun (skor | içerik) */
   .aa-game {
-    flex-direction: row;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    grid-template-areas:
+      "top  top"
+      "side main";
+    align-content: start;
     justify-content: center;
-    gap: 32px;
+    column-gap: 32px;
+    row-gap: 16px;
     padding: 32px 48px;
+    max-width: 1040px;
   }
 
   .aa-game-top {
+    grid-area: top;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -1557,18 +1564,18 @@
 
   /* Sol sütun: skor tablosu */
   .aa-leaderboard {
-    flex: 0 0 280px;
+    grid-area: side;
+    align-self: start;
     position: sticky;
-    top: 16px;
-    max-height: calc(100vh - 100px);
+    top: 84px;
+    max-height: calc(100vh - 120px);
     overflow-y: auto;
   }
 
   /* Sağ sütun: soru, aksiyonlar, istatistikler */
   .aa-game-main {
-    flex: 1 1 0;
+    grid-area: main;
     min-width: 0;
-    max-width: 680px;
     display: flex;
     flex-direction: column;
     gap: 12px;
