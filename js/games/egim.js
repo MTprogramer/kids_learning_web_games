@@ -20,6 +20,7 @@ const Egim = (() => {
     const CAMERA_Z_OFFSET = 4.0;           // kamera topun arkasında
     const FOV_SCALE = 300;                 // perspektif ölçek
     const VIEW_DIST = 140;                 // kaç birim ileriyi çiziyoruz
+    const WALL_HEIGHT = 1.3;               // kenar duvarı yüksekliği (dünya birimi)
 
     // Ball
     const BALL_RADIUS = 0.55;
@@ -38,7 +39,7 @@ const Egim = (() => {
 
     // ---- Durum ----
     let container, callbacks;
-    let canvas, ctx;
+    let canvas, ctx, canvasFit;
     let uiLayer;
     let hudEl, scoreEl, distanceEl, bestEl;
     let ball;
@@ -95,6 +96,7 @@ const Egim = (() => {
     function destroy() {
         state = 'destroyed';
         if (animFrameId) cancelAnimationFrame(animFrameId);
+        if (canvasFit) { canvasFit.disconnect(); canvasFit = null; }
         unbindInput();
         if (container) container.innerHTML = '';
     }
@@ -144,7 +146,7 @@ const Egim = (() => {
         canvas = document.createElement('canvas');
         canvas.className = 'eg-canvas';
         ctx = canvas.getContext('2d');
-        try { MobileUtils.setupHiDPICanvas(canvas, ctx, GAME_W, GAME_H); }
+        try { canvasFit = MobileUtils.attachResponsiveCanvas(canvas, ctx, GAME_W, GAME_H); }
         catch (e) { canvas.width = GAME_W; canvas.height = GAME_H; }
         canvas.style.touchAction = 'none';
         wrap.appendChild(canvas);
@@ -299,11 +301,11 @@ const Egim = (() => {
         // Pist çizgileri
         trackStripeOffset = (trackStripeOffset + currentSpeed * dt) % 4;
 
-        // Kenar kontrolü
-        if (Math.abs(ball.x) > TRACK_HALF_WIDTH + BALL_RADIUS) {
-            triggerGameOver('fall');
-            return;
-        }
+        // Kenar duvarları — top duvarı geçemez (clamp). Topun kenarı (merkez +
+        // yarıçap) duvarın iç yüzünde durur; %1 bile taşmaz. Düşme yok.
+        const wallLimit = TRACK_HALF_WIDTH - BALL_RADIUS;
+        if (ball.x > wallLimit) ball.x = wallLimit;
+        else if (ball.x < -wallLimit) ball.x = -wallLimit;
 
         // Engel spawn
         while (nextObstacleZ < cameraZ + VIEW_DIST) {
@@ -345,7 +347,17 @@ const Egim = (() => {
     }
 
     function spawnObstacle(z) {
-        const x = rand(-TRACK_HALF_WIDTH * 0.75, TRACK_HALF_WIDTH * 0.75);
+        // Engeller, topun duvarlar arasında ulaşabildiği TÜM bölgeyi kapsar ve
+        // bir kısmı bilinçli olarak kenarlara yerleştirilir; böylece top kenarda
+        // duvara yaslanıp beklese bile kenar engelleri onu yakalar.
+        const EDGE = TRACK_HALF_WIDTH - OBSTACLE_W * 0.5;   // 2.35 — engel yol içinde kalır
+        let x;
+        if (Math.random() < 0.45) {
+            const side = Math.random() < 0.5 ? -1 : 1;
+            x = side * rand(EDGE * 0.55, EDGE);              // kenar bandı (±1.3–2.35)
+        } else {
+            x = rand(-EDGE, EDGE);                           // tüm yol
+        }
         obstacles.push({ x, z });
     }
 
@@ -553,6 +565,9 @@ const Egim = (() => {
         // Pist
         drawTrack();
 
+        // Kenar duvarları (top bunları geçemez)
+        drawWalls();
+
         // Engelleri, topu, partikülleri z sırasına göre çiz (uzak → yakın)
         const drawables = [];
         for (const o of obstacles) {
@@ -749,6 +764,49 @@ const Egim = (() => {
         ctx.shadowBlur = 6;
         ctx.strokeStyle = 'rgba(220, 255, 255, 0.9)';
         ctx.lineWidth = 1.2;
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    function drawWalls() {
+        // Uzaktan yakına çiz (painter's algorithm) — yakın segmentler öne gelsin
+        const seg = 4;
+        for (let dz = VIEW_DIST - seg; dz >= -trackStripeOffset; dz -= seg) {
+            const z0 = cameraZ + dz + 0.5;
+            const z1 = cameraZ + dz + seg + 0.5;
+            const alpha = clamp(1 - dz / VIEW_DIST, 0, 1);
+            drawWallSeg(-TRACK_HALF_WIDTH, z0, z1, alpha);
+            drawWallSeg(TRACK_HALF_WIDTH, z0, z1, alpha);
+        }
+    }
+
+    function drawWallSeg(x, z0, z1, alpha) {
+        const b0 = project(x, 0, z0);
+        const b1 = project(x, 0, z1);
+        const t0 = project(x, WALL_HEIGHT, z0);
+        const t1 = project(x, WALL_HEIGHT, z1);
+        if (!b0 || !b1 || !t0 || !t1) return;
+        // Duvar yüzü — koyu taban → neon cyan üst dikey gradyan
+        const grad = ctx.createLinearGradient(b0.sx, b0.sy, t0.sx, t0.sy);
+        grad.addColorStop(0, `rgba(12, 6, 32, ${alpha * 0.88})`);
+        grad.addColorStop(1, `rgba(0, 220, 255, ${alpha * 0.30})`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.moveTo(b0.sx, b0.sy);
+        ctx.lineTo(b1.sx, b1.sy);
+        ctx.lineTo(t1.sx, t1.sy);
+        ctx.lineTo(t0.sx, t0.sy);
+        ctx.closePath();
+        ctx.fill();
+        // Üst neon kenar çizgisi — cyan glow
+        ctx.save();
+        ctx.strokeStyle = `rgba(150, 255, 255, ${alpha})`;
+        ctx.lineWidth = 2;
+        ctx.shadowColor = '#00ffff';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.moveTo(t0.sx, t0.sy);
+        ctx.lineTo(t1.sx, t1.sy);
         ctx.stroke();
         ctx.restore();
     }
