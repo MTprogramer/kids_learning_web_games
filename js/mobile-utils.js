@@ -34,6 +34,39 @@ const MobileUtils = (() => {
     return dpr;
   }
 
+  // Canvas'ı GÖRÜNTÜLENEN boyutuna (CSS px × DPR) göre boyutlandırır ve çizim
+  // koordinatlarını mantıksal (logicalW×logicalH) sisteme ölçekler. Oyun büyüdükçe
+  // (örn. tam ekran) iç çözünürlük de büyür → bulanıklaşma olmaz. ResizeObserver ile
+  // boyut değişiminde otomatik yeniden ayarlanır. Oyun her karede mantıksal
+  // koordinatlarda çizmeye devam eder.
+  function attachResponsiveCanvas(canvas, ctx, logicalW, logicalH) {
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    const fit = () => {
+      const dpr = getDPR();
+      const w = canvas.clientWidth || logicalW;
+      const h = canvas.clientHeight || logicalH;
+      canvas.width = Math.max(1, Math.round(w * dpr));
+      canvas.height = Math.max(1, Math.round(h * dpr));
+      // Mantıksal koordinat sistemini iç çözünürlüğe ölçekle (en-boy oranı
+      // korunduğunda x/y aynı faktör → bozulma olmaz).
+      ctx.setTransform(canvas.width / logicalW, 0, 0, canvas.height / logicalH, 0, 0);
+    };
+    fit();
+    let ro = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      ro = new ResizeObserver(fit);
+      ro.observe(canvas);
+    }
+    // ResizeObserver bazı durumlarda (ör. tam ekran geçişi) tetiklenmeyebildiği için
+    // window resize olayını da dinle — tam ekran butonu bu olayı tetikler.
+    window.addEventListener('resize', fit);
+    return {
+      refit: fit,
+      disconnect() { if (ro) ro.disconnect(); window.removeEventListener('resize', fit); }
+    };
+  }
+
   function lockBodyScroll() {
     document.body.classList.add('game-active');
   }
@@ -113,6 +146,7 @@ const MobileUtils = (() => {
     getDPR,
     isTouchDevice,
     setupHiDPICanvas,
+    attachResponsiveCanvas,
     lockBodyScroll,
     unlockBodyScroll,
     attachGlobalAudioUnlock,

@@ -175,6 +175,41 @@
     overflow-anchor: auto;
 }
 
+/* ── TAM EKRAN MODU ── */
+/* Tam ekranda canvas oyunlarını en-boy oranını koruyarak ekrana sığdır */
+.game-container.is-fullscreen .game-area {
+    padding: 0;
+    justify-content: center;
+}
+.game-container.is-fullscreen .eg-wrap {
+    width: min(100vw, calc((100vh - 56px) * 800 / 500));
+    height: min(calc(100vh - 56px), calc(100vw * 500 / 800));
+    max-width: none;
+    border-radius: 0;
+}
+.game-container.is-fullscreen .sw-wrap {
+    width: min(100vw, calc((100vh - 56px) * 800 / 420));
+    height: min(calc(100vh - 56px), calc(100vw * 420 / 800));
+    max-width: none;
+    border-radius: 0;
+}
+.game-container.is-fullscreen .zt-wrap {
+    width: min(100vw, calc((100vh - 56px) * 800 / 360));
+    height: min(calc(100vh - 56px), calc(100vw * 360 / 800));
+    max-width: none;
+    border-radius: 0;
+}
+.game-container.is-fullscreen .bk-wrap {
+    width: min(100vw, calc((100vh - 56px) * 400 / 640));
+    height: min(calc(100vh - 56px), calc(100vw * 640 / 400));
+    max-width: none;
+    border-radius: 0;
+}
+/* Buton ikon durum göstergesi */
+.fs-icon-compress { display: none; }
+.game-container.is-fullscreen .fs-icon-compress { display: inline-block; }
+.game-container.is-fullscreen .fs-icon-expand { display: none; }
+
 /* Oyun yönergesi */
 .game-instruction {
     font-family: 'Fredoka', sans-serif;

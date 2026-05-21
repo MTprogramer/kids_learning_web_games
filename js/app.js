@@ -155,6 +155,41 @@ const App = (() => {
             GameEngine.hideLevelComplete();
             navigateToHub();
         });
+
+        // Tam ekran butonu
+        document.getElementById('game-fullscreen')?.addEventListener('click', toggleFullscreen);
+        document.addEventListener('fullscreenchange', updateFullscreenUI);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
+    }
+
+    function toggleFullscreen() {
+        const el = document.getElementById('game-container');
+        if (!el) return;
+        const goingFs = !el.classList.contains('is-fullscreen');
+        // Oyunu ekranı kaplayacak şekilde büyüt — her zaman çalışır (CSS).
+        el.classList.toggle('is-fullscreen', goingFs);
+        try { AudioManager.play('tap'); } catch (e) {}
+        // CSS boyutu değişti — canvas oyunlarının iç çözünürlüğünü yeniden
+        // hesaplaması için (layout sonrası) resize olayını tetikle. Aksi halde
+        // canvas büyür ama düşük çözünürlükte kalıp bulanıklaşır.
+        requestAnimationFrame(() => { try { window.dispatchEvent(new Event('resize')); } catch (e) {} });
+        // Tarayıcının gerçek tam ekranını da dene (destekliyorsa); başarısızsa
+        // CSS büyütme modu yine de geçerli kalır.
+        try {
+            if (goingFs) {
+                const req = el.requestFullscreen || el.webkitRequestFullscreen;
+                if (req) { const p = req.call(el); if (p && p.catch) p.catch(() => {}); }
+            } else if (document.fullscreenElement || document.webkitFullscreenElement) {
+                const exit = document.exitFullscreen || document.webkitExitFullscreen;
+                if (exit) exit.call(document);
+            }
+        } catch (e) {}
+    }
+
+    function updateFullscreenUI() {
+        // Tarayıcı tam ekranından (ESC vb.) çıkıldıysa CSS büyütme modunu da kapat
+        const fs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+        if (!fs) document.getElementById('game-container')?.classList.remove('is-fullscreen');
     }
 
     function showSplash() {
@@ -434,6 +469,11 @@ const App = (() => {
 
     function navigateToHub() {
         AudioManager.play('whoosh');
+        // Tam ekrandan çık (oyundan ayrılırken)
+        if (document.fullscreenElement || document.webkitFullscreenElement) {
+            const exit = document.exitFullscreen || document.webkitExitFullscreen;
+            if (exit) { try { exit.call(document); } catch (e) {} }
+        }
         GameEngine.destroy();
         GameEngine.hideLevelComplete();
         // Cleanup multiplayer if active
