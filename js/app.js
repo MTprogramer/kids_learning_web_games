@@ -43,6 +43,7 @@ const App = (() => {
                 { game: SekilBulmaca, color: 'var(--sekil-color)' },
                 { game: Siralama, color: 'var(--siralama-color)' },
                 { game: Jigsaw, color: 'var(--jigsaw-color)' },
+                { game: Tetris, color: 'var(--tetris-color)' },
             ]
         },
         {
@@ -54,6 +55,7 @@ const App = (() => {
                 { game: Boyama, color: 'var(--boyama-color)' },
                 { game: Tuval, color: 'var(--tuval-color)' },
                 { game: SayilarlaBoyama, color: 'var(--sayilarla-boyama-color)' },
+                { game: EmojiYapici, color: 'var(--emoji-yapici-color)' },
             ]
         },
         {

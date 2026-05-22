@@ -30,12 +30,14 @@ const TR = {
         'penalti-mp': 'Penaltı Online',
         'tuval': 'Tuval',
         'sayilarla-boyama': 'Sayılarla Boyama',
+        'emoji-yapici': 'Emoji Yapıcı',
         'zipla-topla': 'Zıpla Topla',
         'ates-buz': 'Ateş & Buz',
         'space-waves': 'SpaceWaves',
         'egim': 'Eğim',
         'altin-avi': 'Altın Avı',
         'buz-kulesi': 'Buz Kulesi',
+        'tetris': 'Tetris',
     },
 
     // Multiplayer strings
@@ -126,7 +128,9 @@ const TR = {
         'penalti-mp': 'Rakibine penaltı at!',
         'tuval': 'Hayal et ve boya!',
         'sayilarla-boyama': 'Numarayı seç, aynı numaralı kutuları boya!',
+        'emoji-yapici': 'Parçaları seç, kendi emoji yüzünü yarat!',
         'altin-avi': 'Soruyu cevapla, akıllı seç, en çok altın topla!',
+        'tetris': 'Blokları döndür, satırları doldur ve temizle!',
     },
 
     // Kod Macerasi stringleri
