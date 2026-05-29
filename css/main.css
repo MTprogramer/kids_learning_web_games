@@ -1,5 +1,5 @@
 /* ============================================
-   OYUN BAHÇESİ - Ana Stil Dosyası
+   CHILDS PLAY LOGIC - Main Style File
    ============================================ */
 
 /* Reset */
@@ -14,37 +14,37 @@ html, body {
 }
 
 :root {
-    /* Oyun Kartı Renkleri */
-    --renk-color: #FF6B6B;
-    --sayi-color: #4ECDC4;
-    --harf-color: #45B7D1;
-    --sekil-color: #F7B731;
-    --hafiza-color: #A55EEA;
-    --boyama-color: #FF78C4;
-    --siralama-color: #26DE81;
-    --kelime-color: #FF6348;
-    --harf-tahmin-color: #7C5CE0;
-    --kodmacerasi-color: #00BCD4;
-    --satranc-color: #8B4513;
-    --matematik-color: #FF9800;
-    --hece-color: #00897B;
+    /* Game Card Colors */
+    --color-matching-color: #FF6B6B;
+    --counting-color: #4ECDC4;
+    --letter-recognition-color: #45B7D1;
+    --shape-puzzle-color: #F7B731;
+    --memory-cards-color: #A55EEA;
+    --coloring-color: #FF78C4;
+    --sorting-color: #26DE81;
+    --word-guess-color: #FF6348;
+    --letter-guess-color: #7C5CE0;
+    --coding-adventure-color: #00BCD4;
+    --chess-color: #8B4513;
+    --math-color: #FF9800;
+    --syllable-merging-color: #00897B;
     --jigsaw-color: #9C27B0;
-    --desen-color: #E040FB;
-    --lego-color: #FFC107;
+    --pattern-color: #E040FB;
+    --lego-adventure-color: #FFC107;
     --lego-world-color: #FF5722;
-    --penalti-color: #27AE60;
-    --tuval-color: #E91E63;
-    --zipla-topla-color: #FF9800;
-    --ates-buz-color: #E74C3C;
+    --penalty-color: #27AE60;
+    --canvas-color: #E91E63;
+    --jump-collect-color: #FF9800;
+    --fire-ice-color: #E74C3C;
     --space-waves-color: #7B5BFF;
-    --egim-color: #00E8C0;
-    --altin-avi-color: #F4A93C;
-    --buz-kulesi-color: #4FC3F7;
-    --sayilarla-boyama-color: #7E57C2;
-    --emoji-yapici-color: #FFB703;
+    --slope-color: #00E8C0;
+    --gold-hunt-color: #F4A93C;
+    --ice-tower-color: #4FC3F7;
+    --color-by-number-color: #7E57C2;
+    --emoji-maker-color: #FFB703;
     --tetris-color: #5C6BC0;
 
-    /* UI Renkleri */
+    /* UI Colors */
     --bg-sky-top: #87CEEB;
     --bg-sky-bottom: #C9E8F7;
     --bg-grass: #7EC850;
@@ -64,7 +64,7 @@ html, body {
     --error-light: #FADBD8;
     --neutral: #3498DB;
 
-    /* Gölgeler */
+    /* Shadows */
     --shadow-sm: 0 2px 8px rgba(0,0,0,0.1);
     --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
     --shadow-lg: 0 8px 32px rgba(0,0,0,0.15);
@@ -79,7 +79,7 @@ html, body {
     --space-xl: 40px;
     --space-2xl: 64px;
 
-    /* Dokunmatik hedef minimum */
+    /* Touch target minimum */
     --touch-min: 52px;
 
     /* Border Radius */
@@ -89,7 +89,7 @@ html, body {
     --radius-xl: 40px;
     --radius-round: 50%;
 
-    /* Geçişler */
+    /* Transitions */
     --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
     --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
     --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -108,7 +108,7 @@ html, body {
     touch-action: manipulation;
 }
 
-/* Tipografi */
+/* Typography */
 h1, h2, h3, .display-font {
     font-family: 'Fredoka', 'Nunito', sans-serif;
 }
@@ -403,7 +403,7 @@ button {
 }
 
 /* ============================================
-   SEVIYE TAMAMLAMA
+   LEVEL COMPLETE
    ============================================ */
 .level-complete {
     position: fixed;
@@ -496,7 +496,7 @@ button {
     height: 100%;
 }
 
-/* SEO İçerik Bloğu */
+/* SEO Content Block */
 .seo-content {
     background: linear-gradient(180deg, #E8F5E9 0%, #C8E6C9 100%);
     padding: 2rem 1rem;

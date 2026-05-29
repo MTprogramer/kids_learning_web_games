@@ -1,0 +1,8 @@
+{
+  "gameId": "jump_collect",
+  "title": "Jump & Collect",
+  "description": "Jump over obstacles and collect coins to reach the goal!",
+  "version": "1.0.0",
+  "icon": "assets/icon.png",
+  "supportedOrientations": "landscape"
+}

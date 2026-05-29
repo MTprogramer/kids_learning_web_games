@@ -1,5 +1,5 @@
 /* ============================================
-   OYUN BAHÇESİ - Ses Yöneticisi
+   CHILDS PLAY LOGIC - Audio Manager
    ============================================ */
 
 const AudioManager = (() => {
@@ -8,7 +8,7 @@ const AudioManager = (() => {
     let initialized = false;
     const buffers = {};
 
-    // Basit ses efektleri üretici (Web Audio API ile)
+    // Simple sound effects generator (via Web Audio API)
     const tones = {
         tap: { freq: 600, duration: 0.08, type: 'sine', gain: 0.15 },
         success: { freq: 880, duration: 0.25, type: 'sine', gain: 0.2, seq: [523, 659, 784] },
@@ -26,7 +26,7 @@ const AudioManager = (() => {
             ctx = new (window.AudioContext || window.webkitAudioContext)();
             initialized = true;
         } catch (e) {
-            console.warn('Web Audio API desteklenmiyor');
+            console.warn('Web Audio API not supported');
         }
     }
 
@@ -38,7 +38,7 @@ const AudioManager = (() => {
         if (!tone) return;
 
         if (tone.seq) {
-            // Sıralı notalar
+            // Sequence of notes
             tone.seq.forEach((freq, i) => {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();

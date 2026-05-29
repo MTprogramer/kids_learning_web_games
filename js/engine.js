@@ -1,5 +1,5 @@
 /* ============================================
-   OYUN BAHÇESİ - Oyun Motoru
+   CHILDS PLAY LOGIC - Game Engine
    ============================================ */
 
 const GameEngine = (() => {
@@ -21,12 +21,12 @@ const GameEngine = (() => {
         const gameArea = document.getElementById('game-area');
         gameArea.innerHTML = '';
 
-        // Toolbar güncelle
-        document.getElementById('game-title').textContent = TR.games[game.id] || game.id;
+        // Update toolbar
+        document.getElementById('game-title').textContent = i18n.games[game.id] || game.id;
         updateToolbarLevel(game, level);
         updateToolbarStars(0);
 
-        // Oyunu başlat
+        // Start game
         if (game.init) {
             game.init(gameArea, level, { onCorrect, onWrong, onComplete });
         }
@@ -78,13 +78,13 @@ const GameEngine = (() => {
 
         const stars = customStars !== undefined ? customStars : calculateStars();
 
-        // İlerleme kaydet
+        // Save progress
         Progress.setLevelStars(currentGame.id, currentLevel, stars);
 
-        // Toolbar güncelle
+        // Update toolbar
         updateToolbarStars(stars);
 
-        // Kutlama
+        // Celebration
         setTimeout(() => {
             AudioManager.play('complete');
             Particles.celebrate();
@@ -98,12 +98,12 @@ const GameEngine = (() => {
         const starsEl = document.getElementById('complete-stars');
         const nextBtn = document.getElementById('btn-next');
 
-        // Başlık
-        if (stars === 3) titleEl.textContent = TR.complete.perfect;
-        else if (stars === 2) titleEl.textContent = TR.complete.great;
-        else titleEl.textContent = TR.complete.good;
+        // Title
+        if (stars === 3) titleEl.textContent = i18n.complete.perfect;
+        else if (stars === 2) titleEl.textContent = i18n.complete.great;
+        else titleEl.textContent = i18n.complete.good;
 
-        // Yıldızlar
+        // Stars
         starsEl.innerHTML = '';
         for (let i = 0; i < 3; i++) {
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -116,13 +116,13 @@ const GameEngine = (() => {
             starsEl.appendChild(svg);
         }
 
-        // Sonraki seviye butonu
+        // Next level button
         const totalLevels = currentGame.levels ? currentGame.levels.length : 3;
         nextBtn.classList.toggle('hidden', currentLevel >= totalLevels);
 
         overlay.classList.remove('hidden');
 
-        // Toplam yıldız güncelle
+        // Update total star counter
         App.updateStarCounter();
     }
 

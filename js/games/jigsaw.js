@@ -1,17 +1,17 @@
 /* ============================================
-   OYUN: Jigsaw Bulmaca
-   Emoji grid tabanlı parça birleştirme
+   GAME: Jigsaw Puzzle
+   Emoji grid-based piece merging
    ============================================ */
 
 const Jigsaw = (() => {
   const id = 'jigsaw';
 
   const PICTURES = [
-    { name: 'Çiftlik', grid: ['🐔','🐷','🐮','🐑','🐴','🐶','🐱','🐰','🦆','🌻','🌾','🏠','🚜','🌳','🌈','🦋'] },
-    { name: 'Deniz', grid: ['🐟','🐠','🐙','🦀','🐚','🌊','🐬','🦈','🐢','🦑','🪸','⚓','🚢','🏖️','🐋','🦞'] },
-    { name: 'Uzay', grid: ['🚀','🌍','🌙','⭐','🪐','☀️','🌟','💫','🛸','🌕','✨','🔭','👨‍🚀','🌌','💥','🛰️'] },
-    { name: 'Orman', grid: ['🌳','🌲','🍄','🦊','🐻','🦌','🐿️','🦉','🌿','🍃','🌸','🐝','🦋','🐛','🌺','🍀'] },
-    { name: 'Meyve', grid: ['🍎','🍊','🍋','🍇','🍓','🍌','🍑','🍒','🥝','🍍','🥭','🫐','🍈','🍉','🥥','🫒'] },
+    { name: 'Farm', grid: ['🐔','🐷','🐮','🐑','🐴','🐶','🐱','🐰','🦆','🌻','🌾','🏠','🚜','🌳','🌈','🦋'] },
+    { name: 'Sea', grid: ['🐟','🐠','🐙','🦀','🐚','🌊','🐬','🦈','🐢','🦑','🪸','⚓','🚢','🏖️','🐋','🦞'] },
+    { name: 'Space', grid: ['🚀','🌍','🌙','⭐','🪐','☀️','🌟','💫','🛸','🌕','✨','🔭','👨‍🚀','🌌','💥','🛰️'] },
+    { name: 'Forest', grid: ['🌳','🌲','🍄','🦊','🐻','🦌','🐿️','🦉','🌿','🍃','🌸','🐝','🦋','🐛','🌺','🍀'] },
+    { name: 'Fruit', grid: ['🍎','🍊','🍋','🍇','🍓','🍌','🍑','🍒','🥝','🍍','🥭','🫐','🍈','🍉','🥥','🫒'] },
   ];
 
   const levels = [
@@ -47,7 +47,7 @@ const Jigsaw = (() => {
 
     container.innerHTML = `
       <div class="jig-game">
-        <div class="jig-progress">Yerleştirilen: ${placedCount}/${currentLevel.totalPieces}</div>
+        <div class="jig-progress">Placed: ${placedCount}/${currentLevel.totalPieces}</div>
         <div class="jig-board" id="jig-board" style="grid-template-columns: repeat(${size}, ${cellSize}px); grid-template-rows: repeat(${size}, ${cellSize}px);">
           ${pictureData.map((p, i) => `
             <div class="jig-cell ${p.placed ? 'jig-placed' : ''}" data-idx="${i}" style="width:${cellSize}px;height:${cellSize}px;font-size:${cellSize * 0.55}px;">
@@ -55,7 +55,7 @@ const Jigsaw = (() => {
             </div>
           `).join('')}
         </div>
-        <div class="jig-hint">Parçayı seç, sonra yerine tıkla!</div>
+        <div class="jig-hint">Select a piece, then click on its place!</div>
         <div class="jig-pieces" id="jig-pieces">
           ${pieces.filter(p => !p.placed).map((p, i) => `
             <button class="jig-piece" data-row="${p.row}" data-col="${p.col}" style="font-size:${Math.min(40, cellSize * 0.5)}px;">
@@ -98,7 +98,7 @@ const Jigsaw = (() => {
 
           // Update progress
           const prog = container.querySelector('.jig-progress');
-          if (prog) prog.textContent = `Yerleştirilen: ${placedCount}/${currentLevel.totalPieces}`;
+          if (prog) prog.textContent = `Placed: ${placedCount}/${currentLevel.totalPieces}`;
 
           if (placedCount >= currentLevel.totalPieces) {
             setTimeout(() => {

@@ -1,5 +1,5 @@
 /* ============================================
-   OYUN BAHÇESİ - Parçacık Efektleri
+   CHILDS PLAY LOGIC - Particle Effects
    ============================================ */
 
 const Particles = (() => {
@@ -49,7 +49,8 @@ const Particles = (() => {
             } else if (p.type === 'sparkle') {
                 ctx.fillStyle = p.color;
                 ctx.beginPath();
-                ctx.arc(0, 0, p.size * p.life, 0, Math.PI * 2);
+                const radius = Math.max(0, p.size * p.life);
+                ctx.arc(0, 0, radius, 0, Math.PI * 2);
                 ctx.fill();
             }
 

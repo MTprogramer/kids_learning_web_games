@@ -1,14 +1,14 @@
 /* ============================================
-   OYUN: SpaceWaves — Uzay Dalgaları
-   Canvas tabanlı side-scroller, gravity-switch kontrolü,
-   çarpışmada bilişim sorusu + checkpoint + hız rampası
+   GAME: SpaceWaves
+   Canvas-based side-scroller, gravity-switch control,
+   collision trigger quiz + checkpoint + speed ramp
    ============================================ */
 
 const SpaceWaves = (() => {
   const id = 'space-waves';
   const levels = [{}];
 
-  // ---- Sabitler ----
+  // ---- Constants ----
   const GAME_W = 800, GAME_H = 420;
   const FPS = 60, STEP = 1 / FPS;
   const PLAYER_X = 120;
@@ -20,7 +20,7 @@ const SpaceWaves = (() => {
 
   const GRAVITY = 380;
   const MAX_VY  = 170;
-  const FLIP_KICK = 0.30;  // toggle anında anlık yön hızı oranı (0-1)
+  const FLIP_KICK = 0.30;
 
   const CHECKPOINT_EVERY = 500;
   const RESPAWN_CLEAR_AHEAD = 260;
@@ -33,7 +33,7 @@ const SpaceWaves = (() => {
   const OBSTACLE_MAX_GAP = 420;
   const STAR_CHANCE = 0.55;
 
-  // ---- Durum ----
+  // ---- State ----
   let container, callbacks;
   let canvas, ctx;
   let uiLayer;
@@ -56,10 +56,10 @@ const SpaceWaves = (() => {
   let questionTimerId;
   let parallax;
   let db;
-  let countdownEndAt;          // ms — countdown hedef zamanı
-  let countdownSec;            // 3, 2, 1, 0 (GO) gösterilen rakam
+  let countdownEndAt;
+  let countdownSec;
 
-  // ---------- Yardımcılar ----------
+  // ---------- Helpers ----------
   function nowMs() { return performance.now(); }
   function rand(a, b) { return a + Math.random() * (b - a); }
   function randInt(a, b) { return Math.floor(rand(a, b + 1)); }
@@ -116,7 +116,6 @@ const SpaceWaves = (() => {
 
     player = { x: PLAYER_X, y: GAME_H / 2, vy: 0, r: 14 };
 
-    // İlk start için countdown'a geç
     state = 'countdown';
     countdownEndAt = nowMs() + 3000;
     countdownSec = 3;
@@ -166,15 +165,15 @@ const SpaceWaves = (() => {
     hudEl.className = 'sw-hud';
     hudEl.innerHTML =
       '<div class="sw-hud-box sw-lives" id="sw-lives"></div>' +
-      '<div class="sw-hud-box sw-score"><span class="sw-hud-label">Skor</span><span id="sw-score">0</span></div>' +
-      '<div class="sw-hud-box sw-dist"><span class="sw-hud-label">Mesafe</span><span id="sw-distance">0</span></div>';
+      '<div class="sw-hud-box sw-score"><span class="sw-hud-label">Score</span><span id="sw-score">0</span></div>' +
+      '<div class="sw-hud-box sw-dist"><span class="sw-hud-label">Distance</span><span id="sw-distance">0</span></div>';
     uiLayer.appendChild(hudEl);
 
     const hint = document.createElement('div');
     hint.className = 'sw-hint';
     hint.innerHTML =
-      '<span class="sw-hint-desktop">Boşluk / Sol tık ile <b>yön değiştir</b></span>' +
-      '<span class="sw-hint-mobile">Ekrana <b>dokun</b> — yön değiştir</span>';
+      '<span class="sw-hint-desktop">Space / Left Click to <b>switch direction</b></span>' +
+      '<span class="sw-hint-mobile"><b>Tap</b> the screen to switch direction</span>';
     uiLayer.appendChild(hint);
 
     container.appendChild(wrap);
@@ -192,7 +191,6 @@ const SpaceWaves = (() => {
         toggleGravity();
       }
     };
-    // Modal/buton üzerinde tıklama → toggleGravity'i atla
     const isInteractiveTarget = (el) => {
       if (!el || !el.closest) return false;
       return !!el.closest('.sw-modal, button, input, select, textarea, a');
@@ -208,7 +206,6 @@ const SpaceWaves = (() => {
       toggleGravity();
     };
     document.addEventListener('keydown', keyHandler);
-    // Wrap seviyesinde dinle (canvas + uiLayer'ı kapsar) — modal/buton dışı her dokunuş toggle eder
     const wrap = canvas.parentElement;
     if (wrap) {
       wrap.addEventListener('mousedown', clickHandler);
@@ -231,7 +228,6 @@ const SpaceWaves = (() => {
     if (state !== 'playing' && state !== 'countdown') return;
     inputDir = -inputDir;
     if (state === 'playing') {
-      // Anlık yön kazandır — "salınım" hissini önle
       player.vy = inputDir * MAX_VY * FLIP_KICK;
       spawnThrusterBurst();
     }
@@ -241,9 +237,8 @@ const SpaceWaves = (() => {
   function updateCountdown() {
     const remainMs = countdownEndAt - nowMs();
     if (remainMs <= 0) {
-      // GO! → gerçek oyun
       state = 'playing';
-      respawnTimer = 0;            // hız rampası yeniden başlasın
+      respawnTimer = 0;
       currentSpeed = 0;
       invulnUntil = nowMs() + INVULN_MS;
       lastTime = nowMs(); accum = 0;
@@ -257,7 +252,7 @@ const SpaceWaves = (() => {
     }
   }
 
-  // ---------- Oyun döngüsü ----------
+  // ---------- Game Loop ----------
   function gameLoop() {
     if (state === 'destroyed') return;
     const t = nowMs();
@@ -272,7 +267,6 @@ const SpaceWaves = (() => {
       }
     } else if (state === 'countdown') {
       updateCountdown();
-      // Countdown sırasında sadece karakter ortada sabit duruyor
       player.y = GAME_H / 2;
       player.vy = 0;
     }
@@ -301,22 +295,18 @@ const SpaceWaves = (() => {
     });
     parallax.nebula.offset = (parallax.nebula.offset + deltaX * 0.1) % 1024;
 
-    // Oyuncu fiziği
     player.vy += GRAVITY * inputDir * dt;
     player.vy = clamp(player.vy, -MAX_VY, MAX_VY);
     player.y += player.vy * dt;
 
-    // Sınırlar
     if (player.y < 18) { player.y = 18; player.vy = 0; triggerCollision('border'); return; }
     if (player.y > GAME_H - 18) { player.y = GAME_H - 18; player.vy = 0; triggerCollision('border'); return; }
 
-    // Engelleri/starları taşı
     for (const o of obstacles) o.sx -= deltaX;
     for (const s of stars) s.sx -= deltaX;
     obstacles = obstacles.filter(o => o.sx + o.w > -60);
     stars = stars.filter(s => s.sx + s.r > -20);
 
-    // Spawn
     while (nextObstacleAtWorldX < worldX + GAME_W + 100) {
       spawnObstacle(nextObstacleAtWorldX - worldX + GAME_W);
       if (Math.random() < STAR_CHANCE) spawnStar(nextObstacleAtWorldX - worldX + GAME_W + rand(60, 140));
@@ -326,7 +316,6 @@ const SpaceWaves = (() => {
     distanceScore = Math.floor(worldX / 10);
     score = distanceScore + starsCollected * 10;
 
-    // Checkpoint
     if (worldX - checkpointWorldX >= CHECKPOINT_EVERY) {
       checkpointWorldX = worldX;
       lastCheckpointScore = score;
@@ -334,7 +323,6 @@ const SpaceWaves = (() => {
       flashHUD();
     }
 
-    // Star toplama
     for (const s of stars) {
       if (s.collected) continue;
       const dx = s.sx - player.x;
@@ -347,14 +335,12 @@ const SpaceWaves = (() => {
       }
     }
 
-    // Çarpışma
     if (nowMs() > invulnUntil) {
       for (const o of obstacles) {
         if (collidesWith(o)) { triggerCollision(o.type); return; }
       }
     }
 
-    // Partiküller
     for (const p of particles) {
       p.x += p.vx * dt; p.y += p.vy * dt;
       p.life -= dt; p.vy += 120 * dt;
@@ -417,7 +403,6 @@ const SpaceWaves = (() => {
     }
   }
 
-  // ---------- Çarpışma akışı ----------
   function triggerCollision(type) {
     if (state !== 'playing') return;
     state = 'question';
@@ -444,7 +429,7 @@ const SpaceWaves = (() => {
     modal.innerHTML =
       '<div class="sw-modal-card">' +
         '<div class="sw-question-header">' +
-          '<div class="sw-question-title">⚡ Çarpıştın! Doğru cevapla, canını koru!</div>' +
+          '<div class="sw-question-title">⚡ Collision! Answer correctly to save your life!</div>' +
           '<div class="sw-timer-ring">' +
             '<svg viewBox="0 0 64 64"><circle class="sw-timer-bg" cx="32" cy="32" r="28"/><circle class="sw-timer-fg" cx="32" cy="32" r="28"/></svg>' +
             '<span class="sw-timer-text" id="sw-timer-text">' + QUESTION_TIME + '</span>' +
@@ -497,8 +482,8 @@ const SpaceWaves = (() => {
     const banner = document.createElement('div');
     banner.className = 'sw-answer-banner ' + (isCorrect ? 'sw-banner-ok' : 'sw-banner-bad');
     banner.textContent = isCorrect
-      ? '✅ Doğru! Canını korudun.'
-      : (selectedIdx === -1 ? '⏰ Süre doldu! Bir can kaybettin.' : '❌ Yanlış! Bir can kaybettin.');
+      ? '✅ Correct! You saved your life.'
+      : (selectedIdx === -1 ? '⏰ Time\'s up! You lost a life.' : '❌ Wrong! You lost a life.');
     modal.querySelector('.sw-modal-card').appendChild(banner);
 
     try { AudioManager.play(isCorrect ? 'success' : 'error'); } catch (e) {}
@@ -506,7 +491,7 @@ const SpaceWaves = (() => {
     setTimeout(() => {
       modal.remove();
       if (!isCorrect) lives--;
-      if (lives <= 0) gameOver();
+      if (lives <= 0) triggerGameOver();
       else respawn();
     }, 900);
   }
@@ -524,15 +509,13 @@ const SpaceWaves = (() => {
     stars = stars.filter(s => s.sx > PLAYER_X + 80);
     nextObstacleAtWorldX = Math.max(nextObstacleAtWorldX, worldX + GAME_W + RESPAWN_CLEAR_AHEAD);
     invulnUntil = nowMs() + INVULN_MS;
-    // Geri sayım ile başlat — oyuncu hazırlansın
     state = 'countdown';
     countdownEndAt = nowMs() + 3000;
     countdownSec = 3;
     lastTime = nowMs(); accum = 0;
   }
 
-  // ---------- Game Over + Leaderboard ----------
-  function gameOver() {
+  function triggerGameOver() {
     state = 'gameover';
     finalScore = score;
     try { AudioManager.play('complete'); } catch (e) {}
@@ -544,16 +527,16 @@ const SpaceWaves = (() => {
     modal.className = 'sw-modal sw-gameover-modal';
     modal.innerHTML =
       '<div class="sw-modal-card sw-gameover-card">' +
-        '<div class="sw-gameover-title">🚀 Oyun Bitti</div>' +
+        '<div class="sw-gameover-title">🚀 Game Over</div>' +
         '<div class="sw-gameover-score">' +
-          '<div class="sw-go-row"><span>Skor</span><b>' + finalScore + '</b></div>' +
-          '<div class="sw-go-row"><span>Mesafe</span><b>' + distanceScore + '</b></div>' +
-          '<div class="sw-go-row"><span>Yıldız</span><b>' + starsCollected + '</b></div>' +
+          '<div class="sw-go-row"><span>Score</span><b>' + finalScore + '</b></div>' +
+          '<div class="sw-go-row"><span>Distance</span><b>' + distanceScore + '</b></div>' +
+          '<div class="sw-go-row"><span>Stars</span><b>' + starsCollected + '</b></div>' +
         '</div>' +
         '<div class="sw-gameover-buttons">' +
-          '<button class="sw-btn sw-btn-primary" id="sw-btn-restart">🔁 Tekrar Oyna</button>' +
-          '<button class="sw-btn sw-btn-secondary" id="sw-btn-home">🏠 Ana Sayfa</button>' +
-          (finalScore > 0 ? '<button class="sw-btn sw-btn-accent" id="sw-btn-save">⭐ Skoru Kaydet</button>' : '') +
+          '<button class="sw-btn sw-btn-primary" id="sw-btn-restart">🔁 Play Again</button>' +
+          '<button class="sw-btn sw-btn-secondary" id="sw-btn-home">🏠 Home</button>' +
+          (finalScore > 0 ? '<button class="sw-btn sw-btn-accent" id="sw-btn-save">⭐ Save Score</button>' : '') +
         '</div>' +
         '<div class="sw-save-area" id="sw-save-area"></div>' +
         '<div class="sw-leaderboard-area" id="sw-leaderboard-area"></div>' +
@@ -579,8 +562,8 @@ const SpaceWaves = (() => {
     const area = modal.querySelector('#sw-save-area');
     area.innerHTML =
       '<div class="sw-save-form">' +
-        '<input type="text" id="sw-name-input" maxlength="16" placeholder="Adın (en fazla 16 harf)" />' +
-        '<button class="sw-btn sw-btn-primary" id="sw-btn-commit-save">Kaydet</button>' +
+        '<input type="text" id="sw-name-input" maxlength="16" placeholder="Your name (max 16 letters)" />' +
+        '<button class="sw-btn sw-btn-primary" id="sw-btn-commit-save">Save</button>' +
       '</div>';
     const input = area.querySelector('#sw-name-input');
     input.focus();
@@ -596,7 +579,7 @@ const SpaceWaves = (() => {
 
   async function saveScoreAndShowLeaderboard(name, scoreVal, modal) {
     if (!db) {
-      modal.querySelector('#sw-save-area').innerHTML = '<div class="sw-error">⚠️ Sunucuya bağlanılamadı.</div>';
+      modal.querySelector('#sw-save-area').innerHTML = '<div class="sw-error">⚠️ Could not connect to server.</div>';
       return;
     }
     if (savedThisRound) return;
@@ -608,23 +591,23 @@ const SpaceWaves = (() => {
     try {
       const entry = { name, score: scoreVal, timestamp: firebase.database.ServerValue.TIMESTAMP };
       const newRef = await ref.push(entry);
-      modal.querySelector('#sw-save-area').innerHTML = '<div class="sw-save-ok">✅ Kaydedildi!</div>';
+      modal.querySelector('#sw-save-area').innerHTML = '<div class="sw-save-ok">✅ Saved!</div>';
       await renderLeaderboard(modal, newRef.key, scoreVal);
     } catch (err) {
-      modal.querySelector('#sw-save-area').innerHTML = '<div class="sw-error">⚠️ Kaydedilemedi. ' + escapeHTML(err.message || '') + '</div>';
+      modal.querySelector('#sw-save-area').innerHTML = '<div class="sw-error">⚠️ Could not save. ' + escapeHTML(err.message || '') + '</div>';
     }
   }
 
   async function renderLeaderboard(modal, myKey, myScore) {
     const area = modal.querySelector('#sw-leaderboard-area');
-    area.innerHTML = '<div class="sw-lb-loading">Sıralama yükleniyor...</div>';
+    area.innerHTML = '<div class="sw-lb-loading">Leaderboard loading...</div>';
     try {
       const snap = await db.ref('leaderboards/space-waves')
         .orderByChild('score').limitToLast(50).once('value');
       const rows = [];
       snap.forEach(child => {
         const v = child.val();
-        rows.push({ key: child.key, name: v.name || 'Anonim', score: v.score || 0, timestamp: v.timestamp || 0 });
+        rows.push({ key: child.key, name: v.name || 'Anonymous', score: v.score || 0, timestamp: v.timestamp || 0 });
       });
       rows.sort((a, b) => b.score - a.score || a.timestamp - b.timestamp);
 
@@ -632,24 +615,23 @@ const SpaceWaves = (() => {
       if (myIdx >= 0 && myIdx < 50) {
         renderPaginatedLB(area, rows, myKey, myIdx);
       } else {
-        // 50+ → rank
         let rank = 51;
         try {
           const afterSnap = await db.ref('leaderboards/space-waves')
-            .orderByChild('score').startAfter(myScore).once('value');
+              .orderByChild('score').startAfter(myScore).once('value');
           let above = 0;
           afterSnap.forEach(() => { above++; });
           rank = above + 1;
         } catch (e) {}
         area.innerHTML =
           '<div class="sw-lb-out">' +
-            '<div class="sw-lb-title">🌍 Global Sıralaman</div>' +
+            '<div class="sw-lb-title">🌍 Your Global Ranking</div>' +
             '<div class="sw-lb-rank-big"><span>#' + rank + '</span></div>' +
-            '<div class="sw-lb-msg">İlk 50\'ye girmek için daha yüksek skor yap!</div>' +
+            '<div class="sw-lb-msg">Get a higher score to enter the top 50!</div>' +
           '</div>';
       }
     } catch (err) {
-      area.innerHTML = '<div class="sw-error">⚠️ Sıralama yüklenemedi.</div>';
+      area.innerHTML = '<div class="sw-error">⚠️ Could not load leaderboard.</div>';
     }
   }
 
@@ -661,9 +643,9 @@ const SpaceWaves = (() => {
     function render() {
       const start = currentPage * PER;
       const slice = rows.slice(start, start + PER);
-      let html = '<div class="sw-lb-title">🏆 İlk 50 — Sayfa ' + (currentPage + 1) + ' / ' + pages + '</div>';
+      let html = '<div class="sw-lb-title">🏆 Top 50 — Page ' + (currentPage + 1) + ' / ' + pages + '</div>';
       html += '<div class="sw-lb-table">';
-      html += '<div class="sw-lb-head"><span class="sw-lb-rank">#</span><span class="sw-lb-name">İsim</span><span class="sw-lb-score">Skor</span></div>';
+      html += '<div class="sw-lb-head"><span class="sw-lb-rank">#</span><span class="sw-lb-name">Name</span><span class="sw-lb-score">Score</span></div>';
       slice.forEach((r, i) => {
         const rank = start + i + 1;
         const me = r.key === myKey ? ' sw-lb-me' : '';
@@ -671,9 +653,9 @@ const SpaceWaves = (() => {
       });
       html += '</div>';
       html += '<div class="sw-lb-nav">' +
-        '<button class="sw-btn sw-btn-ghost" id="sw-lb-prev"' + (currentPage === 0 ? ' disabled' : '') + '>◀ Önceki</button>' +
+        '<button class="sw-btn sw-btn-ghost" id="sw-lb-prev"' + (currentPage === 0 ? ' disabled' : '') + '>◀ Previous</button>' +
         '<span class="sw-lb-pageinfo">' + (start + 1) + '-' + Math.min(start + PER, rows.length) + '</span>' +
-        '<button class="sw-btn sw-btn-ghost" id="sw-lb-next"' + (currentPage >= pages - 1 ? ' disabled' : '') + '>Sonraki ▶</button>' +
+        '<button class="sw-btn sw-btn-ghost" id="sw-lb-next"' + (currentPage >= pages - 1 ? ' disabled' : '') + '>Next ▶</button>' +
         '</div>';
       area.innerHTML = html;
       const prev = area.querySelector('#sw-lb-prev');
@@ -748,16 +730,13 @@ const SpaceWaves = (() => {
       ctx.globalAlpha = 1;
     }
 
-    // Countdown overlay
     if (state === 'countdown') drawCountdownOverlay();
   }
 
   function drawCountdownOverlay() {
-    // Karartma
     ctx.fillStyle = 'rgba(5, 2, 20, 0.45)';
     ctx.fillRect(0, 0, GAME_W, GAME_H);
 
-    // Ok — karakterin gideceği yön
     const cx = player.x;
     const cy = player.y;
     const arrowOffset = inputDir === -1 ? -46 : 46;
@@ -767,13 +746,11 @@ const SpaceWaves = (() => {
     ctx.save();
     ctx.translate(cx, arrowY + bob);
     ctx.globalAlpha = 0.95;
-    // Glow
     ctx.shadowColor = '#ffd54a';
     ctx.shadowBlur = 18;
     ctx.fillStyle = '#ffd54a';
     ctx.beginPath();
     if (inputDir === -1) {
-      // Yukarı ok
       ctx.moveTo(0, -14);
       ctx.lineTo(14, 8);
       ctx.lineTo(5, 8);
@@ -782,7 +759,6 @@ const SpaceWaves = (() => {
       ctx.lineTo(-5, 8);
       ctx.lineTo(-14, 8);
     } else {
-      // Aşağı ok
       ctx.moveTo(0, 14);
       ctx.lineTo(14, -8);
       ctx.lineTo(5, -8);
@@ -795,13 +771,12 @@ const SpaceWaves = (() => {
     ctx.fill();
     ctx.restore();
 
-    // Sayı / GO!
     ctx.save();
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     const remainMs = countdownEndAt - nowMs();
     const secF = remainMs / 1000;
-    const pulse = 1 - (secF - Math.floor(secF)); // 0 → 1 her saniye
+    const pulse = 1 - (secF - Math.floor(secF));
     const scale = 1 + pulse * 0.5;
     const label = countdownSec > 0 ? String(countdownSec) : 'GO!';
 
@@ -818,7 +793,6 @@ const SpaceWaves = (() => {
     ctx.strokeText(label, 0, 0);
     ctx.restore();
 
-    // İpucu
     ctx.save();
     ctx.textAlign = 'center';
     ctx.fillStyle = '#ffffff';
@@ -826,8 +800,8 @@ const SpaceWaves = (() => {
     ctx.shadowColor = 'rgba(0,0,0,0.8)';
     ctx.shadowBlur = 6;
     const hintTxt = (typeof MobileUtils !== 'undefined' && MobileUtils.isTouchDevice())
-      ? 'Ekrana dokun ile yön seç'
-      : 'Boşluk / Tık ile yön seç';
+      ? 'Tap to switch direction'
+      : 'Space / Click to switch direction';
     ctx.fillText(hintTxt, GAME_W / 2, GAME_H - 40);
     ctx.restore();
   }
@@ -935,7 +909,6 @@ const SpaceWaves = (() => {
     const x = player.x, y = player.y;
     const thrust = currentSpeed / MAX_SPEED;
 
-    // Thruster alevi
     ctx.save();
     const flameX = x - 18;
     const fg = ctx.createLinearGradient(flameX, y, flameX - 18 - thrust * 14, y);

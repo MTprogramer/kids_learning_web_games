@@ -1,0 +1,159 @@
+/* Emoji Maker Styles */
+
+.ey-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.55rem;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    padding-bottom: 1rem;
+}
+
+/* Preview */
+.ey-preview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at 50% 38%, #ffffff, #eef2fb);
+    border: 3px solid #fff;
+    border-radius: 24px;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.14);
+    padding: 6px;
+}
+.ey-preview-face,
+.ey-face-svg { display: block; }
+
+/* Category tabs */
+.ey-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+}
+.ey-tab {
+    padding: 7px 14px;
+    border: 2px solid #E3E3E3;
+    border-radius: 18px;
+    background: #fff;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #666;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.ey-tab:hover { border-color: var(--emoji-yapici-color, #FFB703); }
+.ey-tab.active {
+    background: var(--emoji-yapici-color, #FFB703);
+    border-color: var(--emoji-yapici-color, #FFB703);
+    color: #fff;
+}
+
+/* Option ribbon */
+.ey-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    min-height: 64px;
+    max-width: 100%;
+}
+.ey-option {
+    width: 60px;
+    height: 60px;
+    border: 3px solid #E8E8E8;
+    border-radius: 14px;
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    transition: transform 0.12s, border-color 0.12s, box-shadow 0.12s;
+}
+.ey-option:hover { transform: scale(1.07); }
+.ey-option.active {
+    border-color: var(--emoji-yapici-color, #FFB703);
+    box-shadow: 0 0 0 2px var(--emoji-yapici-color, #FFB703);
+}
+
+/* Color selection */
+.ey-color {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+    cursor: pointer;
+    transition: transform 0.12s, box-shadow 0.12s;
+}
+.ey-color:hover { transform: scale(1.12); }
+.ey-color.active {
+    border-color: #333;
+    transform: scale(1.15);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.22);
+}
+
+/* Action buttons */
+.ey-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 2px;
+}
+.ey-btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 14px;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    color: #fff;
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.15);
+    transition: transform 0.12s, filter 0.12s;
+}
+.ey-btn:hover { transform: translateY(-2px); filter: brightness(1.06); }
+.ey-btn:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15); }
+.ey-btn-surprise { background: #9B5DE5; }
+.ey-btn-add { background: #2ECC71; }
+.ey-btn-reset { background: #95A5A6; }
+
+/* Collection */
+.ey-coll-title {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-warm, #5D4037);
+    margin-top: 4px;
+}
+.ey-collection {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    min-height: 72px;
+    width: 100%;
+}
+.ey-coll-item {
+    background: #fff;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    padding: 2px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    animation: eyPop 0.3s ease;
+}
+@keyframes eyPop {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+.ey-coll-empty {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.8rem;
+    color: #999;
+    text-align: center;
+    padding: 0.5rem 1rem;
+}

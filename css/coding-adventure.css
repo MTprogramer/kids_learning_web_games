@@ -1,0 +1,759 @@
+/* ============================================
+   CODING ADVENTURE - Coding Game Styles
+   ============================================ */
+
+/* Grid Container */
+.kod-grid-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 0.3rem 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.kod-grid {
+    display: grid;
+    gap: 2px;
+    background: #C8E6C9;
+    border: 3px solid #81C784;
+    border-radius: var(--radius-md);
+    padding: 3px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.kod-grid.grid-3x3 { grid-template-columns: repeat(3, 1fr); }
+.kod-grid.grid-4x4 { grid-template-columns: repeat(4, 1fr); }
+.kod-grid.grid-5x5 { grid-template-columns: repeat(5, 1fr); }
+.kod-grid.grid-6x6 { grid-template-columns: repeat(6, 1fr); }
+.kod-grid.grid-7x7 { grid-template-columns: repeat(7, 1fr); }
+
+/* Grid Cells */
+.kod-cell {
+    width: clamp(32px, 10vw, 68px);
+    height: clamp(32px, 10vw, 68px);
+    background: #E8F5E9;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    position: relative;
+    transition: background 0.3s;
+}
+
+.kod-cell.obstacle {
+    background: #BCAAA4;
+    border: 2px solid #8D6E63;
+}
+
+.kod-cell.target {
+    background: #FFF9C4;
+    border: 2px dashed #FFD700;
+    animation: targetPulse 2s ease-in-out infinite;
+}
+
+.kod-cell.collectible {
+    background: #E8F5E9;
+}
+
+.kod-cell.start {
+    background: #E3F2FD;
+}
+
+.kod-cell.robot-here {
+    background: #BBDEFB;
+    z-index: 2;
+}
+
+/* Robot */
+.kod-robot {
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    transition: transform 0.4s ease;
+    z-index: 10;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.kod-robot.dir-up { transform: rotate(0deg); }
+.kod-robot.dir-right { transform: rotate(90deg); }
+.kod-robot.dir-down { transform: rotate(180deg); }
+.kod-robot.dir-left { transform: rotate(270deg); }
+
+.kod-robot.moving {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kod-robot.crashed {
+    animation: robotCrash 0.5s ease-in-out;
+}
+
+/* Program Area */
+.kod-program-wrap {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 0.6rem;
+    margin: 0.5rem auto;
+    max-width: min(480px, 95vw);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.kod-program-label {
+    font-size: 0.7rem;
+    color: #888;
+    font-weight: 600;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.kod-program-slots {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+    min-height: 52px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.kod-program-slot {
+    width: 44px;
+    height: 44px;
+    border: 3px dashed #E0E0E0;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.kod-program-slot.filled {
+    border-style: solid;
+    border-color: transparent;
+    animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.kod-program-slot.filled:active {
+    transform: scale(0.9);
+}
+
+.kod-program-slot .slot-block {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kod-program-slot .slot-block svg {
+    width: 28px;
+    height: 28px;
+}
+
+/* Play/Reset Buttons */
+.kod-action-btns {
+    display: flex;
+    gap: 6px;
+    margin-left: auto;
+}
+
+.kod-play-btn, .kod-reset-btn {
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    flex-shrink: 0;
+}
+
+.kod-play-btn {
+    background: linear-gradient(135deg, #4CAF50, #2E7D32);
+    color: white;
+    box-shadow: 0 3px 8px rgba(76, 175, 80, 0.4);
+}
+
+.kod-play-btn:active { transform: scale(0.92); }
+.kod-play-btn:disabled {
+    background: #CCC;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.kod-reset-btn {
+    background: linear-gradient(135deg, #EF5350, #C62828);
+    color: white;
+    box-shadow: 0 3px 8px rgba(239, 83, 80, 0.3);
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+}
+
+.kod-reset-btn:active { transform: scale(0.92); }
+
+/* Block Palette */
+.kod-palette {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 0.3rem auto;
+    padding: 0.4rem;
+    background: rgba(255,255,255,0.7);
+    border-radius: var(--radius-lg);
+    max-width: min(400px, 95vw);
+}
+
+.kod-block-btn {
+    width: 50px;
+    height: 50px;
+    border: 3px solid transparent;
+    border-radius: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+    position: relative;
+}
+
+.kod-block-btn:active {
+    transform: scale(0.9);
+}
+
+.kod-block-btn svg {
+    width: 32px;
+    height: 32px;
+}
+
+.kod-block-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Status Bar */
+.kod-status {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 600;
+    padding: 0.3rem;
+}
+
+.kod-status span {
+    background: rgba(255,255,255,0.8);
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+/* Animations */
+@keyframes targetPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(255, 215, 0, 0); }
+}
+
+@keyframes robotCrash {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px) rotate(-5deg); }
+    40% { transform: translateX(5px) rotate(5deg); }
+    60% { transform: translateX(-3px) rotate(-3deg); }
+    80% { transform: translateX(3px) rotate(3deg); }
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); }
+    100% { transform: scale(1); }
+}
+
+/* Robot walking trail */
+.kod-cell.trail {
+    background: #C5E1A5 !important;
+    transition: background 0.3s;
+}
+
+.kod-cell.trail::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #8BC34A;
+    border-radius: 50%;
+    opacity: 0.5;
+}
+
+/* MP Simultaneous Race Styles */
+
+/* Score bar */
+.kod-mp-scorebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.4rem 0.8rem;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    margin: 0.3rem auto;
+    max-width: min(420px, 95vw);
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+.kod-mp-score.my-score { color: #FF9800; }
+.kod-mp-score.op-score { color: #2196F3; }
+.kod-mp-round { color: #888; font-size: 0.75rem; }
+
+/* Section labels */
+.kod-mp-section-label {
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    padding: 0.2rem;
+    border-radius: 8px;
+    margin: 0.2rem auto;
+    max-width: 300px;
+}
+.kod-mp-section-label.my-label { color: #FF9800; background: #FFF3E0; }
+.kod-mp-section-label.op-label { color: #2196F3; background: #E3F2FD; }
+
+/* Side-by-side layout */
+.kod-mp-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 0.3rem;
+}
+.kod-mp-left, .kod-mp-right {
+    flex: 1;
+    min-width: 0;
+}
+.kod-mp-left .kod-palette {
+    margin: 0.2rem auto;
+    padding: 0.3rem;
+    gap: 6px;
+}
+.kod-mp-left .kod-block-btn {
+    width: 42px;
+    height: 42px;
+}
+
+/* Opponent grid - normal size but not clickable */
+.kod-mp-mini-grid-wrap {
+    pointer-events: none;
+}
+.kod-mp-right {
+    background: rgba(33, 150, 243, 0.05);
+    border-radius: var(--radius-md);
+    border: 2px dashed #BBDEFB;
+    padding: 0.2rem;
+}
+
+/* Grid cells in side-by-side layout */
+.kod-mp-row .kod-cell {
+    width: clamp(24px, 5.5vw, 48px);
+    height: clamp(24px, 5.5vw, 48px);
+    font-size: 1rem;
+}
+.kod-mp-row .kod-robot {
+    width: 70%;
+    height: 70%;
+}
+.kod-mp-row .kod-grid {
+    gap: 1px;
+    padding: 2px;
+    border-width: 2px;
+}
+
+.kod-mp-opponent-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #888;
+    padding: 0.3rem;
+}
+
+.kod-mp-opponent-bar .dot-loading::after {
+    content: '...';
+    animation: dotPulse 1.5s infinite;
+}
+
+@keyframes dotPulse {
+    0% { content: '.'; }
+    33% { content: '..'; }
+    66% { content: '...'; }
+}
+
+/* Game Over Screen */
+.kod-gameover {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    padding: 1rem;
+    animation: fadeIn 0.6s ease;
+}
+.kod-gameover-card {
+    border-radius: 24px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.kod-gameover-icon {
+    font-size: 4rem;
+    margin-bottom: 0.3rem;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+    animation: bounce 1s ease infinite;
+}
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+.kod-gameover-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0.3rem 0;
+    text-shadow: 0 2px 4px rgba(255,255,255,0.3);
+}
+.kod-gameover-sub {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin: 0 0 1.2rem;
+    color: rgba(0,0,0,0.5);
+}
+.kod-gameover-scores {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0;
+    background: rgba(255,255,255,0.35);
+    border-radius: 16px;
+    padding: 1rem;
+    backdrop-filter: blur(4px);
+}
+.kod-gameover-player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+.kod-gameover-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+.kod-gameover-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: rgba(0,0,0,0.6);
+}
+.kod-gameover-pts {
+    font-size: 2rem;
+    font-weight: 900;
+    color: rgba(0,0,0,0.7);
+}
+.kod-gameover-vs {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: rgba(0,0,0,0.3);
+    letter-spacing: 2px;
+}
+.kod-gameover-btn {
+    margin-top: 1rem;
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 50px;
+    background: rgba(255,255,255,0.9);
+    color: #333;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.kod-gameover-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+.kod-gameover-btn:active {
+    transform: scale(0.95);
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Round result overlay */
+.kod-round-result {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(6px);
+    animation: fadeIn 0.3s ease;
+}
+.kod-round-card {
+    text-align: center;
+    padding: 2rem 2.5rem;
+    border-radius: 24px;
+    max-width: 340px;
+    width: 90%;
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.kod-round-card.won {
+    background: linear-gradient(135deg, #00b894, #00cec9);
+    color: white;
+}
+.kod-round-card.lost {
+    background: linear-gradient(135deg, #fd79a8, #e17055);
+    color: white;
+}
+.kod-round-card.draw {
+    background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+    color: white;
+}
+.kod-round-icon {
+    font-size: 3.5rem;
+    margin-bottom: 0.3rem;
+    animation: bounce 0.8s ease infinite;
+}
+.kod-round-card h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin: 0.3rem 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.kod-round-card p {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin: 0.2rem 0;
+}
+.kod-round-score {
+    font-size: 2.2rem;
+    font-weight: 900;
+    margin-top: 0.5rem;
+    text-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    letter-spacing: 4px;
+}
+
+/* Penalty message */
+.kod-penalty-msg {
+    text-align: center;
+    padding: 0.5rem;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border-radius: 12px;
+    margin: 0.3rem auto;
+    max-width: 280px;
+    animation: shakeIn 0.4s ease;
+    box-shadow: 0 4px 12px rgba(238, 90, 36, 0.3);
+}
+.kod-penalty-timer {
+    display: inline-block;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    margin-left: 6px;
+    font-size: 0.85rem;
+}
+@keyframes shakeIn {
+    0% { transform: translateX(-20px); opacity: 0; }
+    30% { transform: translateX(10px); }
+    60% { transform: translateX(-5px); }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+/* ============================================
+   LEGO ADVENTURE - Extra Styles
+   ============================================ */
+
+.lego-game-wrap {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+.lego-grid-wrap {
+    display: flex;
+    justify-content: center;
+}
+
+.lego-grid {
+    display: grid;
+    gap: 3px;
+    background: #90A4AE;
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+.lego-grid.grid-3x3 { grid-template-columns: repeat(3, clamp(50px, 14vw, 72px)); }
+.lego-grid.grid-4x4 { grid-template-columns: repeat(4, clamp(42px, 11vw, 64px)); }
+.lego-grid.grid-5x5 { grid-template-columns: repeat(5, clamp(36px, 9vw, 56px)); }
+
+.lego-cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #B0BEC5;
+    border-radius: 6px;
+    position: relative;
+    font-size: clamp(1.2rem, 4vw, 1.8rem);
+    transition: background 0.2s;
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,0.1);
+}
+
+.lego-stud {
+    position: absolute;
+    top: 3px; left: 50%; transform: translateX(-50%);
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+    pointer-events: none;
+}
+
+.lego-cell.lego-obstacle {
+    background: #78909C;
+}
+.lego-cell.lego-target {
+    background: #FFF9C4;
+    box-shadow: inset 0 0 0 2px #FFC107, 0 0 8px rgba(255,193,7,0.3);
+    animation: targetPulse 2s ease-in-out infinite;
+}
+.lego-cell.lego-has-piece {
+    background: #E3F2FD;
+}
+.lego-cell.lego-robot-here {
+    background: #C8E6C9;
+}
+.lego-cell.lego-trail {
+    background: #DCEDC8;
+}
+
+.lego-piece-cell {
+    font-size: clamp(1rem, 3.5vw, 1.5rem);
+}
+
+.lego-order {
+    position: absolute;
+    top: 2px; right: 4px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: white;
+    background: #E74C3C;
+    border-radius: 50%;
+    width: 16px; height: 16px;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1;
+}
+
+.lego-man {
+    width: 80%; height: 80%;
+    position: absolute;
+    z-index: 2;
+}
+.lego-man.crashed {
+    animation: robotCrash 0.4s ease-in-out;
+}
+
+/* Building Panel */
+.lego-build-panel {
+    background: rgba(255,255,255,0.92);
+    border-radius: 16px;
+    padding: 12px;
+    min-width: 100px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.lego-build-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #5D4037;
+    margin-bottom: 8px;
+}
+.lego-build-stack {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 4px;
+    min-height: 60px;
+}
+.lego-build-slot {
+    width: 70px;
+    height: 30px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+.lego-build-slot .lego-build-empty {
+    width: 100%;
+    height: 100%;
+    border: 2px dashed #ccc;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+.lego-build-slot.lego-built {
+    animation: popIn 0.4s var(--ease-spring);
+}
+.lego-build-slot .lego-piece-svg {
+    width: 100%;
+    height: 100%;
+}
+.lego-build-count {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #888;
+    margin-top: 6px;
+}
+
+@media (max-width: 480px) {
+    .lego-game-wrap { flex-direction: column; align-items: center; }
+    .lego-build-panel { flex-direction: row; min-width: auto; }
+    .lego-build-stack { flex-direction: row; min-height: auto; gap: 6px; }
+    .lego-build-slot { width: 50px; height: 26px; }
+}

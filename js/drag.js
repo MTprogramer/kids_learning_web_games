@@ -1,5 +1,5 @@
 /* ============================================
-   OYUN BAHÇESİ - Sürükle Bırak Sistemi
+   CHILDS PLAY LOGIC - Drag and Drop System
    ============================================ */
 
 const DragSystem = (() => {
@@ -76,7 +76,7 @@ const DragSystem = (() => {
             });
 
             if (!dropped) {
-                // Geri dön
+                // Return to start
                 element.style.left = startX + 'px';
                 element.style.top = startY + 'px';
                 setTimeout(() => {

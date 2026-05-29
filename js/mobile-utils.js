@@ -1,5 +1,5 @@
 /* ============================================
-   Mobile Utils — Canvas DPR + Touch Yardımcıları
+   Mobile Utils — Canvas DPR + Touch Helpers
    ============================================ */
 
 const MobileUtils = (() => {
@@ -34,11 +34,12 @@ const MobileUtils = (() => {
     return dpr;
   }
 
-  // Canvas'ı GÖRÜNTÜLENEN boyutuna (CSS px × DPR) göre boyutlandırır ve çizim
-  // koordinatlarını mantıksal (logicalW×logicalH) sisteme ölçekler. Oyun büyüdükçe
-  // (örn. tam ekran) iç çözünürlük de büyür → bulanıklaşma olmaz. ResizeObserver ile
-  // boyut değişiminde otomatik yeniden ayarlanır. Oyun her karede mantıksal
-  // koordinatlarda çizmeye devam eder.
+  /**
+   * Resizes the canvas based on its DISPLAYED size (CSS px × DPR)
+   * and scales the drawing coordinates to a logical (logicalW × logicalH) system.
+   * As the game grows (e.g. fullscreen), internal resolution grows → no blurring.
+   * Automatically re-adjusts on size changes via ResizeObserver.
+   */
   function attachResponsiveCanvas(canvas, ctx, logicalW, logicalH) {
     canvas.style.width = '100%';
     canvas.style.height = '100%';
@@ -48,8 +49,7 @@ const MobileUtils = (() => {
       const h = canvas.clientHeight || logicalH;
       canvas.width = Math.max(1, Math.round(w * dpr));
       canvas.height = Math.max(1, Math.round(h * dpr));
-      // Mantıksal koordinat sistemini iç çözünürlüğe ölçekle (en-boy oranı
-      // korunduğunda x/y aynı faktör → bozulma olmaz).
+      // Scale the logical coordinate system to internal resolution
       ctx.setTransform(canvas.width / logicalW, 0, 0, canvas.height / logicalH, 0, 0);
     };
     fit();
@@ -58,8 +58,7 @@ const MobileUtils = (() => {
       ro = new ResizeObserver(fit);
       ro.observe(canvas);
     }
-    // ResizeObserver bazı durumlarda (ör. tam ekran geçişi) tetiklenmeyebildiği için
-    // window resize olayını da dinle — tam ekran butonu bu olayı tetikler.
+    // Also listen to window resize as fallback
     window.addEventListener('resize', fit);
     return {
       refit: fit,

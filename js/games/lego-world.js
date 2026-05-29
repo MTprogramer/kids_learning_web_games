@@ -1,6 +1,6 @@
 /* ============================================
-   LEGO World — 3D Açık Dünya (Three.js)
-   Ok tuşlarıyla hareket, LEGO parça toplama, bina tamiri
+   LEGO World — 3D Open World (Three.js)
+   Move with arrow keys, collect LEGO pieces, repair buildings
    ============================================ */
 
 const LegoWorld = (() => {
@@ -18,39 +18,39 @@ const LegoWorld = (() => {
     { worldSize: 50, buildings: 6, pieceCount: 55, capacity: 60 },
   ];
 
-  // ── Bina Tanımları ──
+  // ── Building Definitions ──
   const BUILDING_DEFS = [
-    { name: 'Okul', emoji: '🏫', color: 0xE74C3C, required: { red: 3, blue: 2 } },
-    { name: 'Hastane', emoji: '🏥', color: 0xECF0F1, required: { white: 3, red: 2 } },
-    { name: 'İtfaiye', emoji: '🚒', color: 0xC0392B, required: { red: 4, yellow: 2 } },
-    { name: 'Kütüphane', emoji: '📚', color: 0x8D6E63, required: { brown: 3, orange: 3 } },
+    { name: 'School', emoji: '🏫', color: 0xE74C3C, required: { red: 3, blue: 2 } },
+    { name: 'Hospital', emoji: '🏥', color: 0xECF0F1, required: { white: 3, red: 2 } },
+    { name: 'Fire Station', emoji: '🚒', color: 0xC0392B, required: { red: 4, yellow: 2 } },
+    { name: 'Library', emoji: '📚', color: 0x8D6E63, required: { brown: 3, orange: 3 } },
     { name: 'Park', emoji: '🎡', color: 0x27AE60, required: { green: 3, yellow: 2, blue: 1 } },
-    { name: 'Köprü', emoji: '🌉', color: 0x7F8C8D, required: { gray: 4, black: 2 } },
+    { name: 'Bridge', emoji: '🌉', color: 0x7F8C8D, required: { gray: 4, black: 2 } },
   ];
 
   const PIECE_TYPES = {
-    red:    { color: 0xE74C3C, label: 'Kırmızı', emoji: '🟥' },
-    blue:   { color: 0x3498DB, label: 'Mavi', emoji: '🟦' },
-    yellow: { color: 0xF1C40F, label: 'Sarı', emoji: '🟨' },
-    green:  { color: 0x2ECC71, label: 'Yeşil', emoji: '🟩' },
-    orange: { color: 0xFF9800, label: 'Turuncu', emoji: '🟠' },
-    white:  { color: 0xFFFFFF, label: 'Beyaz', emoji: '⬜' },
-    brown:  { color: 0x8D6E63, label: 'Kahverengi', emoji: '🟤' },
-    gray:   { color: 0x95A5A6, label: 'Gri', emoji: '⬛' },
-    black:  { color: 0x2C3E50, label: 'Siyah', emoji: '⚫' },
+    red:    { color: 0xE74C3C, label: 'Red', emoji: '🟥' },
+    blue:   { color: 0x3498DB, label: 'Blue', emoji: '🟦' },
+    yellow: { color: 0xF1C40F, label: 'Yellow', emoji: '🟨' },
+    green:  { color: 0x2ECC71, label: 'Green', emoji: '🟩' },
+    orange: { color: 0xFF9800, label: 'Orange', emoji: '🟠' },
+    white:  { color: 0xFFFFFF, label: 'White', emoji: '⬜' },
+    brown:  { color: 0x8D6E63, label: 'Brown', emoji: '🟤' },
+    gray:   { color: 0x95A5A6, label: 'Gray', emoji: '⬛' },
+    black:  { color: 0x2C3E50, label: 'Black', emoji: '⚫' },
   };
 
   let container, callbacks, currentLevel;
   let scene, camera, renderer, clock;
   let player, playerGroup;
-  let playerMixer = null; // AnimationMixer
-  let playerAnimations = {}; // { idle, walk, run, ... }
+  let playerMixer = null;
+  let playerAnimations = {};
   let currentAnim = null;
   let keys = {};
-  let pieces3D = []; // { mesh, type, collected }
-  let buildings3D = []; // { group, def, repaired, position }
+  let pieces3D = [];
+  let buildings3D = [];
   let trees3D = [];
-  let inventory = {}; // { red: 0, blue: 0, ... }
+  let inventory = {};
   let buildingsRepaired = 0;
   let animFrameId = null;
   let overlayVisible = false;
@@ -96,8 +96,8 @@ const LegoWorld = (() => {
     scene.background = new THREE.Color(0x87CEEB);
     scene.fog = new THREE.Fog(0x87CEEB, 30, 80);
 
-    const w = container.clientWidth;
-    const h = container.clientHeight;
+    const w = container.clientWidth || window.innerWidth;
+    const h = container.clientHeight || window.innerHeight;
 
     camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 200);
     camera.position.set(0, 14, 14);
@@ -110,7 +110,6 @@ const LegoWorld = (() => {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
 
-    // Işıklar
     const ambient = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambient);
 
@@ -139,11 +138,10 @@ const LegoWorld = (() => {
     renderer.setSize(w, h);
   }
 
-  // ── DÜNYA İNŞA ──
+  // ── WORLD BUILD ──
   function buildWorld() {
     const ws = currentLevel.worldSize;
 
-    // Zemin — çim
     const groundGeo = new THREE.PlaneGeometry(ws, ws);
     const groundMat = new THREE.MeshLambertMaterial({ color: 0x7EC850 });
     const ground = new THREE.Mesh(groundGeo, groundMat);
@@ -151,7 +149,6 @@ const LegoWorld = (() => {
     ground.receiveShadow = true;
     scene.add(ground);
 
-    // Çim çizgileri
     const lineGeo = new THREE.PlaneGeometry(ws, 0.05);
     const lineMat = new THREE.MeshBasicMaterial({ color: 0x6BBF3B });
     for (let i = -ws / 2; i <= ws / 2; i += 4) {
@@ -161,7 +158,6 @@ const LegoWorld = (() => {
       scene.add(line);
     }
 
-    // Yol
     const roadGeo = new THREE.PlaneGeometry(3, ws);
     const roadMat = new THREE.MeshLambertMaterial({ color: 0x95A5A6 });
     const road = new THREE.Mesh(roadGeo, roadMat);
@@ -174,26 +170,18 @@ const LegoWorld = (() => {
     road2.position.y = 0.02;
     scene.add(road2);
 
-    // Oyuncu
     createPlayer();
-
-    // Binalar
     createBuildings();
-
-    // Ağaçlar
     createTrees();
-
-    // LEGO parçaları
     spawnPieces();
   }
 
-  // ── LEGO KARAKTER ──
+  // ── PLAYER ──
   function createPlayer() {
     playerGroup = new THREE.Group();
     playerGroup.position.set(0, 0, 0);
     scene.add(playerGroup);
 
-    // GLTF model yüklemeyi dene
     if (typeof THREE.GLTFLoader !== 'undefined') {
       const loader = new THREE.GLTFLoader();
 
@@ -210,19 +198,16 @@ const LegoWorld = (() => {
             }
           });
 
-          // Animasyonları ayarla
           if (gltf.animations && gltf.animations.length > 0) {
             playerMixer = new THREE.AnimationMixer(model);
             gltf.animations.forEach(clip => {
               const name = clip.name.toLowerCase();
               playerAnimations[name] = playerMixer.clipAction(clip);
-              // İlk idle animasyonunu bul ve oynat
               if (name.includes('idle') && !currentAnim) {
                 playerAnimations[name].play();
                 currentAnim = name;
               }
             });
-            // idle bulunamadıysa ilk animasyonu oynat
             if (!currentAnim && gltf.animations.length > 0) {
               const firstName = gltf.animations[0].name.toLowerCase();
               playerAnimations[firstName]?.play();
@@ -234,21 +219,18 @@ const LegoWorld = (() => {
           playerGroup.add(model);
         },
         undefined,
-        (err) => { console.warn('GLB yüklenemedi:', err); }
+        (err) => { console.warn('GLB could not be loaded:', err); }
       );
     }
 
-    // Başlangıçta fallback göster (GLTF yüklenene kadar)
     createFallbackPlayer();
   }
 
   function playAnim(name) {
-    // Animasyon adını bul (kısmi eşleşme)
     let key = Object.keys(playerAnimations).find(k => k.includes(name));
-    if (!key) key = Object.keys(playerAnimations)[0]; // fallback
+    if (!key) key = Object.keys(playerAnimations)[0];
     if (!key || key === currentAnim) return;
 
-    // Eski animasyonu durdur, yenisini başlat (crossfade)
     if (currentAnim && playerAnimations[currentAnim]) {
       playerAnimations[currentAnim].fadeOut(0.2);
     }
@@ -259,7 +241,6 @@ const LegoWorld = (() => {
   }
 
   function createFallbackPlayer() {
-    // Mevcut prosedürel LEGO adam (fallback)
     const legMat = new THREE.MeshLambertMaterial({ color: 0x2980B9 });
     const legGeo = new THREE.BoxGeometry(0.3, 0.5, 0.3);
     const leftLeg = new THREE.Mesh(legGeo, legMat);
@@ -307,7 +288,7 @@ const LegoWorld = (() => {
     player = playerGroup;
   }
 
-  // ── BİNALAR ──
+  // ── BUILDINGS ──
   function createBuildings() {
     const count = currentLevel.buildings;
     const ws = currentLevel.worldSize;
@@ -320,7 +301,6 @@ const LegoWorld = (() => {
 
       const group = new THREE.Group();
 
-      // Ana yapı (hasarlı — yarı saydam, çatlaklı görünüm)
       const bw = 2 + Math.random();
       const bh = 1.5 + Math.random() * 1.5;
       const bd = 2 + Math.random();
@@ -337,7 +317,6 @@ const LegoWorld = (() => {
       walls.receiveShadow = true;
       group.add(walls);
 
-      // Çatı
       const roofMat = new THREE.MeshLambertMaterial({ color: 0x8B4513, transparent: true, opacity: 0.5 });
       const roofGeo = new THREE.ConeGeometry(bw * 0.75, 1, 4);
       const roof = new THREE.Mesh(roofGeo, roofMat);
@@ -346,7 +325,6 @@ const LegoWorld = (() => {
       roof.castShadow = true;
       group.add(roof);
 
-      // "Tamir gerekli" işareti
       const signGeo = new THREE.PlaneGeometry(1.2, 0.5);
       const canvas = document.createElement('canvas');
       canvas.width = 128;
@@ -357,7 +335,7 @@ const LegoWorld = (() => {
       ctx.fillStyle = 'white';
       ctx.font = 'bold 20px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('🔧 TAMİR', 64, 32);
+      ctx.fillText('🔧 REPAIR', 64, 32);
       const signTex = new THREE.CanvasTexture(canvas);
       const signMat = new THREE.MeshBasicMaterial({ map: signTex, transparent: true });
       const sign = new THREE.Mesh(signGeo, signMat);
@@ -384,10 +362,9 @@ const LegoWorld = (() => {
     const b = buildings3D[bIdx];
     if (b.repaired) return;
 
-    // Parçaları düş
     const required = b.def.required;
     for (const [type, count] of Object.entries(required)) {
-      if ((inventory[type] || 0) < count) return; // yetersiz
+      if ((inventory[type] || 0) < count) return;
     }
     for (const [type, count] of Object.entries(required)) {
       inventory[type] -= count;
@@ -396,23 +373,19 @@ const LegoWorld = (() => {
     b.repaired = true;
     buildingsRepaired++;
 
-    // Görsel güncelleme — tam opak
     b.walls.material.opacity = 1;
     b.walls.material.transparent = false;
     b.roof.material.opacity = 1;
     b.roof.material.transparent = false;
 
-    // İşareti kaldır
     const sign = b.group.getObjectByName('repair-sign');
     if (sign) b.group.remove(sign);
 
-    // Kapı ekle
     const doorMat = new THREE.MeshLambertMaterial({ color: 0x5D4037 });
     const door = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.8, 0.05), doorMat);
     door.position.set(0, 0.4, b.bd / 2 + 0.03);
     b.group.add(door);
 
-    // Pencereler ekle
     const winMat = new THREE.MeshBasicMaterial({ color: 0x87CEEB });
     [-0.6, 0.6].forEach(wx => {
       const win = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.35, 0.05), winMat);
@@ -437,7 +410,7 @@ const LegoWorld = (() => {
     }
   }
 
-  // ── AĞAÇLAR ──
+  // ── TREES ──
   function createTrees() {
     const ws = currentLevel.worldSize;
     const count = Math.floor(ws * 1.5);
@@ -446,11 +419,9 @@ const LegoWorld = (() => {
       const tx = (Math.random() - 0.5) * (ws - 4);
       const tz = (Math.random() - 0.5) * (ws - 4);
 
-      // Yoldan uzak tut
       if (Math.abs(tx) < 2.5 && Math.abs(tz) < ws / 2) continue;
       if (Math.abs(tz) < 2.5 && Math.abs(tx) < ws / 2) continue;
 
-      // Binalardan uzak tut
       const tooClose = buildings3D.some(b =>
         Math.abs(tx - b.position.x) < 4 && Math.abs(tz - b.position.z) < 4
       );
@@ -481,13 +452,12 @@ const LegoWorld = (() => {
     }
   }
 
-  // ── LEGO PARÇALARI ──
+  // ── LEGO PIECES ──
   function spawnPieces() {
     const ws = currentLevel.worldSize;
     const count = currentLevel.pieceCount;
     const typeKeys = Object.keys(PIECE_TYPES);
 
-    // Binalara göre gerekli parçaları hesapla
     const needed = {};
     buildings3D.forEach(b => {
       if (b.repaired) return;
@@ -496,15 +466,13 @@ const LegoWorld = (() => {
       }
     });
 
-    // Pool: önce her gerekli tipin TAM SAYISINI ekle, sonra ekstra
     const pool = [];
     for (const [t, c] of Object.entries(needed)) {
-      for (let i = 0; i < c + 1; i++) pool.push(t); // ihtiyaç + 1 fazladan
+      for (let i = 0; i < c + 1; i++) pool.push(t);
     }
     while (pool.length < count) {
       pool.push(typeKeys[Math.floor(Math.random() * typeKeys.length)]);
     }
-    // Karıştır
     for (let i = pool.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [pool[i], pool[j]] = [pool[j], pool[i]];
@@ -526,7 +494,6 @@ const LegoWorld = (() => {
 
       const pieceGroup = new THREE.Group();
 
-      // LEGO blok
       const color = PIECE_TYPES[type].color;
       const block = new THREE.Mesh(
         new THREE.BoxGeometry(0.5, 0.3, 0.5),
@@ -536,17 +503,15 @@ const LegoWorld = (() => {
       block.castShadow = true;
       pieceGroup.add(block);
 
-      // Beyaz/açık renk bloklar için siyah kenar çizgisi
       if (type === 'white' || type === 'gray') {
         const edges = new THREE.LineSegments(
           new THREE.EdgesGeometry(block.geometry),
-          new THREE.LineBasicMaterial({ color: 0x333333, linewidth: 2 })
+          new THREE.LineBasicMaterial({ color: 0x333333 })
         );
         edges.position.copy(block.position);
         pieceGroup.add(edges);
       }
 
-      // LEGO stud
       const stud = new THREE.Mesh(
         new THREE.CylinderGeometry(0.1, 0.1, 0.1, 8),
         new THREE.MeshLambertMaterial({ color })
@@ -554,7 +519,6 @@ const LegoWorld = (() => {
       stud.position.y = 0.35;
       pieceGroup.add(stud);
 
-      // Parlama efekti
       const glow = new THREE.Mesh(
         new THREE.RingGeometry(0.3, 0.5, 16),
         new THREE.MeshBasicMaterial({ color: 0xFFD700, transparent: true, opacity: 0.3, side: THREE.DoubleSide })
@@ -570,12 +534,11 @@ const LegoWorld = (() => {
     }
   }
 
-  // ── KONTROLLER ──
+  // ── CONTROLS ──
   function setupControls() {
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
 
-    // Fare ile tıklama (bina etkileşimi)
     renderer.domElement.addEventListener('click', onCanvasClick);
   }
 
@@ -594,7 +557,6 @@ const LegoWorld = (() => {
   function tryInteract() {
     if (overlayVisible) return;
 
-    // En yakın binayı kontrol et
     const px = player.position.x;
     const pz = player.position.z;
 
@@ -611,7 +573,7 @@ const LegoWorld = (() => {
     }
   }
 
-  // ── MOBİL KONTROLLER ──
+  // ── MOBILE CONTROLS ──
   function createMobileControls() {
     if (!('ontouchstart' in window)) return;
 
@@ -683,7 +645,7 @@ const LegoWorld = (() => {
     }
   }
 
-  // ── TAMİR UI ──
+  // ── REPAIR UI ──
   function showRepairUI(bIdx) {
     const b = buildings3D[bIdx];
     overlayVisible = true;
@@ -704,11 +666,11 @@ const LegoWorld = (() => {
 
     overlay.innerHTML = `
       <div class="lw-repair-card">
-        <h2>🔧 ${b.def.name} Tamiri ${b.def.emoji}</h2>
+        <h2>🔧 ${b.def.name} Repair ${b.def.emoji}</h2>
         <div class="lw-req-list">${reqHTML}</div>
         <div class="lw-repair-btns">
-          <button class="lw-btn lw-btn-repair" ${canRepair ? '' : 'disabled'}>${canRepair ? '🔨 Tamir Et!' : '❌ Parça Eksik'}</button>
-          <button class="lw-btn lw-btn-close">← Geri</button>
+          <button class="lw-btn lw-btn-repair" ${canRepair ? '' : 'disabled'}>${canRepair ? '🔨 Repair!' : '❌ Pieces Missing'}</button>
+          <button class="lw-btn lw-btn-close">← Back</button>
         </div>
       </div>
     `;
@@ -728,7 +690,7 @@ const LegoWorld = (() => {
     };
   }
 
-  // ── ANİMASYON DÖNGÜSÜ ──
+  // ── ANIMATION LOOP ──
   function animate() {
     animFrameId = requestAnimationFrame(animate);
     if (overlayVisible) { renderer.render(scene, camera); return; }
@@ -736,14 +698,12 @@ const LegoWorld = (() => {
     const delta = clock.getDelta();
     const speed = 8 * delta;
 
-    // Karakter hareketi
     let dx = 0, dz = 0;
     if (keys['ArrowUp'] || keys['w'] || keys['W']) dz -= 1;
     if (keys['ArrowDown'] || keys['s'] || keys['S']) dz += 1;
     if (keys['ArrowLeft'] || keys['a'] || keys['A']) dx -= 1;
     if (keys['ArrowRight'] || keys['d'] || keys['D']) dx += 1;
 
-    // Mobil joystick
     if (joystickDir.x || joystickDir.z) {
       dx = joystickDir.x;
       dz = joystickDir.z;
@@ -757,18 +717,15 @@ const LegoWorld = (() => {
       const newZ = player.position.z + dz * speed;
       const ws = currentLevel.worldSize;
 
-      // Sınır kontrolü
       if (Math.abs(newX) < ws / 2 - 1) player.position.x = newX;
       if (Math.abs(newZ) < ws / 2 - 1) player.position.z = newZ;
 
-      // Yön (yumuşak dönüş)
       const targetRot = Math.atan2(dx, dz);
       let diff = targetRot - player.rotation.y;
       while (diff > Math.PI) diff -= Math.PI * 2;
       while (diff < -Math.PI) diff += Math.PI * 2;
       player.rotation.y += diff * 10 * delta;
 
-      // Yürüme animasyonu
       if (playerMixer) {
         playAnim('walk');
       } else {
@@ -777,7 +734,6 @@ const LegoWorld = (() => {
         player.rotation.z = Math.sin(t * 8) * 0.06;
       }
     } else {
-      // Duruyorken
       if (playerMixer) {
         playAnim('idle');
       } else {
@@ -786,19 +742,15 @@ const LegoWorld = (() => {
       }
     }
 
-    // AnimationMixer güncelle
     if (playerMixer) playerMixer.update(delta);
 
-    // Kamera takibi (yumuşak lerp)
     const camLerp = 4 * delta;
     camera.position.x += (player.position.x - camera.position.x) * camLerp;
     camera.position.z += (player.position.z + 14 - camera.position.z) * camLerp;
     camera.lookAt(player.position.x, 1, player.position.z);
 
-    // Parça toplama kontrolü
     checkPieceCollection();
 
-    // Parça animasyonu (zıplama + dönme)
     pieces3D.forEach(p => {
       if (p.collected) return;
       const t = clock.elapsedTime;
@@ -806,7 +758,6 @@ const LegoWorld = (() => {
       p.group.rotation.y += delta * 1.5;
     });
 
-    // Bina işareti animasyonu
     buildings3D.forEach(b => {
       if (b.repaired) return;
       const sign = b.group.getObjectByName('repair-sign');
@@ -816,7 +767,6 @@ const LegoWorld = (() => {
       }
     });
 
-    // Yakındaki bina ipucu
     const nearBuilding = buildings3D.find(b => {
       if (b.repaired) return false;
       const dist = Math.sqrt(
@@ -828,7 +778,7 @@ const LegoWorld = (() => {
     const hintEl = container.querySelector('#lw-hint');
     if (hintEl) {
       if (nearBuilding) {
-        hintEl.textContent = `E tuşu → ${nearBuilding.def.name} tamir et`;
+        hintEl.textContent = `E key → Repair ${nearBuilding.def.name}`;
         hintEl.classList.add('lw-hint-show');
       } else {
         hintEl.classList.remove('lw-hint-show');
@@ -848,7 +798,7 @@ const LegoWorld = (() => {
       const dist = Math.sqrt(Math.pow(px - p.x, 2) + Math.pow(pz - p.z, 2));
       if (dist < 1.2) {
         if (totalPieces >= currentLevel.capacity) {
-          showHint('🎒 Çanta dolu!');
+          showHint('🎒 Bag full!');
           return;
         }
         p.collected = true;
@@ -867,13 +817,12 @@ const LegoWorld = (() => {
     const totalCollected = Object.values(inventory).reduce((a, b) => a + b, 0);
     const totalPossible = currentLevel.pieceCount;
     const efficiency = (totalPossible - totalCollected) / totalPossible;
-    // Daha az parça toplamak = daha verimli
     if (efficiency > 0.4) return 3;
     if (efficiency > 0.2) return 2;
     return 1;
   }
 
-  // ── TEMİZLİK ──
+  // ── CLEANUP ──
   function destroy() {
     if (animFrameId) cancelAnimationFrame(animFrameId);
     document.removeEventListener('keydown', onKeyDown);

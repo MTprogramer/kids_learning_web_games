@@ -1,9 +1,9 @@
 /* ============================================
-   OYUN BAHÇESİ - İlerleme Takibi
+   CHILDS PLAY LOGIC - Progress Tracking
    ============================================ */
 
 const Progress = (() => {
-    const STORAGE_KEY = 'oyun_bahcesi_progress';
+    const STORAGE_KEY = 'childs_play_logic_progress';
 
     const defaultData = {
         version: 1,
@@ -19,7 +19,7 @@ const Progress = (() => {
             const raw = localStorage.getItem(STORAGE_KEY);
             if (raw) return JSON.parse(raw);
         } catch (e) {
-            console.warn('İlerleme yüklenemedi:', e);
+            console.warn('Could not load progress:', e);
         }
         return JSON.parse(JSON.stringify(defaultData));
     }
@@ -28,7 +28,7 @@ const Progress = (() => {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         } catch (e) {
-            console.warn('İlerleme kaydedilemedi:', e);
+            console.warn('Could not save progress:', e);
         }
     }
 
@@ -56,16 +56,15 @@ const Progress = (() => {
                 stars,
                 ...(data.games[gameId].levels[level] || {}),
             };
-            data.games[gameId].levels[level].stars = stars;
 
-            // Toplam yıldız hesapla
+            // Calculate game total stars
             let gameTotal = 0;
             for (const lv in data.games[gameId].levels) {
                 gameTotal += data.games[gameId].levels[lv].stars || 0;
             }
             data.games[gameId].totalStars = gameTotal;
 
-            // Genel toplam
+            // Calculate grand total
             let total = 0;
             for (const gId in data.games) {
                 total += data.games[gId].totalStars || 0;
@@ -75,6 +74,17 @@ const Progress = (() => {
             save(data);
         }
         return stars;
+    }
+
+    function getLastUnlockedLevel(gameId) {
+        const game = getGameProgress(gameId);
+        let lastLevel = 1;
+        for (const lv in game.levels) {
+            if (game.levels[lv].stars > 0) {
+                lastLevel = Math.max(lastLevel, parseInt(lv) + 1);
+            }
+        }
+        return lastLevel;
     }
 
     function getTotalStars() {
@@ -115,6 +125,7 @@ const Progress = (() => {
     return {
         getLevelStars,
         setLevelStars,
+        getLastUnlockedLevel,
         getTotalStars,
         getGameTotalStars,
         getMaxStarsForGame,

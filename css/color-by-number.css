@@ -1,0 +1,124 @@
+/* Color by Number (Pixel Art) Styles */
+
+.sbn-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 0.4rem;
+}
+
+.sbn-grid {
+    --sbn-w: clamp(280px, 92vw, 380px);
+    display: grid;
+    gap: 2px;
+    width: var(--sbn-w);
+    padding: 3px;
+    background: #BDBDBD;
+    border: 3px solid #9E9E9E;
+    border-radius: 10px;
+    touch-action: none;
+    user-select: none;
+}
+
+.sbn-cell {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F4F4F4;
+    color: #9E9E9E;
+    font-weight: 800;
+    font-size: calc(var(--sbn-w) / var(--sbn-cols) * 0.42);
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.12s ease, box-shadow 0.12s ease;
+}
+
+.sbn-cell.sbn-empty {
+    background: transparent;
+    cursor: default;
+    pointer-events: none;
+}
+
+.sbn-cell.sbn-hint {
+    box-shadow: inset 0 0 0 2px #FFB300;
+    color: #616161;
+}
+
+.sbn-cell.sbn-filled {
+    color: transparent;
+    box-shadow: none;
+    cursor: default;
+}
+
+@keyframes sbn-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+}
+.sbn-cell.sbn-shake {
+    animation: sbn-shake 0.25s ease;
+    background: #FFCDD2;
+}
+
+.sbn-palette {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 0.5rem;
+    max-width: min(440px, 95vw);
+    margin: 0.4rem auto;
+}
+
+.sbn-swatch {
+    position: relative;
+    width: 46px;
+    height: 46px;
+    border: 3px solid rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+.sbn-swatch:hover { transform: scale(1.1); }
+.sbn-swatch.active {
+    border-color: #2D3436;
+    transform: scale(1.15);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.25);
+}
+
+.sbn-swatch-num {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.sbn-swatch.completed {
+    opacity: 0.45;
+    filter: grayscale(0.4);
+    cursor: default;
+}
+.sbn-swatch.completed::after {
+    content: '✓';
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    background: #2ECC71;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}

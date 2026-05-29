@@ -1,37 +1,36 @@
 /* ============================================
-   OYUN: Tetris
-   Klasik 10x20 Tetris — düşen tetromino blokları,
-   satır temizleme, kademeli hızlanan seviye sistemi.
-   Çocuk dostu: yavaş başlar, ghost piece ile yardımcı.
-   Skor tabanlı (Firebase leaderboard + en yüksek skor).
+   GAME: Tetris
+   Classic 10x20 Tetris — falling tetromino blocks,
+   row clearing, progressively accelerating level system.
+   Child-friendly: starts slow, helps with ghost piece.
+   Score-based (Firebase leaderboard + high score).
    ============================================ */
 
 const Tetris = (() => {
     const id = 'tetris';
     const levels = [{}];
 
-    // ---- Tahta ----
+    // ---- Board ----
     const COLS = 10, ROWS = 20;
-    const CELL = 32;                       // hücre boyutu (dünya px)
+    const CELL = 32;                       // cell size (world px)
     const BOARD_W = COLS * CELL;           // 320
     const BOARD_H = ROWS * CELL;           // 640
     const BOARD_X = 24, BOARD_Y = 40;
     const PANEL_X = BOARD_X + BOARD_W + 24; // 368
     const GAME_W = 560, GAME_H = 720;
 
-    // ---- Hız (yavaş başla → kademeli hızlan) ----
+    // ---- Speed (start slow → gradually accelerate) ----
     const BASE_DROP_MS = 1000;
-    const DROP_DECAY = 0.82;               // her seviyede çarpan
+    const DROP_DECAY = 0.82;               // multiplier per level
     const MIN_DROP_MS = 120;
     const LINES_PER_LEVEL = 10;
 
-    // DAS / ARR (yatay tuş basılı tutma)
-    const DAS_MS = 170;                    // ilk gecikme
-    const ARR_MS = 55;                     // tekrar aralığı
-    const SOFT_DROP_MS = 45;               // yumuşak düşüş aralığı
+    // DAS / ARR (horizontal key repeat)
+    const DAS_MS = 170;                    // initial delay
+    const ARR_MS = 55;                     // repeat interval
+    const SOFT_DROP_MS = 45;               // soft drop interval
 
-    // ---- Tetromino tanımları ----
-    // Her parça bir matris; renk anahtarı COLORS sözlüğüne işaret eder.
+    // ---- Tetromino definitions ----
     const SHAPES = {
         I: [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]],
         O: [[1,1],[1,1]],
@@ -42,15 +41,15 @@ const Tetris = (() => {
         L: [[0,0,1],[1,1,1],[0,0,0]],
     };
     const PIECE_KEYS = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
-    // Klasik renkler, çocuk dostu yumuşatılmış canlı tonlar
+    // Classic colors, child-friendly softened vibrant tones
     const COLORS = {
         I: '#33C4D6',  // cyan
-        O: '#F7C948',  // sarı
-        T: '#B069D6',  // mor
-        S: '#5FC97A',  // yeşil
-        Z: '#EC6A6A',  // kırmızı
-        J: '#5B8DEF',  // mavi
-        L: '#F2994A',  // turuncu
+        O: '#F7C948',  // yellow
+        T: '#B069D6',  // purple
+        S: '#5FC97A',  // green
+        Z: '#EC6A6A',  // red
+        J: '#5B8DEF',  // blue
+        L: '#F2994A',  // orange
     };
     const COLORS_LIGHT = {
         I: '#7BE0EC', O: '#FCE08A', T: '#D29CEC', S: '#90E0A3',
@@ -62,11 +61,11 @@ const Tetris = (() => {
     };
     const FRAME_COLOR = '#5C6BC0';
 
-    // ---- Durum ----
+    // ---- State ----
     let container, callbacks;
     let canvas, ctx, canvasFit;
     let uiLayer;
-    let board;                             // ROWS×COLS, '' veya parça anahtarı
+    let board;                             // ROWS×COLS, '' or piece key
     let current;                           // { key, matrix, x, y }
     let nextKey;
     let bag;                               // 7-bag randomizer
@@ -77,17 +76,17 @@ const Tetris = (() => {
     let finalScore, savedThisRound;
     let countdownEndAt, countdownSec;
     let db;
-    let flashRows;                         // temizlenirken parlayan satırlar
+    let flashRows;                         // flashing rows when clearing
     let flashTimer;
-    let shake;                             // game over / hard drop sarsıntısı
+    let shake;                             // shake for game over / hard drop
 
     // Input
     let keyDownHandler, keyUpHandler;
-    let moveDir;                           // -1, 0, 1 (yatay)
+    let moveDir;                           // -1, 0, 1 (horizontal)
     let dasTimer, dasCharged;
     let softDrop, softTimer;
 
-    // ---- Yardımcılar ----
+    // ---- Helpers ----
     function nowMs() { return performance.now(); }
     function escapeHTML(s) {
         return String(s).replace(/[&<>"'`]/g, ch => ({
@@ -95,7 +94,7 @@ const Tetris = (() => {
         })[ch]);
     }
 
-    // 7-bag: tüm parçaları karıştırıp sırayla dağıt (adil dağıtım)
+    // 7-bag: shuffle all pieces and distribute in order (fair distribution)
     function refillBag() {
         bag = PIECE_KEYS.slice();
         for (let i = bag.length - 1; i > 0; i--) {
@@ -112,7 +111,7 @@ const Tetris = (() => {
         const matrix = SHAPES[key].map(row => row.slice());
         const w = matrix[0].length;
         const x = Math.floor((COLS - w) / 2);
-        // I parçasında üst satır boş; biraz yukarıda başlat
+        // Start I piece a bit higher because its top row is empty
         return { key, matrix, x, y: (key === 'I' ? -1 : 0) };
     }
 
@@ -127,7 +126,7 @@ const Tetris = (() => {
         return out;
     }
 
-    // Parça hücrelerinin tahtaya/sınıra çarpıp çarpmadığı
+    // Check if piece cells collide with board/boundaries
     function collides(matrix, px, py) {
         for (let r = 0; r < matrix.length; r++) {
             for (let c = 0; c < matrix[r].length; c++) {
@@ -183,7 +182,7 @@ const Tetris = (() => {
     function spawnPiece() {
         current = makePiece(nextKey);
         nextKey = nextFromBag();
-        // Spawn noktasında çarpışma varsa oyun biter (tahta doldu)
+        // If collision at spawn point, game over (board full)
         if (collides(current.matrix, current.x, current.y)) {
             triggerGameOver();
         }
@@ -209,18 +208,18 @@ const Tetris = (() => {
 
         const hint = document.createElement('div');
         hint.className = 'tt-hint';
-        hint.innerHTML = '<span>◀ ▶ <b>kaydır</b> • ↑ <b>döndür</b> • ↓ <b>indir</b> • Boşluk <b>bırak</b></span>';
+        hint.innerHTML = '<span>◀ ▶ <b>move</b> • ↑ <b>rotate</b> • ↓ <b>soft drop</b> • Space <b>hard drop</b></span>';
         uiLayer.appendChild(hint);
 
-        // Mobil dokunmatik butonlar
+        // Mobile touch buttons
         const mobile = document.createElement('div');
         mobile.className = 'tt-mobile';
         mobile.innerHTML =
-            '<button class="tt-mbtn tt-mleft" data-act="left" aria-label="Sola">◀</button>' +
-            '<button class="tt-mbtn tt-mrotate" data-act="rotate" aria-label="Döndür">↻</button>' +
-            '<button class="tt-mbtn tt-mright" data-act="right" aria-label="Sağa">▶</button>' +
-            '<button class="tt-mbtn tt-msoft" data-act="soft" aria-label="İndir">▼</button>' +
-            '<button class="tt-mbtn tt-mdrop" data-act="drop" aria-label="Bırak">⤓</button>';
+            '<button class="tt-mbtn tt-mleft" data-act="left" aria-label="Left">◀</button>' +
+            '<button class="tt-mbtn tt-mrotate" data-act="rotate" aria-label="Rotate">↻</button>' +
+            '<button class="tt-mbtn tt-mright" data-act="right" aria-label="Right">▶</button>' +
+            '<button class="tt-mbtn tt-msoft" data-act="soft" aria-label="Soft drop">▼</button>' +
+            '<button class="tt-mbtn tt-mdrop" data-act="drop" aria-label="Hard drop">⤓</button>';
         uiLayer.appendChild(mobile);
 
         container.appendChild(wrap);
@@ -261,7 +260,7 @@ const Tetris = (() => {
         document.addEventListener('keydown', keyDownHandler);
         document.addEventListener('keyup', keyUpHandler);
 
-        // Mobil — basılı tutma desteği
+        // Mobile — hold support
         if (uiLayer) {
             uiLayer.querySelectorAll('.tt-mbtn').forEach((btn) => {
                 const act = btn.dataset.act;
@@ -300,7 +299,7 @@ const Tetris = (() => {
         document.removeEventListener('keyup', keyUpHandler);
     }
 
-    // ---- Hareket ----
+    // ---- Movement ----
     function startMove(dir) {
         moveDir = dir;
         dasTimer = 0;
@@ -327,7 +326,7 @@ const Tetris = (() => {
         let m = current.matrix;
         const turns = dir > 0 ? 1 : 3;
         for (let i = 0; i < turns; i++) m = rotateMatrix(m);
-        // Wall kick: yerinde olmazsa yana küçük kaydırmalar dene
+        // Wall kick: try small side shifts if it doesn't fit
         const kicks = [0, -1, 1, -2, 2];
         for (const k of kicks) {
             if (!collides(m, current.x + k, current.y)) {
@@ -337,7 +336,7 @@ const Tetris = (() => {
                 return true;
             }
         }
-        // Yukarı doğru bir kick (özellikle I parçası dipte)
+        // One kick upwards (especially for I piece at bottom)
         if (!collides(m, current.x, current.y - 1)) {
             current.matrix = m;
             current.y -= 1;
@@ -393,25 +392,25 @@ const Tetris = (() => {
         }
         if (full.length === 0) return;
 
-        // Skor (klasik): 1=100, 2=300, 3=500, 4=800 — seviye çarpanı
+        // Score (classic): 1=100, 2=300, 3=500, 4=800 — level multiplier
         const pts = [0, 100, 300, 500, 800][full.length] * level;
         score += pts;
         lines += full.length;
 
-        // Satırları kaldır, üsttekileri aşağı kaydır
+        // Remove rows, shift others down
         for (const r of full) {
             board.splice(r, 1);
             board.unshift(new Array(COLS).fill(''));
         }
 
-        // Görsel flaş efekti (kaldırılan satır indekslerinde)
+        // Visual flash effect on removed row indices
         flashRows = full.slice();
         flashTimer = 220;
 
-        // Ses: 4 satır (Tetris!) farklı
+        // Sound: different for 4 rows (Tetris!)
         try { AudioManager.play(full.length >= 4 ? 'complete' : 'success'); } catch (e) {}
 
-        // Seviye güncelle
+        // Update level
         const newLevel = Math.floor(lines / LINES_PER_LEVEL) + 1;
         if (newLevel > level) {
             level = newLevel;
@@ -440,17 +439,17 @@ const Tetris = (() => {
         modal.className = 'tt-modal tt-gameover-modal';
         modal.innerHTML =
             '<div class="tt-modal-card tt-gameover-card">' +
-                '<div class="tt-gameover-title">Oyun Bitti</div>' +
+                '<div class="tt-gameover-title">Game Over</div>' +
                 '<div class="tt-gameover-score">' +
-                    '<div class="tt-go-row"><span>Skor</span><b>' + finalScore + '</b></div>' +
-                    '<div class="tt-go-row"><span>Satır</span><b>' + lines + '</b></div>' +
-                    '<div class="tt-go-row"><span>Seviye</span><b>' + level + '</b></div>' +
-                    '<div class="tt-go-row"><span>Rekor</span><b>' + bestScore + '</b></div>' +
+                    '<div class="tt-go-row"><span>Score</span><b>' + finalScore + '</b></div>' +
+                    '<div class="tt-go-row"><span>Lines</span><b>' + lines + '</b></div>' +
+                    '<div class="tt-go-row"><span>Level</span><b>' + level + '</b></div>' +
+                    '<div class="tt-go-row"><span>Record</span><b>' + bestScore + '</b></div>' +
                 '</div>' +
                 '<div class="tt-gameover-buttons">' +
-                    '<button class="tt-btn tt-btn-primary" id="tt-btn-restart">🔁 Tekrar Oyna</button>' +
-                    '<button class="tt-btn tt-btn-secondary" id="tt-btn-home">🏠 Ana Sayfa</button>' +
-                    (finalScore > 0 ? '<button class="tt-btn tt-btn-accent" id="tt-btn-save">⭐ Skoru Kaydet</button>' : '') +
+                    '<button class="tt-btn tt-btn-primary" id="tt-btn-restart">🔁 Play Again</button>' +
+                    '<button class="tt-btn tt-btn-secondary" id="tt-btn-home">🏠 Home</button>' +
+                    (finalScore > 0 ? '<button class="tt-btn tt-btn-accent" id="tt-btn-save">⭐ Save Score</button>' : '') +
                 '</div>' +
                 '<div class="tt-save-area" id="tt-save-area"></div>' +
                 '<div class="tt-leaderboard-area" id="tt-leaderboard-area"></div>' +
@@ -475,8 +474,8 @@ const Tetris = (() => {
         const area = modal.querySelector('#tt-save-area');
         area.innerHTML =
             '<div class="tt-save-form">' +
-                '<input type="text" id="tt-name-input" maxlength="16" placeholder="Adın (en fazla 16 harf)" />' +
-                '<button class="tt-btn tt-btn-primary" id="tt-btn-commit-save">Kaydet</button>' +
+                '<input type="text" id="tt-name-input" maxlength="16" placeholder="Your name (max 16 letters)" />' +
+                '<button class="tt-btn tt-btn-primary" id="tt-btn-commit-save">Save</button>' +
             '</div>';
         const input = area.querySelector('#tt-name-input');
         input.focus();
@@ -492,7 +491,7 @@ const Tetris = (() => {
 
     async function saveScoreAndShowLeaderboard(name, scoreVal, modal) {
         if (!db) {
-            modal.querySelector('#tt-save-area').innerHTML = '<div class="tt-error">⚠️ Sunucuya bağlanılamadı.</div>';
+            modal.querySelector('#tt-save-area').innerHTML = '<div class="tt-error">⚠️ Could not connect to server.</div>';
             return;
         }
         if (savedThisRound) return;
@@ -504,23 +503,23 @@ const Tetris = (() => {
         try {
             const entry = { name, score: scoreVal, timestamp: firebase.database.ServerValue.TIMESTAMP };
             const newRef = await ref.push(entry);
-            modal.querySelector('#tt-save-area').innerHTML = '<div class="tt-save-ok">✅ Kaydedildi!</div>';
+            modal.querySelector('#tt-save-area').innerHTML = '<div class="tt-save-ok">✅ Saved!</div>';
             await renderLeaderboard(modal, newRef.key, scoreVal);
         } catch (err) {
-            modal.querySelector('#tt-save-area').innerHTML = '<div class="tt-error">⚠️ Kaydedilemedi. ' + escapeHTML(err.message || '') + '</div>';
+            modal.querySelector('#tt-save-area').innerHTML = '<div class="tt-error">⚠️ Could not save. ' + escapeHTML(err.message || '') + '</div>';
         }
     }
 
     async function renderLeaderboard(modal, myKey, myScore) {
         const area = modal.querySelector('#tt-leaderboard-area');
-        area.innerHTML = '<div class="tt-lb-loading">Sıralama yükleniyor...</div>';
+        area.innerHTML = '<div class="tt-lb-loading">Leaderboard loading...</div>';
         try {
             const snap = await db.ref('leaderboards/tetris')
                 .orderByChild('score').limitToLast(50).once('value');
             const rows = [];
             snap.forEach(child => {
                 const v = child.val();
-                rows.push({ key: child.key, name: v.name || 'Anonim', score: v.score || 0, timestamp: v.timestamp || 0 });
+                rows.push({ key: child.key, name: v.name || 'Anonymous', score: v.score || 0, timestamp: v.timestamp || 0 });
             });
             rows.sort((a, b) => b.score - a.score || a.timestamp - b.timestamp);
 
@@ -538,13 +537,13 @@ const Tetris = (() => {
                 } catch (e) {}
                 area.innerHTML =
                     '<div class="tt-lb-out">' +
-                        '<div class="tt-lb-title">🌍 Global Sıralaman</div>' +
+                        '<div class="tt-lb-title">🌍 Your Global Ranking</div>' +
                         '<div class="tt-lb-rank-big"><span>#' + rank + '</span></div>' +
-                        '<div class="tt-lb-msg">İlk 50\'ye girmek için daha yüksek skor yap!</div>' +
+                        '<div class="tt-lb-msg">Get a higher score to enter the top 50!</div>' +
                     '</div>';
             }
         } catch (err) {
-            area.innerHTML = '<div class="tt-error">⚠️ Sıralama yüklenemedi.</div>';
+            area.innerHTML = '<div class="tt-error">⚠️ Could not load leaderboard.</div>';
         }
     }
 
@@ -556,9 +555,9 @@ const Tetris = (() => {
         function render() {
             const start = currentPage * PER;
             const slice = rows.slice(start, start + PER);
-            let html = '<div class="tt-lb-title">🏆 İlk 50 — Sayfa ' + (currentPage + 1) + ' / ' + pages + '</div>';
+            let html = '<div class="tt-lb-title">🏆 Top 50 — Page ' + (currentPage + 1) + ' / ' + pages + '</div>';
             html += '<div class="tt-lb-table">';
-            html += '<div class="tt-lb-head"><span class="tt-lb-rank">#</span><span class="tt-lb-name">İsim</span><span class="tt-lb-score">Skor</span></div>';
+            html += '<div class="tt-lb-head"><span class="tt-lb-rank">#</span><span class="tt-lb-name">Name</span><span class="tt-lb-score">Score</span></div>';
             slice.forEach((r, i) => {
                 const rank = start + i + 1;
                 const me = r.key === myKey ? ' tt-lb-me' : '';
@@ -566,9 +565,9 @@ const Tetris = (() => {
             });
             html += '</div>';
             html += '<div class="tt-lb-nav">' +
-                '<button class="tt-btn tt-btn-ghost" id="tt-lb-prev"' + (currentPage === 0 ? ' disabled' : '') + '>◀ Önceki</button>' +
+                '<button class="tt-btn tt-btn-ghost" id="tt-lb-prev"' + (currentPage === 0 ? ' disabled' : '') + '>◀ Previous</button>' +
                 '<span class="tt-lb-pageinfo">' + (start + 1) + '-' + Math.min(start + PER, rows.length) + '</span>' +
-                '<button class="tt-btn tt-btn-ghost" id="tt-lb-next"' + (currentPage >= pages - 1 ? ' disabled' : '') + '>Sonraki ▶</button>' +
+                '<button class="tt-btn tt-btn-ghost" id="tt-lb-next"' + (currentPage >= pages - 1 ? ' disabled' : '') + '>Next ▶</button>' +
                 '</div>';
             area.innerHTML = html;
             const prev = area.querySelector('#tt-lb-prev');
@@ -579,7 +578,7 @@ const Tetris = (() => {
         render();
     }
 
-    // ---- Döngü ----
+    // ---- Loop ----
     function gameLoop() {
         if (state === 'destroyed') return;
         const t = nowMs();
@@ -613,7 +612,7 @@ const Tetris = (() => {
     }
 
     function update(dt) {
-        // Yatay DAS/ARR (tuş/buton basılı tutunca tekrarlı kaydırma)
+        // Horizontal DAS/ARR (repeated movement when holding key/button)
         if (moveDir !== 0) {
             dasTimer += dt;
             if (!dasCharged) {
@@ -623,7 +622,7 @@ const Tetris = (() => {
             }
         }
 
-        // Yumuşak düşüş
+        // Soft drop
         if (softDrop) {
             softTimer -= dt;
             while (softTimer <= 0) {
@@ -633,7 +632,7 @@ const Tetris = (() => {
             }
         }
 
-        // Yerçekimi
+        // Gravity
         dropAccum += dt;
         while (dropAccum >= dropMs) {
             dropAccum -= dropMs;
@@ -642,11 +641,11 @@ const Tetris = (() => {
         }
     }
 
-    // ---- Çizim ----
+    // ---- Drawing ----
     function draw() {
         ctx.clearRect(0, 0, GAME_W, GAME_H);
 
-        // Yumuşak pastel arka plan
+        // Soft pastel background
         const bg = ctx.createLinearGradient(0, 0, 0, GAME_H);
         bg.addColorStop(0, '#EEF1FB');
         bg.addColorStop(1, '#D7DCF2');
@@ -690,7 +689,7 @@ const Tetris = (() => {
         const r = 6;
         ctx.globalAlpha = alpha == null ? 1 : alpha;
 
-        // Gövde — dikey gradyan (açık → ana → koyu)
+        // Body — vertical gradient (light → main → dark)
         const grad = ctx.createLinearGradient(rx, ry, rx, ry + s);
         grad.addColorStop(0, COLORS_LIGHT[key]);
         grad.addColorStop(0.5, COLORS[key]);
@@ -699,12 +698,12 @@ const Tetris = (() => {
         roundRectPath(rx, ry, s, s, r);
         ctx.fill();
 
-        // Üst parlaklık
+        // Top shine
         ctx.fillStyle = 'rgba(255,255,255,0.35)';
         roundRectPath(rx + 3, ry + 3, s - 6, s * 0.32, 4);
         ctx.fill();
 
-        // Kenar
+        // Edge
         ctx.globalAlpha = (alpha == null ? 1 : alpha) * 0.5;
         ctx.strokeStyle = COLORS_DARK[key];
         ctx.lineWidth = 1.5;
@@ -714,12 +713,12 @@ const Tetris = (() => {
     }
 
     function drawBoard() {
-        // Oyun alanı zemini
+        // Play area ground
         ctx.fillStyle = '#FBFCFF';
         roundRectPath(BOARD_X - 6, BOARD_Y - 6, BOARD_W + 12, BOARD_H + 12, 14);
         ctx.fill();
 
-        // İnce ızgara
+        // Thin grid
         ctx.strokeStyle = 'rgba(120, 130, 190, 0.16)';
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -733,7 +732,7 @@ const Tetris = (() => {
         }
         ctx.stroke();
 
-        // Yerleşmiş bloklar
+        // Locked blocks
         for (let r = 0; r < ROWS; r++) {
             const isFlashing = flashRows && flashRows.includes(r) && flashTimer > 0;
             for (let c = 0; c < COLS; c++) {
@@ -750,7 +749,7 @@ const Tetris = (() => {
             }
         }
 
-        // Çerçeve
+        // Frame
         ctx.strokeStyle = FRAME_COLOR;
         ctx.lineWidth = 3;
         roundRectPath(BOARD_X - 6, BOARD_Y - 6, BOARD_W + 12, BOARD_H + 12, 14);
@@ -773,7 +772,7 @@ const Tetris = (() => {
 
     function drawGhost() {
         if (!current || state !== 'playing') return;
-        // Düşeceği yeri bul
+        // Find drop location
         let gy = current.y;
         while (!collides(current.matrix, current.x, gy + 1)) gy++;
         if (gy === current.y) return;
@@ -801,16 +800,16 @@ const Tetris = (() => {
         const px = PANEL_X;
         const pw = GAME_W - PANEL_X - 24;   // 144
 
-        // SIRADAKİ parça kutusu
-        drawPanelCard(px, BOARD_Y, pw, 130, 'SIRADAKİ');
+        // NEXT piece box
+        drawPanelCard(px, BOARD_Y, pw, 130, 'NEXT');
         drawNextPiece(px, BOARD_Y + 34, pw, 90);
 
-        // Skor / Seviye / Satır / Rekor kartları
+        // Score / Level / Lines / Record cards
         let cy = BOARD_Y + 150;
-        cy = drawStatCard(px, cy, pw, 'SKOR', String(score)) + 14;
-        cy = drawStatCard(px, cy, pw, 'SEVİYE', String(level)) + 14;
-        cy = drawStatCard(px, cy, pw, 'SATIR', String(lines)) + 14;
-        drawStatCard(px, cy, pw, 'REKOR', String(Math.max(bestScore, score)));
+        cy = drawStatCard(px, cy, pw, 'SCORE', String(score)) + 14;
+        cy = drawStatCard(px, cy, pw, 'LEVEL', String(level)) + 14;
+        cy = drawStatCard(px, cy, pw, 'LINES', String(lines)) + 14;
+        drawStatCard(px, cy, pw, 'RECORD', String(Math.max(bestScore, score)));
     }
 
     function drawPanelCard(x, y, w, h, title) {
@@ -844,7 +843,7 @@ const Tetris = (() => {
     function drawNextPiece(x, y, w, h) {
         const m = SHAPES[nextKey];
         const pw = m[0].length, ph = m.length;
-        // Dolu hücre sınırlarını bul, ortala
+        // Find occupied cell boundaries, center it
         let minR = ph, maxR = -1, minC = pw, maxC = -1;
         for (let r = 0; r < ph; r++) for (let c = 0; c < pw; c++) {
             if (m[r][c]) { minR = Math.min(minR, r); maxR = Math.max(maxR, r); minC = Math.min(minC, c); maxC = Math.max(maxC, c); }
@@ -875,7 +874,7 @@ const Tetris = (() => {
         const secF = remainMs / 1000;
         const pulse = 1 - (secF - Math.floor(secF));
         const scale = 1 + pulse * 0.4;
-        const label = countdownSec > 0 ? String(countdownSec) : 'BAŞLA!';
+        const label = countdownSec > 0 ? String(countdownSec) : 'START!';
 
         ctx.translate(cx, cyc);
         ctx.scale(scale, scale);
