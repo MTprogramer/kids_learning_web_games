@@ -8,6 +8,12 @@ const GameEngine = (() => {
     let state = 'IDLE'; // IDLE, PLAYING, COMPLETED
     let score = { correct: 0, wrong: 0, total: 0 };
 
+    function getEffectiveLevel(game, level) {
+        if (!game.levels || game.levels.length === 0) return level;
+        const totalLevels = game.levels.length;
+        return ((level - 1) % totalLevels) + 1;
+    }
+
     function startGame(game, level = 1) {
         if (currentGame && currentGame.destroy) {
             currentGame.destroy();
@@ -22,29 +28,46 @@ const GameEngine = (() => {
         gameArea.innerHTML = '';
 
         // Update toolbar
-        document.getElementById('game-title').textContent = i18n.games[game.id] || game.id;
+        document.getElementById('game-title').textContent = i18n.games[game.id] || game.name || game.id;
         updateToolbarLevel(game, level);
         updateToolbarStars(0);
 
+        // Report to host
+        if (window.reportToHost) {
+            window.reportToHost('GAME_STARTED', { gameId: game.id, level: level });
+        }
+
         // Start game
         if (game.init) {
-            game.init(gameArea, level, { onCorrect, onWrong, onComplete });
+            const effectiveLevel = getEffectiveLevel(game, level);
+            game.init(gameArea, effectiveLevel, { onCorrect, onWrong, onComplete });
         }
     }
 
     function updateToolbarLevel(game, level) {
         const container = document.getElementById('toolbar-level');
         container.innerHTML = '';
+
         const totalLevels = game.levels ? game.levels.length : 3;
+        const stage = getEffectiveLevel(game, level);
+
+        const label = document.createElement('div');
+        label.className = 'toolbar-level-label';
+        label.textContent = `Level ${level}`;
+        container.appendChild(label);
+
+        const dotRow = document.createElement('div');
+        dotRow.className = 'toolbar-level-dots';
         for (let i = 1; i <= totalLevels; i++) {
             const dot = document.createElement('span');
             dot.className = 'level-dot';
-            if (i === level) dot.classList.add('active');
-            if (i < level) dot.classList.add('done');
+            if (i === stage) dot.classList.add('active');
+            if (i < stage) dot.classList.add('done');
             const stars = Progress.getLevelStars(game.id, i);
-            if (stars > 0 && i !== level) dot.classList.add('done');
-            container.appendChild(dot);
+            if (stars > 0 && i !== stage) dot.classList.add('done');
+            dotRow.appendChild(dot);
         }
+        container.appendChild(dotRow);
     }
 
     function updateToolbarStars(count) {
@@ -57,11 +80,25 @@ const GameEngine = (() => {
     function onCorrect() {
         score.correct++;
         AudioManager.play('success');
+        if (window.reportToHost && currentGame) {
+            window.reportToHost('ANSWER_RESULT', {
+                gameId: currentGame.id,
+                isCorrect: true,
+                level: currentLevel
+            });
+        }
     }
 
     function onWrong() {
         score.wrong++;
         AudioManager.play('error');
+        if (window.reportToHost && currentGame) {
+            window.reportToHost('ANSWER_RESULT', {
+                gameId: currentGame.id,
+                isCorrect: false,
+                level: currentLevel
+            });
+        }
     }
 
     function calculateStars() {
@@ -83,6 +120,15 @@ const GameEngine = (() => {
 
         // Update toolbar
         updateToolbarStars(stars);
+
+        // Report to host
+        if (window.reportToHost && currentGame) {
+            window.reportToHost('GAME_COMPLETED', {
+                gameId: currentGame.id,
+                level: currentLevel,
+                stars: stars
+            });
+        }
 
         // Celebration
         setTimeout(() => {
@@ -116,9 +162,8 @@ const GameEngine = (() => {
             starsEl.appendChild(svg);
         }
 
-        // Next level button
-        const totalLevels = currentGame.levels ? currentGame.levels.length : 3;
-        nextBtn.classList.toggle('hidden', currentLevel >= totalLevels);
+        // Next level button for infinite play
+        nextBtn.classList.remove('hidden');
 
         overlay.classList.remove('hidden');
 
@@ -137,10 +182,7 @@ const GameEngine = (() => {
 
     function nextLevel() {
         hideLevelComplete();
-        const totalLevels = currentGame.levels ? currentGame.levels.length : 3;
-        if (currentLevel < totalLevels) {
-            startGame(currentGame, currentLevel + 1);
-        }
+        startGame(currentGame, currentLevel + 1);
     }
 
     function getCurrentGame() { return currentGame; }

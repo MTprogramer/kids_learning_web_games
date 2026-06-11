@@ -37,13 +37,12 @@ const LetterRecognition = (() => {
         if (availableLetters.length === 0) return;
 
         const targetLetter = availableLetters[Math.floor(Math.random() * availableLetters.length)];
-        const correctOptions = i18n.letterImages[targetLetter];
-        const correctOption = correctOptions[Math.floor(Math.random() * correctOptions.length)];
 
-        // Instruction
+        // Instruction - using i18n with placeholder
         const instruction = document.createElement('div');
         instruction.className = 'game-instruction';
-        instruction.textContent = `Find the picture starting with the letter "${targetLetter}"!`;
+        const instrTemplate = i18n.instructions['letter-recognition'] || 'Find the picture starting with the letter "{letter}"!';
+        instruction.textContent = instrTemplate.replace('{letter}', targetLetter);
         container.appendChild(instruction);
 
         // Letter display
@@ -52,22 +51,39 @@ const LetterRecognition = (() => {
         letterDiv.textContent = targetLetter;
         container.appendChild(letterDiv);
 
-        // Options: 1 correct + 3 wrong
-        const options = [{ ...correctOption, correct: true }];
+        // Options selection logic
+        const options = [];
 
-        // Wrong options (from different letters)
-        const wrongLetters = availableLetters.filter(l => l !== targetLetter);
-        const shuffledWrong = wrongLetters.sort(() => Math.random() - 0.5);
+        // 1. Get all potential correct options for this letter
+        const correctPool = i18n.letterImages[targetLetter];
+        const shuffledCorrect = [...correctPool].sort(() => Math.random() - 0.5);
 
-        for (let i = 0; i < config.optionCount - 1 && i < shuffledWrong.length; i++) {
-            const wLetter = shuffledWrong[i];
-            const wOptions = i18n.letterImages[wLetter];
-            if (wOptions && wOptions.length > 0) {
-                const wOption = wOptions[Math.floor(Math.random() * wOptions.length)];
-                options.push({ ...wOption, correct: false });
-            }
+        // 2. Add at least one correct option, and possibly more if they fit
+        // To keep the game challenging, we'll show 1 to 2 correct options
+        const numCorrectToShow = Math.min(shuffledCorrect.length, Math.floor(Math.random() * 2) + 1);
+        for (let i = 0; i < numCorrectToShow; i++) {
+            options.push(shuffledCorrect[i]);
         }
 
+        // 3. Fill the rest with wrong options from other letters
+        const wrongLetters = availableLetters.filter(l => l !== targetLetter);
+        const shuffledWrongLetters = [...wrongLetters].sort(() => Math.random() - 0.5);
+
+        let wIdx = 0;
+        while (options.length < config.optionCount && wIdx < shuffledWrongLetters.length) {
+            const wLetter = shuffledWrongLetters[wIdx];
+            const wPool = i18n.letterImages[wLetter];
+            if (wPool && wPool.length > 0) {
+                const wOption = wPool[Math.floor(Math.random() * wPool.length)];
+                // Ensure this word doesn't actually start with target letter
+                if (!wOption.word.toUpperCase().startsWith(targetLetter.toUpperCase())) {
+                    options.push(wOption);
+                }
+            }
+            wIdx++;
+        }
+
+        // Shuffle the final selection
         options.sort(() => Math.random() - 0.5);
 
         // Option cards
@@ -92,16 +108,18 @@ const LetterRecognition = (() => {
             btn.addEventListener('click', () => {
                 if (btn.disabled) return;
 
-                if (opt.correct) {
+                // Source of truth: check if the word starts with the target letter
+                const isCorrect = opt.word.toUpperCase().startsWith(targetLetter.toUpperCase());
+
+                if (isCorrect) {
                     btn.classList.add('correct');
-                    btn.disabled = true;
+                    // Disable all buttons immediately
+                    optionsDiv.querySelectorAll('.game-option-btn').forEach(b => b.disabled = true);
+
                     callbacks.onCorrect();
 
                     const rect = btn.getBoundingClientRect();
                     Particles.sparkle(rect.left + rect.width / 2, rect.top + rect.height / 2, 8);
-
-                    // Disable all buttons
-                    optionsDiv.querySelectorAll('.game-option-btn').forEach(b => b.disabled = true);
 
                     roundsPlayed++;
                     if (roundsPlayed >= totalRounds) {

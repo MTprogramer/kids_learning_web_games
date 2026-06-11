@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+    <defs>
+        <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#E8F6FF"/>
+            <stop offset="50%" stop-color="#C2E9FB"/>
+            <stop offset="100%" stop-color="#8ED1FC"/>
+        </linearGradient>
+        <radialGradient id="balloonRed" cx="35%" cy="30%" r="75%">
+            <stop offset="0%" stop-color="#FFC2D1"/>
+            <stop offset="100%" stop-color="#FF6F91"/>
+        </radialGradient>
+        <radialGradient id="balloonYellow" cx="35%" cy="30%" r="75%">
+            <stop offset="0%" stop-color="#FFE3A3"/>
+            <stop offset="100%" stop-color="#FFC75F"/>
+        </radialGradient>
+        <radialGradient id="balloonBlue" cx="35%" cy="30%" r="75%">
+            <stop offset="0%" stop-color="#AFD3FF"/>
+            <stop offset="100%" stop-color="#4D96FF"/>
+        </radialGradient>
+    </defs>
+    <rect width="128" height="128" rx="28" fill="url(#bgGrad)"/>
+
+    <!-- clouds -->
+    <circle cx="100" cy="100" r="10" fill="#FFFFFF" opacity="0.3"/>
+    <circle cx="112" cy="96" r="7" fill="#FFFFFF" opacity="0.3"/>
+
+    <!-- left balloon (yellow) with 1 dot -->
+    <ellipse cx="32" cy="56" rx="19" ry="23" fill="url(#balloonYellow)"/>
+    <polygon points="32,79 27,86 37,86" fill="#FFC75F"/>
+    <line x1="32" y1="86" x2="28" y2="110" stroke="#9AA5B1" stroke-width="2"/>
+    <circle cx="32" cy="56" r="5" fill="#FFFFFF"/>
+
+    <!-- right balloon (blue) with 3 dots -->
+    <ellipse cx="98" cy="62" rx="18" ry="22" fill="url(#balloonBlue)"/>
+    <polygon points="98,84 93,91 103,91" fill="#4D96FF"/>
+    <line x1="98" y1="91" x2="102" y2="112" stroke="#9AA5B1" stroke-width="2"/>
+    <circle cx="91" cy="60" r="4" fill="#FFFFFF"/>
+    <circle cx="98" cy="68" r="4" fill="#FFFFFF"/>
+    <circle cx="105" cy="60" r="4" fill="#FFFFFF"/>
+
+    <!-- main balloon (red) with 2 dots -->
+    <ellipse cx="64" cy="50" rx="29" ry="34" fill="url(#balloonRed)"/>
+    <polygon points="64,84 57,93 71,93" fill="#FF6F91"/>
+    <line x1="64" y1="93" x2="64" y2="118" stroke="#9AA5B1" stroke-width="2.5"/>
+    <circle cx="56" cy="48" r="6" fill="#FFFFFF"/>
+    <circle cx="72" cy="48" r="6" fill="#FFFFFF"/>
+
+    <!-- highlight -->
+    <ellipse cx="54" cy="32" rx="8" ry="10" fill="#FFFFFF" opacity="0.35"/>
+</svg>

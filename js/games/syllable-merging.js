@@ -8,51 +8,41 @@ const SyllableMerging = (() => {
   // Word pool: [syllables, image_path, distractors(optional)]
   const IMG = 'assets/images/words/';
   const WORDS_L1 = [
-    // 3 syllable words — no distractors
-    [['a','ra','ba'], IMG+'araba.png'],
-    [['por','ta','kal'], IMG+'portakal.png'],
-    [['do','ma','tes'], IMG+'domates.png'],
-    [['pa','ta','tes'], IMG+'patates.png'],
-    [['ke','le','bek'], IMG+'kelebek.png'],
-    [['kur','ba','ğa'], IMG+'kurbaga.png'],
-    [['öğ','ret','men'], IMG+'ogretmen.png'],
-    [['ka','rın','ca'], IMG+'karinca.png'],
-    [['san','dal','ye'], IMG+'sandalye.png'],
-    [['hay','van','lar'], IMG+'hayvanlar.png'],
-    [['per','şem','be'], IMG+'takvim.png'],
-    [['çi','çek','ler'], IMG+'cicekler.png'],
+    // 3 syllable words
+    [['to','ma','to'], IMG+'domates.png'],
+    [['po','ta','to'], IMG+'patates.png'],
+    [['but','ter','fly'], IMG+'kelebek.png'],
+    [['cal','en','dar'], IMG+'takvim.png'],
+    [['an','i','mal'], IMG+'hayvanlar.png'],
+    [['com','pu','ter'], IMG+'bilgisayar.png'],
+    [['sun','flow','er'], IMG+'cicekler.png'],
+    [['en','gi','neer'], IMG+'muhendis.png'],
+    [['li','bra','ry'], IMG+'kutüphane.png'],
+    [['or','an','ges'], IMG+'portakal.png'],
   ];
   const WORDS_L2 = [
-    // 4 syllable words + 1 distractor syllable
-    [['bil','gi','sa','yar'], IMG+'bilgisayar.png', ['me']],
-    [['te','le','viz','yon'], IMG+'televizyon.png', ['ka']],
-    [['ka','ra','bi','ber'], IMG+'karabiber.png', ['tu']],
-    [['he','li','kop','ter'], IMG+'helikopter.png', ['sa']],
-    [['a','yak','ka','bı'], IMG+'ayakkabi.png', ['lı']],
-    [['kü','tüp','ha','ne'], IMG+'kutüphane.png', ['ri']],
-    [['o','to','mo','bil'], IMG+'araba.png', ['de']],
-    [['cu','mar','te','si'], IMG+'takvim.png', ['na']],
-    [['ça','ma','şır','lar'], IMG+'camasir.png', ['be']],
-    [['mü','hen','dis','lik'], IMG+'muhendis.png', ['pa']],
+    // 4 syllable words + 1 distractor
+    [['hel','i','cop','ter'], IMG+'helikopter.png', ['ing']],
+    [['tel','e','vi','sion'], IMG+'televizyon.png', ['er']],
+    [['au','to','mo','bile'], IMG+'araba.png', ['ly']],
+    [['math','e','ma','tics'], IMG+'matematik.png', ['al']],
+    [['cat','er','pil','lar'], IMG+'karinca.png', ['tion']],
+    [['al','li','ga','tor'], IMG+'kurbaga.png', ['ed']],
+    [['dic','tion','ar','y'], IMG+'kutüphane.png', ['ic']],
   ];
   const WORDS_L3 = [
-    // 4-5 syllable words + 2 distractor syllables
-    [['an','sik','lo','pe','di'], IMG+'kutüphane.png', ['ta','mu']],
-    [['ü','ni','ver','si','te'], IMG+'universite.png', ['ka','lo']],
-    [['ma','te','ma','tik','çi'], IMG+'matematik.png', ['bu','le']],
-    [['bil','gi','sa','yar','cı'], IMG+'bilgisayar.png', ['me','tu']],
-    [['te','le','viz','yon','cu'], IMG+'televizyon.png', ['ra','şı']],
-    [['kü','tüp','ha','ne','ci'], IMG+'kutüphane.png', ['bo','lu']],
-    [['he','li','kop','ter','ler'], IMG+'helikopter.png', ['sa','ni']],
-    [['o','to','mo','bil','ler'], IMG+'araba.png', ['ka','dü']],
-    [['a','yak','ka','bı','lar'], IMG+'ayakkabi.png', ['ti','se']],
-    [['cu','mar','te','si','ler'], IMG+'takvim.png', ['ba','nö']],
+    // 5 syllable words + 2 distractors
+    [['u','ni','ver','si','ty'], IMG+'universite.png', ['ly','ing']],
+    [['im','ag','i','na','tion'], IMG+'muhendis.png', ['er','al']],
+    [['com','mu','ni','ca','tion'], IMG+'televizyon.png', ['ic','ous']],
+    [['e','lec','tri','ci','ty'], IMG+'televizyon.png', ['tion','ed']],
+    [['re','frig','er','a','tor'], IMG+'camasir.png', ['ous','re']],
   ];
 
   const levels = [
     { words: WORDS_L1, rounds: 6 },
     { words: WORDS_L2, rounds: 6 },
-    { words: WORDS_L3, rounds: 7 },
+    { words: WORDS_L3, rounds: 4 },
   ];
 
   let container, callbacks, currentLevel, round, totalRounds, usedIndices;
@@ -62,7 +52,7 @@ const SyllableMerging = (() => {
     callbacks = cbs;
     currentLevel = levels[level - 1];
     round = 0;
-    totalRounds = currentLevel.rounds;
+    totalRounds = Math.min(currentLevel.rounds, currentLevel.words.length);
     usedIndices = [];
     GameEngine.setTotal(totalRounds);
     nextRound();
@@ -90,12 +80,17 @@ const SyllableMerging = (() => {
     const shuffled = allSyllables.sort(() => Math.random() - 0.5);
     let selected = [];
 
+    // Localized strings
+    const instruction = (typeof i18n !== 'undefined' && i18n.instructions) ? i18n.instructions['syllable-merging'] : 'Merge the syllables to form the word!';
+    const wordLabel = (typeof i18n !== 'undefined' && i18n.kodMacerasi) ? i18n.kodMacerasi.round : 'Word';
+    const resetText = (typeof i18n !== 'undefined' && i18n.kodMacerasi) ? i18n.kodMacerasi.reset : 'Reset';
+
     container.innerHTML = `
       <div class="hece-game">
-        <div class="hece-progress">Word ${round}/${totalRounds}</div>
+        <div class="hece-progress">${wordLabel} ${round}/${totalRounds}</div>
         <div class="hece-target">
           <img class="hece-emoji-img" src="${imgSrc}" alt="hint" draggable="false">
-          <span class="hece-hint">Put the syllables in the correct order!</span>
+          <span class="hece-hint">${instruction}</span>
         </div>
         <div class="hece-answer-area" id="hece-answer">
           ${syllables.map(() => '<div class="hece-slot"></div>').join('')}
@@ -115,7 +110,6 @@ const SyllableMerging = (() => {
         btn.classList.add('hece-used');
         selected.push(btn.dataset.syl);
 
-        // Fill next slot
         const slots = answerArea.querySelectorAll('.hece-slot');
         const slot = slots[selected.length - 1];
         if (slot) {
@@ -125,7 +119,6 @@ const SyllableMerging = (() => {
 
         AudioManager.play('tap');
 
-        // All syllables placed?
         if (selected.length === syllables.length) {
           setTimeout(() => checkAnswer(selected, syllables, imgSrc), 400);
         }
@@ -135,7 +128,7 @@ const SyllableMerging = (() => {
     // Reset button
     const resetBtn = document.createElement('button');
     resetBtn.className = 'hece-reset-btn';
-    resetBtn.textContent = '↺ Reset';
+    resetBtn.textContent = '↺ ' + resetText;
     resetBtn.onclick = () => {
       selected = [];
       pool.querySelectorAll('.hece-btn').forEach(b => { b.disabled = false; b.classList.remove('hece-used'); });
@@ -167,7 +160,7 @@ const SyllableMerging = (() => {
       answerArea.appendChild(reveal);
 
       const rect = answerArea.getBoundingClientRect();
-      Particles.sparkle(rect.left + rect.width / 2, rect.top, 8);
+      if (typeof Particles !== 'undefined') Particles.sparkle(rect.left + rect.width / 2, rect.top, 8);
 
       setTimeout(() => {
         if (round >= totalRounds) callbacks.onComplete();
@@ -180,12 +173,12 @@ const SyllableMerging = (() => {
 
       setTimeout(() => {
         answerArea.classList.remove('hece-wrong');
-        // Reset for retry
         const pool = container.querySelector('#hece-pool');
         if (pool) {
           pool.querySelectorAll('.hece-btn').forEach(b => { b.disabled = false; b.classList.remove('hece-used'); });
         }
         answerArea.querySelectorAll('.hece-slot').forEach(s => { s.textContent = ''; s.classList.remove('hece-filled'); });
+        selected.length = 0;
       }, 800);
     }
   }

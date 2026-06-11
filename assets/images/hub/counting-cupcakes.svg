@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+    <defs>
+        <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#FFF0F5"/>
+            <stop offset="50%" stop-color="#FFD3E2"/>
+            <stop offset="100%" stop-color="#FF9EBB"/>
+        </linearGradient>
+        <radialGradient id="frostingGrad" cx="35%" cy="30%" r="75%">
+            <stop offset="0%" stop-color="#FFE3EE"/>
+            <stop offset="100%" stop-color="#FF6F91"/>
+        </radialGradient>
+    </defs>
+    <rect width="128" height="128" rx="28" fill="url(#bgGrad)"/>
+
+    <!-- sparkles -->
+    <circle cx="22" cy="28" r="4" fill="#FFFFFF" opacity="0.5"/>
+    <circle cx="106" cy="40" r="3" fill="#FFFFFF" opacity="0.5"/>
+    <circle cx="100" cy="100" r="5" fill="#FFFFFF" opacity="0.35"/>
+
+    <!-- wrapper -->
+    <path d="M34 96 L94 96 L86 70 L42 70 Z" fill="#FF6F91"/>
+    <path d="M34 96 L94 96 L92 104 L36 104 Z" fill="#E0506E"/>
+
+    <!-- frosting -->
+    <path d="M40 70 Q40 38 64 38 Q88 38 88 70 Z" fill="url(#frostingGrad)"/>
+
+    <!-- candles -->
+    <rect x="50" y="22" width="6" height="20" rx="2" fill="#4D96FF"/>
+    <rect x="61" y="16" width="6" height="26" rx="2" fill="#6BCB77"/>
+    <rect x="72" y="22" width="6" height="20" rx="2" fill="#FFC75F"/>
+
+    <!-- flames -->
+    <ellipse cx="53" cy="18" rx="4" ry="6" fill="#FFB347"/>
+    <ellipse cx="64" cy="12" rx="4" ry="6" fill="#FFB347"/>
+    <ellipse cx="75" cy="18" rx="4" ry="6" fill="#FFB347"/>
+
+    <!-- highlight -->
+    <ellipse cx="54" cy="50" rx="8" ry="10" fill="#FFFFFF" opacity="0.4"/>
+</svg>

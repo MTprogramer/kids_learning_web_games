@@ -125,6 +125,36 @@ button {
 /* Utility Classes */
 .hidden { display: none !important; }
 
+/*
+   Splash & Hub Bypass:
+   Immediate hide splash when gameId is present in URL.
+*/
+html.is-game-direct .splash-screen {
+    display: none !important;
+}
+
+html.is-game-direct .app.hidden {
+    display: block !important;
+}
+
+/* Show loading on hub until game starts */
+html.is-game-direct #hub-loader {
+    display: flex !important;
+}
+
+html.is-game-direct .hub-grid,
+html.is-game-direct .hub-nav,
+html.is-game-direct .hub-popular,
+html.is-game-direct .top-bar .hub-nav,
+html.is-game-direct .top-bar .top-right {
+    display: none !important;
+}
+
+/* Force game container visible immediately when switching to prevent black/empty blink */
+html.is-game-direct .game-container.hidden {
+    display: block !important;
+}
+
 /* ============================================
    SPLASH SCREEN
    ============================================ */
@@ -138,6 +168,12 @@ button {
     justify-content: center;
     background: linear-gradient(180deg, #87CEEB 0%, #C9E8F7 50%, #8ED45E 50%, #7EC850 100%);
     overflow: hidden;
+    transition: opacity 0.5s ease;
+}
+
+.splash-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
 }
 
 .splash-content {
@@ -225,6 +261,48 @@ button {
         0 4px 10px rgba(0,0,0,0.2);
 }
 
+/* Loader Styles */
+.splash-loader {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.hub-loader {
+    position: fixed;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--hub-loader-bg, linear-gradient(180deg, var(--bg-sky-top) 0%, var(--bg-sky-bottom) 100%));
+    z-index: 2000; /* Highest priority for direct launch loading */
+}
+
+.loader-spinner {
+    width: 60px;
+    height: 60px;
+    border: 6px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s linear infinite;
+}
+
+.loader-text {
+    color: white;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+    margin-top: 20px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 .splash-clouds {
     position: absolute;
     inset: 0;
@@ -307,6 +385,10 @@ button {
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 
+.top-bar.in-game {
+    display: flex !important;
+}
+
 .top-btn {
     width: var(--touch-min);
     height: var(--touch-min);
@@ -330,6 +412,20 @@ button {
 }
 
 .home-btn { margin-right: var(--space-sm); }
+
+/* Hide the whole web top bar inside the Android app — the native screen
+   already provides its own "Exit to Hub" control, and each game has its
+   own in-game toolbar. */
+.is-native-host #top-bar { display: none; }
+.is-native-host .game-container { top: 0; }
+
+/* Also hide the in-game "go to hub" buttons (toolbar home icon and the
+   floating exit button) on Android — they would duplicate the native
+   "Exit to Hub" control. */
+.is-native-host #game-home,
+.is-native-host #btn-game-exit {
+    display: none;
+}
 
 .top-title {
     flex-shrink: 0;
@@ -412,16 +508,16 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(4px);
+    background: rgba(12, 35, 80, 0.64);
+    backdrop-filter: blur(7px);
 }
 
 .complete-card {
-    background: white;
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFF8E6 100%);
     border-radius: var(--radius-lg);
     padding: var(--space-xl) var(--space-2xl);
     text-align: center;
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.18);
     animation: bounceIn 0.5s var(--ease-spring) both;
     max-width: 90vw;
 }
@@ -431,7 +527,7 @@ button {
     font-weight: 700;
     color: var(--success);
     margin-bottom: var(--space-lg);
-    text-shadow: 2px 2px 0 rgba(0,0,0,0.05);
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.08);
 }
 
 .complete-stars {

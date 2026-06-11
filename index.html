@@ -4,55 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#4AABE0">
-    <meta name="google-site-verification" content="nLeu-vMzVfynG0lsz8FSykvKkn-lc1hXHPhC9hi6t1U" />
-    <meta name="google-site-verification" content="etuK4fPs96iwB78M-gIT2Ru1WH5KM2zd3hFr1q3LE50" />
-    <meta name="msvalidate.01" content="9BA89FED4D7AD8761914D713F75D7454" />
-    <meta name="description" content="Childs Play Logic - Educational Games Platform | 20+ free educational games for preschool and primary school children. Chess, coding, math, memory cards, penalty, LEGO World 3D and more. Online multiplayer supported. childsplaylogic.com">
-    <meta name="keywords" content="childsplaylogic, educational games, kids games, preschool games, primary school games, online educational games, learn coding, play chess, math game, memory game">
-    <meta name="author" content="Childs Play Logic">
-    <meta property="og:title" content="Childs Play Logic - Educational Games | Educational Games for Kids">
-    <meta property="og:description" content="20+ educational games: Chess, Coding, Math, Penalty, LEGO World 3D and more. Online multiplayer supported!">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://childsplaylogic.com/">
-    <meta property="og:site_name" content="Childs Play Logic">
-    <meta property="og:image" content="https://childsplaylogic.com/og-image.svg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Childs Play Logic - 20+ Educational Games for Kids">
-    <meta property="og:locale" content="en_US">
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Childs Play Logic - Educational Games | Educational Games for Kids">
-    <meta name="twitter:description" content="20+ educational games: Chess, Coding, Math, Penalty, LEGO World 3D. Online multiplayer supported!">
-    <meta name="twitter:image" content="https://childsplaylogic.com/og-image.svg">
-    <!-- Robots -->
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <!-- Favicon -->
-    <link rel="canonical" href="https://childsplaylogic.com/">
-    <title>Childs Play Logic - Educational Games | Educational Games for Kids</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/main.css?v=4">
+    <script>
+        // CRITICAL: Prevent splash blink when launching game by ID
+        (function() {
+            var gameId = new URLSearchParams(window.location.search).get('gameId');
+            if (!gameId) return;
+            document.documentElement.classList.add('is-game-direct');
+
+            // Keep in sync with getGameTheme() in js/app.js
+            var themes = {
+                'alphabet-runner': 'linear-gradient(135deg, #F9E5FF 0%, #F3C7FF 45%, #B983FF 100%)',
+                'counting': 'linear-gradient(135deg, #FFF8E1 0%, #FFECB3 50%, #FFD54F 100%)',
+                'letter-recognition': 'linear-gradient(135deg, #E8F4FE 0%, #D2E9FF 55%, #A7D7FF 100%)',
+                'color-matching': 'linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 100%)',
+                'memory-cards': 'linear-gradient(135deg, #F3E8FF 0%, #E0C3FC 50%, #C9A8FF 100%)',
+                'shape-puzzle': 'linear-gradient(135deg, #FFF9E6 0%, #FFE9B0 50%, #FFD27A 100%)',
+                'coloring': 'linear-gradient(135deg, #FFF0F7 0%, #FFD6EC 50%, #FFB8E0 100%)',
+                'sorting': 'linear-gradient(135deg, #E8FFF3 0%, #C3F9DD 50%, #9FF0C7 100%)',
+                'math': 'linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 50%, #FFCC80 100%)',
+                'syllable-merging': 'linear-gradient(135deg, #E0FFFA 0%, #B2F5EA 50%, #80E8D8 100%)',
+                'pattern': 'linear-gradient(135deg, #FCE9FF 0%, #F3C6FF 50%, #E59BFF 100%)',
+                'penalty': 'linear-gradient(135deg, #E8FFE9 0%, #C8F7C5 50%, #9DEB9B 100%)',
+                'canvas': 'linear-gradient(135deg, #FFF5F8 0%, #FFD9E6 50%, #FFB3CC 100%)',
+                'color-by-number': 'linear-gradient(135deg, #F1ECFF 0%, #DCD0FF 50%, #C2ABFF 100%)',
+                'emoji-maker': 'linear-gradient(135deg, #FFFBE6 0%, #FFF0B3 50%, #FFE082 100%)',
+                'alphabet-train': 'linear-gradient(135deg, #FFF4E0 0%, #FFD3A8 50%, #FF9F5A 100%)',
+                'alphabet-balloons': 'linear-gradient(135deg, #FFF0F5 0%, #FFD6E8 50%, #FFADD2 100%)',
+                'alphabet-fishing': 'linear-gradient(135deg, #E0FBFF 0%, #B8F0FF 50%, #7FE0F5 100%)',
+                'counting-cupcakes': 'linear-gradient(135deg, #FFF0F5 0%, #FFD3E2 50%, #FF9EBB 100%)',
+                'counting-ladybugs': 'linear-gradient(135deg, #F0FFE9 0%, #D4F7C5 50%, #FF9999 100%)',
+                'counting-treasure': 'linear-gradient(135deg, #FFF8E1 0%, #FFE0A3 50%, #FFC247 100%)',
+                'counting-balloons': 'linear-gradient(135deg, #E8F6FF 0%, #C2E9FB 50%, #8ED1FC 100%)',
+                'counting-hop': 'linear-gradient(135deg, #E6FFFB 0%, #BAF2D8 50%, #7FE0A8 100%)',
+                'alphabet-picture-connect': 'linear-gradient(135deg, #EFFFE9 0%, #C8F7C5 50%, #8CE89A 100%)',
+                'letter-case-connect': 'linear-gradient(135deg, #E8F4FF 0%, #D6E9FF 50%, #FFE3F0 100%)',
+                'number-word-connect': 'linear-gradient(135deg, #4B3F8C 0%, #3A3578 50%, #2A2D5C 100%)',
+                'count-connect': 'linear-gradient(135deg, #FFF8E1 0%, #FFEFC2 50%, #C8F7C5 100%)'
+            };
+            var bg = themes[gameId] || 'linear-gradient(180deg, #E8F4FD 0%, #F0F8FF 100%)';
+            document.documentElement.style.setProperty('--hub-loader-bg', bg);
+            document.documentElement.style.setProperty('--game-bg', bg);
+        })();
+    </script>
+    <meta name="description" content="Childs Play Logic - Educational Games Platform">
+    <title>Childs Play Logic - Educational Games</title>
+    <link rel="stylesheet" href="css/main.css?v=6">
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/hub.css">
-    <link rel="stylesheet" href="css/games.css?v=2">
-    <link rel="stylesheet" href="css/coding-adventure.css">
-    <link rel="stylesheet" href="css/chess.css">
+    <link rel="stylesheet" href="css/games.css?v=6">
     <link rel="stylesheet" href="css/penalty.css">
-    <link rel="stylesheet" href="css/lego-world.css">
     <link rel="stylesheet" href="css/canvas.css">
-    <link rel="stylesheet" href="css/jump-collect.css">
-    <link rel="stylesheet" href="css/space-waves.css">
-    <link rel="stylesheet" href="css/slope.css">
-    <link rel="stylesheet" href="css/ice-tower.css">
     <link rel="stylesheet" href="css/color-by-number.css">
-    <link rel="stylesheet" href="css/emoji-maker.css?v=2">
-    <link rel="stylesheet" href="css/tetris.css">
-    <!-- Chess.js rule engine -->
+    <link rel="stylesheet" href="css/emoji-maker.css?v=3">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -69,6 +74,10 @@
             <p class="splash-subtitle">Are You Ready to Learn?</p>
         </div>
         <button id="splash-start" class="splash-btn">Start Playing!</button>
+        <div id="splash-loader" class="splash-loader hidden">
+            <div class="loader-spinner"></div>
+            <p class="loader-text">Game is Loading...</p>
+        </div>
     </div>
     <div class="splash-clouds">
         <div class="cloud cloud-1"></div>
@@ -78,30 +87,33 @@
     <div class="splash-ground"></div>
 </div>
 
+<!-- Loader for direct game launch (Shared across screens) -->
+<div id="hub-loader" class="hub-loader hidden">
+    <div class="loader-spinner"></div>
+    <p class="loader-text">Game is Loading...</p>
+</div>
+
 <!-- Main App -->
 <div id="app" class="app hidden">
     <!-- Top Bar -->
     <header id="top-bar" class="top-bar">
-        <button id="btn-home" class="top-btn home-btn" title="Home" aria-label="Home page">
+        <button id="btn-home" class="top-btn home-btn" title="Home">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
         </button>
         <h1 class="top-title"><span class="top-brand">Childs Play Logic</span><span class="top-sub">Educational Games</span></h1>
-        <!-- Category Navigation (inside top-bar) -->
         <nav id="hub-nav" class="hub-nav">
-            <div class="hub-nav-scroll" id="hub-nav-scroll">
-                <!-- To be rendered via JS -->
-            </div>
+            <div class="hub-nav-scroll" id="hub-nav-scroll"></div>
         </nav>
         <div class="top-right">
             <div class="star-counter" id="star-counter">
                 <svg class="star-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                 <span id="total-stars">0</span>
             </div>
-            <button id="btn-sound" class="top-btn sound-btn" title="Sound" aria-label="Toggle sound">
+            <button id="btn-sound" class="top-btn sound-btn" title="Sound">
                 <svg class="sound-on" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
                 <svg class="sound-off hidden" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
             </button>
-            <button id="btn-settings" class="top-btn settings-btn" title="Settings" aria-label="Parental settings">
+            <button id="btn-settings" class="top-btn settings-btn" title="Settings">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
             </button>
         </div>
@@ -119,17 +131,17 @@
             <div class="hills"></div>
             <div class="grass"></div>
         </div>
-        <!-- Popular Games -->
         <div class="hub-popular" id="hub-popular"></div>
-        <div class="hub-grid" id="hub-grid">
-            <!-- Game cards to be rendered via JS -->
-        </div>
+        <div class="hub-grid" id="hub-grid"></div>
     </main>
 
     <!-- Game Container -->
     <div id="game-container" class="game-container hidden">
+        <button id="btn-game-exit" class="game-exit-btn" title="Exit Game">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        </button>
         <div id="game-toolbar" class="game-toolbar">
-            <button id="game-home" class="toolbar-btn" aria-label="Home page">
+            <button id="game-home" class="toolbar-btn">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
             </button>
             <div class="toolbar-info">
@@ -141,7 +153,7 @@
                 <svg class="toolbar-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                 <svg class="toolbar-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             </div>
-            <button id="game-fullscreen" class="toolbar-btn" title="Full Screen" aria-label="Toggle full screen">
+            <button id="game-fullscreen" class="toolbar-btn">
                 <svg class="fs-icon-expand" viewBox="0 0 24 24" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
                 <svg class="fs-icon-compress" viewBox="0 0 24 24" fill="currentColor"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
             </button>
@@ -157,18 +169,17 @@
             <div class="complete-buttons">
                 <button id="btn-replay" class="complete-btn replay-btn">Play Again</button>
                 <button id="btn-next" class="complete-btn next-btn">Next Level</button>
-                <button id="btn-hub" class="complete-btn hub-btn">Games</button>
+<!--                <button id="btn-hub" class="complete-btn hub-btn">Games</button>-->
             </div>
         </div>
     </div>
 
-    <!-- Confetti Canvas -->
     <canvas id="particles-canvas" class="particles-canvas"></canvas>
 </div>
 
-<script src="js/i18n.js?v=4"></script>
+<script src="js/i18n.js?v=6"></script>
 <script src="js/audio.js"></script>
-<script src="js/mobile-utils.js?v=3"></script>
+<script src="js/mobile-utils.js?v=4"></script>
 <script src="js/progress.js"></script>
 <script src="js/particles.js"></script>
 <script src="js/drag.js"></script>
@@ -180,27 +191,27 @@
 <script src="js/games/shape-puzzle.js"></script>
 <script src="js/games/coloring.js"></script>
 <script src="js/games/sorting.js"></script>
-<script src="js/games/coding-adventure-shared.js"></script>
-<script src="js/games/coding-adventure.js"></script>
-<script src="js/games/chess-engine.js"></script>
-<script src="js/games/chess.js"></script>
 <script src="js/games/math.js"></script>
 <script src="js/games/syllable-merging.js"></script>
-<script src="js/games/jigsaw.js"></script>
 <script src="js/games/pattern.js"></script>
-<script src="js/games/lego-adventure.js"></script>
-<script src="js/games/lego-world.js"></script>
 <script src="js/games/penalty.js"></script>
 <script src="js/games/canvas.js"></script>
-<script src="js/games/color-by-number.js?v=2"></script>
-<script src="js/games/emoji-maker.js?v=4"></script>
-<script src="js/games/jump-collect-levels.js"></script>
-<script src="js/games/jump-collect.js"></script>
-<script src="js/games/space-waves-questions.js"></script>
-<script src="js/games/space-waves.js"></script>
-<script src="js/games/slope.js?v=2"></script>
-<script src="js/games/ice-tower.js"></script>
-<script src="js/games/tetris.js"></script>
-<script src="js/app.js?v=4"></script>
+<script src="js/games/color-by-number.js?v=3"></script>
+<script src="js/games/emoji-maker.js?v=5"></script>
+<script src="js/games/alphabet-runner.js?v=1"></script>
+<script src="js/games/alphabet-train.js?v=1"></script>
+<script src="js/games/alphabet-balloons.js?v=1"></script>
+<script src="js/games/alphabet-fishing.js?v=1"></script>
+<script src="js/games/counting-cupcakes.js?v=1"></script>
+<script src="js/games/counting-ladybugs.js?v=1"></script>
+<script src="js/games/counting-treasure.js?v=1"></script>
+<script src="js/games/counting-balloons.js?v=1"></script>
+<script src="js/games/counting-hop.js?v=1"></script>
+<script src="js/games/connect-shared.js?v=1"></script>
+<script src="js/games/alphabet-picture-connect.js?v=1"></script>
+<script src="js/games/letter-case-connect.js?v=1"></script>
+<script src="js/games/number-word-connect.js?v=1"></script>
+<script src="js/games/count-connect.js?v=1"></script>
+<script src="js/app.js?v=7"></script>
 </body>
 </html>

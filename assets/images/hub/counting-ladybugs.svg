@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+    <defs>
+        <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#F0FFE9"/>
+            <stop offset="50%" stop-color="#D4F7C5"/>
+            <stop offset="100%" stop-color="#FF9999"/>
+        </linearGradient>
+    </defs>
+    <rect width="128" height="128" rx="28" fill="url(#bgGrad)"/>
+
+    <!-- leaf -->
+    <path d="M14 102 Q14 62 64 62 Q114 62 114 102 Q64 118 14 102 Z" fill="#8BC34A"/>
+    <path d="M20 98 Q64 86 108 98" stroke="#FFFFFF" stroke-width="2" opacity="0.4" fill="none"/>
+
+    <!-- ladybug body -->
+    <ellipse cx="64" cy="58" rx="38" ry="30" fill="#E63946"/>
+    <!-- center line -->
+    <line x1="64" y1="32" x2="64" y2="86" stroke="#2D3436" stroke-width="3"/>
+    <!-- head -->
+    <ellipse cx="64" cy="28" rx="16" ry="14" fill="#2D3436"/>
+    <!-- antennae -->
+    <line x1="56" y1="18" x2="50" y2="8" stroke="#2D3436" stroke-width="3" stroke-linecap="round"/>
+    <line x1="72" y1="18" x2="78" y2="8" stroke="#2D3436" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="50" cy="8" r="3" fill="#2D3436"/>
+    <circle cx="78" cy="8" r="3" fill="#2D3436"/>
+
+    <!-- spots -->
+    <circle cx="48" cy="48" r="7" fill="#2D3436"/>
+    <circle cx="80" cy="48" r="7" fill="#2D3436"/>
+    <circle cx="48" cy="74" r="7" fill="#2D3436"/>
+    <circle cx="80" cy="74" r="7" fill="#2D3436"/>
+
+    <!-- highlight -->
+    <ellipse cx="50" cy="44" rx="8" ry="6" fill="#FFFFFF" opacity="0.25"/>
+</svg>
