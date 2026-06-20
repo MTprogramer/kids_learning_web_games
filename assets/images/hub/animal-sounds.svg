@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+    <defs>
+        <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FFF8E1"/>
+            <stop offset="50%" stop-color="#FFE0B2"/>
+            <stop offset="100%" stop-color="#FFB74D"/>
+        </linearGradient>
+    </defs>
+    <rect width="128" height="128" rx="28" fill="url(#bgGrad)"/>
+
+    <!-- sound burst -->
+    <circle cx="98" cy="34" r="6" fill="#FFFFFF" opacity="0.9"/>
+    <circle cx="110" cy="46" r="4" fill="#FFFFFF" opacity="0.7"/>
+    <circle cx="100" cy="50" r="3" fill="#FFFFFF" opacity="0.6"/>
+
+    <!-- cage bars (zoo theme) -->
+    <rect x="10" y="96" width="108" height="20" rx="6" fill="#A9762F"/>
+    <rect x="16" y="96" width="6" height="20" fill="#7A5320"/>
+    <rect x="34" y="96" width="6" height="20" fill="#7A5320"/>
+    <rect x="52" y="96" width="6" height="20" fill="#7A5320"/>
+    <rect x="70" y="96" width="6" height="20" fill="#7A5320"/>
+    <rect x="88" y="96" width="6" height="20" fill="#7A5320"/>
+    <rect x="106" y="96" width="6" height="20" fill="#7A5320"/>
+
+    <!-- cow head -->
+    <ellipse cx="58" cy="62" rx="34" ry="28" fill="#FFFFFF"/>
+    <ellipse cx="36" cy="44" rx="11" ry="14" fill="#FFFFFF" transform="rotate(-20 36 44)"/>
+    <ellipse cx="80" cy="44" rx="11" ry="14" fill="#FFFFFF" transform="rotate(20 80 44)"/>
+    <ellipse cx="36" cy="44" rx="6" ry="8" fill="#FFC2D1" transform="rotate(-20 36 44)"/>
+    <ellipse cx="80" cy="44" rx="6" ry="8" fill="#FFC2D1" transform="rotate(20 80 44)"/>
+
+    <!-- spots -->
+    <ellipse cx="40" cy="52" rx="7" ry="6" fill="#2D3436"/>
+    <ellipse cx="78" cy="56" rx="6" ry="5" fill="#2D3436"/>
+
+    <!-- snout -->
+    <ellipse cx="58" cy="76" rx="22" ry="14" fill="#FFD9B3"/>
+    <ellipse cx="50" cy="76" rx="3.5" ry="5" fill="#2D3436"/>
+    <ellipse cx="66" cy="76" rx="3.5" ry="5" fill="#2D3436"/>
+
+    <!-- eyes -->
+    <circle cx="46" cy="56" r="5" fill="#2D3436"/>
+    <circle cx="70" cy="56" r="5" fill="#2D3436"/>
+    <circle cx="47.5" cy="54.5" r="1.6" fill="#FFFFFF"/>
+    <circle cx="71.5" cy="54.5" r="1.6" fill="#FFFFFF"/>
+</svg>

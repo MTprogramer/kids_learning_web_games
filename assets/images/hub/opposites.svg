@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+    <defs>
+        <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#E0F7FA"/>
+            <stop offset="50%" stop-color="#B2EBF2"/>
+            <stop offset="100%" stop-color="#4DD0E1"/>
+        </linearGradient>
+    </defs>
+    <rect width="128" height="128" rx="28" fill="url(#bgGrad)"/>
+
+    <!-- see-saw base -->
+    <polygon points="64,96 80,112 48,112" fill="#8D5B2E"/>
+    <rect x="20" y="92" width="88" height="10" rx="5" fill="#C68E54" transform="rotate(-6 64 97)"/>
+
+    <!-- divider -->
+    <line x1="64" y1="16" x2="64" y2="86" stroke="#FFFFFF" stroke-width="3" stroke-dasharray="6 6" opacity="0.6"/>
+
+    <!-- flame (hot) -->
+    <path d="M40 80 C28 70 30 54 40 44 C38 56 48 58 48 66 C48 54 58 52 54 40 C66 48 64 68 50 80 C46 83 44 83 40 80 Z" fill="#FF7043"/>
+    <path d="M44 70 C40 65 41 58 45 53 C44 60 49 61 49 65 C49 59 54 58 52 52 C58 56 57 67 50 73 C47 75 46 73 44 70 Z" fill="#FFD54F"/>
+
+    <!-- filled snowflake (cold) -->
+    <g fill="#0288D1">
+        <circle cx="88" cy="58" r="7"/>
+        <ellipse cx="88" cy="40" rx="5" ry="10"/>
+        <ellipse cx="88" cy="76" rx="5" ry="10"/>
+        <ellipse cx="70" cy="58" rx="10" ry="5"/>
+        <ellipse cx="106" cy="58" rx="10" ry="5"/>
+        <ellipse cx="75" cy="45" rx="5" ry="9" transform="rotate(45 75 45)"/>
+        <ellipse cx="101" cy="45" rx="5" ry="9" transform="rotate(-45 101 45)"/>
+        <ellipse cx="75" cy="71" rx="5" ry="9" transform="rotate(-45 75 71)"/>
+        <ellipse cx="101" cy="71" rx="5" ry="9" transform="rotate(45 101 71)"/>
+    </g>
+    <circle cx="88" cy="58" r="6" fill="#81D4FA"/>
+</svg>

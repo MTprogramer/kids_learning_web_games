@@ -26,8 +26,6 @@ const EN = {
         'syllable-merging': 'Syllable Merging',
         'pattern': 'Pattern Completion',
         'penalty': 'Penalty Shootout',
-        'canvas': 'Canvas',
-        'color-by-number': 'Color by Number',
         'emoji-maker': 'Emoji Maker',
         'counting-cupcakes': 'Cupcake Counting',
         'counting-ladybugs': 'Ladybug Spot Count',
@@ -38,6 +36,12 @@ const EN = {
         'letter-case-connect': 'Big & Small Letters',
         'number-word-connect': 'Number Words',
         'count-connect': 'Count & Connect',
+        'animal-sounds': 'Sound Match Zoo',
+        'opposites': 'Opposite See-Saw',
+        'feelings-match': 'Feelings Theater',
+        'weather-match': 'Dress the Weather Buddy',
+        'number-sequence': 'Rocket Number Climb',
+        'odd-one-out': 'Sorting Conveyor Belt',
     },
 
 
@@ -74,8 +78,6 @@ const EN = {
         'syllable-merging': 'Merge the syllables!',
         'pattern': 'Complete the pattern!',
         'penalty': 'Shoot at the goal!',
-        'canvas': 'Imagine and paint!',
-        'color-by-number': 'Select the number, paint the boxes with the same number!',
         'emoji-maker': 'Select pieces, create your own emoji face!',
         'counting-cupcakes': 'Find the cupcake with the matching number of candles!',
         'counting-ladybugs': 'Tap the ladybug with the matching number of spots!',
@@ -86,6 +88,12 @@ const EN = {
         'letter-case-connect': 'Connect the BIG letter to its small letter!',
         'number-word-connect': 'Connect each number to its word!',
         'count-connect': 'Count the items and connect them to their number!',
+        'animal-sounds': 'Listen to the sound and drag that animal into its cage!',
+        'opposites': 'Drag the opposite item onto the see-saw to balance it!',
+        'feelings-match': 'Watch the puppet act it out, then drag on the matching face!',
+        'weather-match': 'Look at the weather and drag the right outfit onto the buddy!',
+        'number-sequence': 'Drag the next number into the ladder to launch the rocket!',
+        'odd-one-out': 'Three items share a group — tap the one on the belt that is different!',
     },
 
     // Coding Adventure strings

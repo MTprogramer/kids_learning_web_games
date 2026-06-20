@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+    <defs>
+        <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#F3E5F5"/>
+            <stop offset="50%" stop-color="#E1BEE7"/>
+            <stop offset="100%" stop-color="#CE93D8"/>
+        </linearGradient>
+    </defs>
+    <rect width="128" height="128" rx="28" fill="url(#bgGrad)"/>
+
+    <!-- conveyor belt -->
+    <rect x="8" y="92" width="112" height="14" rx="7" fill="#5C4A6B"/>
+    <rect x="14" y="96" width="10" height="6" rx="3" fill="#8B7AA0"/>
+    <rect x="34" y="96" width="10" height="6" rx="3" fill="#8B7AA0"/>
+    <rect x="54" y="96" width="10" height="6" rx="3" fill="#8B7AA0"/>
+    <rect x="74" y="96" width="10" height="6" rx="3" fill="#8B7AA0"/>
+    <rect x="94" y="96" width="10" height="6" rx="3" fill="#8B7AA0"/>
+
+    <!-- three matching circles riding the belt -->
+    <circle cx="30" cy="74" r="13" fill="#FFFFFF"/>
+    <circle cx="58" cy="74" r="13" fill="#FFFFFF"/>
+    <circle cx="86" cy="74" r="13" fill="#FFFFFF"/>
+
+    <!-- the odd star -->
+    <path d="M30 30 l4.5 9.2 10.1 1.5 -7.3 7.1 1.7 10.1 -9-4.8 -9 4.8 1.7-10.1 -7.3-7.1 10.1-1.5 Z" fill="#FFD700"/>
+
+    <!-- filled magnifying glass -->
+    <circle cx="84" cy="36" r="19" fill="#7B1FA2"/>
+    <circle cx="84" cy="36" r="13" fill="#F3E5F5"/>
+    <rect x="96" y="48" width="10" height="26" rx="5" fill="#7B1FA2" transform="rotate(40 101 61)"/>
+</svg>

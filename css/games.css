@@ -2115,3 +2115,463 @@
         font-size: 1.8rem;
     }
 }
+
+/* ============================================
+   SHARED — Discovery Mini-Games (instruction bubble, progress, drag tray)
+   ============================================ */
+.stimulus-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    margin: var(--space-md) auto;
+    animation: bounceIn 0.5s var(--ease-spring) both;
+}
+
+.stimulus-emoji {
+    font-size: clamp(3rem, 12vw, 5.5rem);
+    line-height: 1;
+    animation: float 3s ease-in-out infinite;
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,0.15));
+}
+
+.speech-bubble {
+    position: relative;
+    background: #FFFFFF;
+    border-radius: var(--radius-lg);
+    padding: var(--space-sm) var(--space-lg);
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1rem, 4vw, 1.5rem);
+    color: var(--text-dark);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    animation: pop 0.4s var(--ease-spring) both;
+}
+
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 10px 8px 0 8px;
+    border-style: solid;
+    border-color: #FFFFFF transparent transparent transparent;
+}
+
+.discovery-progress {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-warm);
+    text-align: center;
+    margin-bottom: var(--space-sm);
+    opacity: 0.85;
+}
+
+.drag-tray {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    margin: var(--space-lg) auto 0;
+    padding: var(--space-md);
+    min-height: 100px;
+}
+
+.drag-token {
+    width: 76px;
+    height: 76px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #FFFFFF;
+    border-radius: var(--radius-round);
+    box-shadow: var(--shadow-md);
+    font-size: 2.2rem;
+    cursor: grab;
+    touch-action: none;
+    animation: float 2.6s ease-in-out infinite, bounceIn 0.4s var(--ease-spring) both;
+    transition: box-shadow 0.2s ease;
+}
+
+.drag-token:active { cursor: grabbing; }
+.drag-token.dragging { animation: none; box-shadow: var(--shadow-lg); transform: scale(1.1) !important; }
+.drag-token.wrong-shake { animation: wiggle 0.4s ease; }
+.drag-token.placed { opacity: 0; pointer-events: none; }
+
+.shake-target { animation: wiggle 0.4s ease; }
+
+/* ============================================
+   GAME: Sound Match Zoo (animal-sounds)
+   ============================================ */
+.zoo-scene {
+    display: flex;
+    justify-content: center;
+    margin: var(--space-md) auto;
+}
+
+.zoo-cage {
+    width: 140px;
+    height: 140px;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(160deg, #E8D7B0 0%, #C9A765 100%);
+    border: 6px dashed #8D6E3A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    position: relative;
+    overflow: hidden;
+    animation: glow 1.6s ease-in-out infinite;
+}
+
+.zoo-cage.highlight { border-color: var(--success); transform: scale(1.05); }
+
+.zoo-cage.filled {
+    animation: successPulse 0.45s ease;
+    border-style: solid;
+    border-color: var(--success);
+    background: linear-gradient(160deg, #D8F5D0 0%, #A8E8A0 100%);
+}
+
+.zoo-cage-bars {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(90deg, rgba(80,50,20,0.5) 0 6px, transparent 6px 26px);
+    transition: transform 0.5s var(--ease-bounce);
+}
+
+.zoo-cage.filled .zoo-cage-bars { transform: translateX(120%); }
+
+/* ============================================
+   GAME: Opposite See-Saw (opposites)
+   ============================================ */
+.seesaw-scene {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: var(--space-md) auto var(--space-lg);
+}
+
+.seesaw-beam {
+    width: 260px;
+    height: 16px;
+    background: linear-gradient(180deg, #C68E54, #8D5B2E);
+    border-radius: 8px;
+    position: relative;
+    transform: rotate(-8deg);
+    transform-origin: center;
+    transition: transform 0.5s var(--ease-bounce);
+}
+
+.seesaw-beam.balanced { transform: rotate(0deg); }
+.seesaw-beam.tip { transform: rotate(-22deg); }
+
+.seesaw-pan {
+    position: absolute;
+    top: -54px;
+    width: 84px;
+    height: 84px;
+    border-radius: var(--radius-lg);
+    background: #FFFFFF;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.4rem;
+    border: 4px dashed #D7C2A0;
+}
+
+.seesaw-pan-left { left: -10px; }
+.seesaw-pan-right { right: -10px; }
+.seesaw-pan.highlight { border-color: var(--success); transform: scale(1.08); }
+.seesaw-pan.filled { border-style: solid; border-color: var(--success); }
+.seesaw-pan.fixed { border-style: solid; border-color: #8D5B2E; }
+
+.seesaw-fulcrum {
+    width: 0; height: 0;
+    border-left: 26px solid transparent;
+    border-right: 26px solid transparent;
+    border-bottom: 46px solid #8D5B2E;
+    margin-top: -8px;
+}
+
+/* ============================================
+   GAME: Feelings Theater (feelings-match)
+   ============================================ */
+.theater-stage {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    height: 200px;
+    margin: var(--space-md) auto;
+    background: linear-gradient(180deg, #FFF3F8 0%, #FFE0EF 100%);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theater-curtain {
+    position: absolute;
+    top: 0;
+    width: 70px;
+    height: 100%;
+    background: linear-gradient(90deg, #E84393, #FF6FAE);
+    animation: sway 4s ease-in-out infinite;
+}
+
+.theater-curtain.left { left: 0; transform-origin: left top; }
+.theater-curtain.right { right: 0; transform-origin: right top; animation-delay: -2s; }
+
+.theater-character {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: #FFD93D;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.2rem;
+    position: relative;
+    box-shadow: var(--shadow-md);
+    border: 5px dashed rgba(255,255,255,0.7);
+}
+
+.theater-character.highlight { transform: scale(1.08); border-color: var(--success); }
+
+.theater-character.act-happy { animation: jump 0.6s ease-in-out infinite; }
+.theater-character.act-sad { animation: float 2.4s ease-in-out infinite; }
+.theater-character.act-angry { animation: wiggle 0.35s ease-in-out infinite; }
+.theater-character.act-scared { animation: wiggle 0.18s ease-in-out infinite; }
+.theater-character.act-sleepy { animation: float 3.4s ease-in-out infinite; }
+.theater-character.act-surprised { animation: jump 0.9s var(--ease-spring) infinite; }
+
+.theater-character.masked {
+    animation: successPulse 0.5s ease, spin 0.6s ease;
+    border-style: solid;
+    border-color: var(--success);
+}
+
+/* ============================================
+   GAME: Dress the Weather Buddy (weather-match)
+   ============================================ */
+.weather-scene {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    height: 200px;
+    margin: var(--space-md) auto;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: linear-gradient(180deg, #BBDEFB 0%, #E3F2FD 100%);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.weather-particle {
+    position: absolute;
+    top: -20px;
+    font-size: 1.4rem;
+    opacity: 0.85;
+    animation: weatherFall linear infinite;
+}
+
+@keyframes weatherFall {
+    0% { transform: translateY(-20px) translateX(0); }
+    100% { transform: translateY(220px) translateX(10px); }
+}
+
+.weather-particle.wind { animation: weatherBlow linear infinite; top: 30%; }
+
+@keyframes weatherBlow {
+    0% { transform: translateX(-40px); opacity: 0; }
+    50% { opacity: 0.8; }
+    100% { transform: translateX(340px); opacity: 0; }
+}
+
+.weather-particle.sun-ray { animation: sunPulse 1.6s ease-in-out infinite; top: 14px; right: 14px; font-size: 2.4rem; }
+
+.weather-buddy {
+    width: 90px;
+    height: 110px;
+    border-radius: 40% 40% 50% 50%;
+    background: #FFCB8E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.6rem;
+    position: relative;
+    z-index: 2;
+    box-shadow: var(--shadow-md);
+    border: 5px dashed rgba(255,255,255,0.8);
+    animation: float 2.8s ease-in-out infinite;
+}
+
+.weather-buddy.highlight { transform: scale(1.08); border-color: var(--success); }
+.weather-buddy.shiver { animation: wiggle 0.25s ease-in-out infinite; }
+.weather-buddy.dressed { animation: successPulse 0.5s ease; border-style: solid; border-color: var(--success); }
+
+.weather-item-tag {
+    position: absolute;
+    bottom: -8px;
+    font-size: 1.8rem;
+    animation: pop 0.4s var(--ease-spring) both;
+}
+
+/* ============================================
+   GAME: Rocket Number Climb (number-sequence)
+   ============================================ */
+.rocket-scene {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: var(--space-sm) auto;
+}
+
+.rocket-ladder {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+}
+
+.rocket-rung {
+    min-width: 60px;
+    height: 50px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, #81C784, #4CAF50);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    animation: bounceIn 0.4s var(--ease-spring) both;
+}
+
+.rocket-rung.unknown {
+    background: linear-gradient(135deg, #FFD54F, #FFA726);
+    animation: glow 1.2s ease-in-out infinite, bounceIn 0.4s var(--ease-spring) both;
+    border: 3px dashed #FFFFFF;
+}
+
+.rocket-rung.unknown.highlight { transform: scale(1.1); }
+.rocket-rung.unknown.filled {
+    background: linear-gradient(135deg, #4CAF50, #2ECC71);
+    animation: successPulse 0.4s ease;
+    border-style: solid;
+}
+
+.rocket-pad {
+    font-size: 2.6rem;
+    margin-top: 6px;
+    animation: float 2.6s ease-in-out infinite;
+    position: relative;
+}
+
+.rocket-pad.launching {
+    animation: rocketLaunch 1s ease-in forwards;
+}
+
+@keyframes rocketLaunch {
+    0% { transform: translateY(0) scale(1); }
+    30% { transform: translateY(-10px) scale(1.05); }
+    100% { transform: translateY(-420px) scale(0.6); opacity: 0; }
+}
+
+/* ============================================
+   GAME: Sorting Conveyor Belt (odd-one-out)
+   ============================================ */
+.conveyor-scene {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+    height: 140px;
+    margin: var(--space-md) auto;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, #2D3436 0%, #485460 100%);
+    box-shadow: var(--shadow-md);
+}
+
+.conveyor-belt {
+    position: absolute;
+    bottom: 14px;
+    left: 0;
+    width: 100%;
+    height: 14px;
+    background: repeating-linear-gradient(90deg, #636E72 0 22px, #95A5A6 22px 26px);
+    animation: beltScroll 0.6s linear infinite;
+}
+
+@keyframes beltScroll {
+    0% { background-position: 0 0; }
+    100% { background-position: -26px 0; }
+}
+
+.conveyor-bin {
+    position: absolute;
+    left: 8px;
+    bottom: 0;
+    width: 46px;
+    height: 60px;
+    background: linear-gradient(180deg, #8D6E3A, #6B4F22);
+    border-radius: 6px 6px 0 0;
+    z-index: 1;
+}
+
+.conveyor-item {
+    position: absolute;
+    bottom: 26px;
+    width: 58px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.conveyor-item-inner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    background: #FFFFFF;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    animation: float 1.4s ease-in-out infinite;
+}
+
+.conveyor-item.wrong .conveyor-item-inner { animation: wiggle 0.35s ease; }
+.conveyor-item.correct .conveyor-item-inner { animation: successPulse 0.4s ease forwards; }
+.conveyor-item.collected {
+    animation: conveyorCollect 0.5s var(--ease-bounce) forwards;
+}
+
+@keyframes conveyorCollect {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: translate(-120px, 20px) scale(0.2); opacity: 0; }
+}
+
+@media (max-width: 420px) {
+    .drag-token { width: 64px; height: 64px; font-size: 1.8rem; }
+    .seesaw-beam { width: 210px; }
+    .seesaw-pan { width: 68px; height: 68px; font-size: 2rem; top: -46px; }
+    .theater-stage, .weather-scene { height: 170px; }
+    .rocket-rung { min-width: 48px; height: 42px; font-size: 1.1rem; }
+}

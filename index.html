@@ -25,8 +25,6 @@
                 'syllable-merging': 'linear-gradient(135deg, #E0FFFA 0%, #B2F5EA 50%, #80E8D8 100%)',
                 'pattern': 'linear-gradient(135deg, #FCE9FF 0%, #F3C6FF 50%, #E59BFF 100%)',
                 'penalty': 'linear-gradient(135deg, #E8FFE9 0%, #C8F7C5 50%, #9DEB9B 100%)',
-                'canvas': 'linear-gradient(135deg, #FFF5F8 0%, #FFD9E6 50%, #FFB3CC 100%)',
-                'color-by-number': 'linear-gradient(135deg, #F1ECFF 0%, #DCD0FF 50%, #C2ABFF 100%)',
                 'emoji-maker': 'linear-gradient(135deg, #FFFBE6 0%, #FFF0B3 50%, #FFE082 100%)',
                 'alphabet-train': 'linear-gradient(135deg, #FFF4E0 0%, #FFD3A8 50%, #FF9F5A 100%)',
                 'alphabet-balloons': 'linear-gradient(135deg, #FFF0F5 0%, #FFD6E8 50%, #FFADD2 100%)',
@@ -39,7 +37,13 @@
                 'alphabet-picture-connect': 'linear-gradient(135deg, #EFFFE9 0%, #C8F7C5 50%, #8CE89A 100%)',
                 'letter-case-connect': 'linear-gradient(135deg, #E8F4FF 0%, #D6E9FF 50%, #FFE3F0 100%)',
                 'number-word-connect': 'linear-gradient(135deg, #4B3F8C 0%, #3A3578 50%, #2A2D5C 100%)',
-                'count-connect': 'linear-gradient(135deg, #FFF8E1 0%, #FFEFC2 50%, #C8F7C5 100%)'
+                'count-connect': 'linear-gradient(135deg, #FFF8E1 0%, #FFEFC2 50%, #C8F7C5 100%)',
+                'animal-sounds': 'linear-gradient(135deg, #FFF8E1 0%, #FFE0B2 50%, #FFB74D 100%)',
+                'opposites': 'linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 50%, #4DD0E1 100%)',
+                'feelings-match': 'linear-gradient(135deg, #FFF0F7 0%, #FFD6EC 50%, #FFB8E0 100%)',
+                'weather-match': 'linear-gradient(135deg, #E3F2FD 0%, #90CAF9 50%, #42A5F5 100%)',
+                'number-sequence': 'linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 50%, #81C784 100%)',
+                'odd-one-out': 'linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 50%, #CE93D8 100%)'
             };
             var bg = themes[gameId] || 'linear-gradient(180deg, #E8F4FD 0%, #F0F8FF 100%)';
             document.documentElement.style.setProperty('--hub-loader-bg', bg);
@@ -53,8 +57,6 @@
     <link rel="stylesheet" href="css/hub.css">
     <link rel="stylesheet" href="css/games.css?v=6">
     <link rel="stylesheet" href="css/penalty.css">
-    <link rel="stylesheet" href="css/canvas.css">
-    <link rel="stylesheet" href="css/color-by-number.css">
     <link rel="stylesheet" href="css/emoji-maker.css?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
@@ -185,6 +187,12 @@
 <script src="js/drag.js"></script>
 <script src="js/engine.js"></script>
 <script src="js/games/memory-cards.js"></script>
+<script src="js/games/animal-sounds.js?v=1"></script>
+<script src="js/games/opposites.js?v=1"></script>
+<script src="js/games/feelings-match.js?v=1"></script>
+<script src="js/games/weather-match.js?v=1"></script>
+<script src="js/games/number-sequence.js?v=1"></script>
+<script src="js/games/odd-one-out.js?v=1"></script>
 <script src="js/games/color-matching.js"></script>
 <script src="js/games/counting.js"></script>
 <script src="js/games/letter-recognition.js"></script>
@@ -195,8 +203,6 @@
 <script src="js/games/syllable-merging.js"></script>
 <script src="js/games/pattern.js"></script>
 <script src="js/games/penalty.js"></script>
-<script src="js/games/canvas.js"></script>
-<script src="js/games/color-by-number.js?v=3"></script>
 <script src="js/games/emoji-maker.js?v=5"></script>
 <script src="js/games/alphabet-runner.js?v=1"></script>
 <script src="js/games/alphabet-train.js?v=1"></script>

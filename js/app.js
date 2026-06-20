@@ -18,35 +18,43 @@ if (window.AndroidInterface && window.AndroidInterface.onGameEvent) {
 }
 
 const App = (() => {
+    // Bump this whenever hub icon SVGs change so WebView/native caches don't
+    // keep serving stale artwork under the same file name.
+    const ICON_VERSION = 2;
+
     // Registry of all game modules
     const GameRegistry = {
-        'memory-cards': MemoryCards,
-        'color-matching': ColorMatching,
-        'counting': Counting,
-        'letter-recognition': LetterRecognition,
-        'shape-puzzle': ShapePuzzle,
-        'coloring': Coloring,
-        'sorting': Sorting,
-        'math': MathGame,
-        'syllable-merging': SyllableMerging,
-        'pattern': Pattern,
-        'penalty': Penalty,
-        'canvas': Canvas,
-        'color-by-number': ColorByNumber,
-        'emoji-maker': EmojiMaker,
         'alphabet-runner': AlphabetRunner,
         'alphabet-train': AlphabetTrain,
         'alphabet-balloons': AlphabetBalloons,
         'alphabet-fishing': AlphabetFishing,
+        'letter-recognition': LetterRecognition,
+        'letter-case-connect': LetterCaseConnect,
+        'counting': Counting,
+        'math': MathGame,
         'counting-cupcakes': CountingCupcakes,
         'counting-ladybugs': CountingLadybugs,
         'counting-treasure': CountingTreasure,
         'counting-balloons': CountingBalloons,
         'counting-hop': CountingHop,
         'alphabet-picture-connect': AlphabetPictureConnect,
-        'letter-case-connect': LetterCaseConnect,
         'number-word-connect': NumberWordConnect,
         'count-connect': CountConnect,
+        'memory-cards': MemoryCards,
+        'animal-sounds': AnimalSounds,
+        'opposites': Opposites,
+        'feelings-match': FeelingsMatch,
+        'weather-match': WeatherMatch,
+        'number-sequence': NumberSequence,
+        'odd-one-out': OddOneOut,
+        'color-matching': ColorMatching,
+        'shape-puzzle': ShapePuzzle,
+        'coloring': Coloring,
+        'sorting': Sorting,
+        'syllable-merging': SyllableMerging,
+        'pattern': Pattern,
+        'penalty': Penalty,
+        'emoji-maker': EmojiMaker,
     };
 
     const IconMap = {
@@ -65,8 +73,6 @@ const App = (() => {
         'syllable-merging': 'hece-birlestirme',
         'pattern': 'desen',
         'penalty': 'penalti',
-        'canvas': 'tuval',
-        'color-by-number': 'sayilarla-boyama',
         'emoji-maker': 'emoji-yapici',
         'counting-cupcakes': 'counting-cupcakes',
         'counting-ladybugs': 'counting-ladybugs',
@@ -77,14 +83,21 @@ const App = (() => {
         'letter-case-connect': 'letter-case-connect',
         'number-word-connect': 'number-word-connect',
         'count-connect': 'count-connect',
+        'animal-sounds': 'animal-sounds',
+        'opposites': 'opposites',
+        'feelings-match': 'feelings-match',
+        'weather-match': 'weather-match',
+        'number-sequence': 'number-sequence',
+        'odd-one-out': 'odd-one-out',
     };
 
     const Categories = [
         { id: 'all', name: 'All Games', icon: '🎮' },
-        { id: 'logic', name: 'Logic & Puzzle', icon: '🧩', games: ['memory-cards', 'shape-puzzle', 'sorting', 'jigsaw', 'pattern', 'tetris'] },
-        { id: 'math', name: 'Math & Numbers', icon: '🔢', games: ['counting', 'math', 'color-by-number', 'counting-cupcakes', 'counting-ladybugs', 'counting-treasure', 'counting-balloons', 'counting-hop', 'number-word-connect', 'count-connect'] },
-        { id: 'language', name: 'Language', icon: '🔤', games: ['letter-recognition', 'alphabet-runner', 'alphabet-train', 'alphabet-balloons', 'alphabet-fishing', 'syllable-merging', 'alphabet-picture-connect', 'letter-case-connect'] },
-        { id: 'creative', name: 'Creativity', icon: '🎨', games: ['coloring', 'canvas', 'emoji-maker'] },
+        { id: 'logic', name: 'Logic & Puzzle', icon: '🧩', games: ['memory-cards', 'shape-puzzle', 'sorting', 'odd-one-out', 'jigsaw', 'pattern', 'tetris'] },
+        { id: 'math', name: 'Math & Numbers', icon: '🔢', games: ['counting', 'math', 'number-sequence', 'counting-cupcakes', 'counting-ladybugs', 'counting-treasure', 'counting-balloons', 'counting-hop', 'number-word-connect', 'count-connect'] },
+        { id: 'language', name: 'Language', icon: '🔤', games: ['letter-recognition', 'alphabet-runner', 'alphabet-train', 'alphabet-balloons', 'alphabet-fishing', 'syllable-merging', 'alphabet-picture-connect', 'letter-case-connect', 'animal-sounds', 'opposites'] },
+        { id: 'discovery', name: 'Discovery', icon: '🔍', games: ['feelings-match', 'weather-match'] },
+        { id: 'creative', name: 'Creativity', icon: '🎨', games: ['coloring', 'emoji-maker'] },
         { id: 'action', name: 'Action & Sport', icon: '🏃', games: ['penalty', 'jump-collect', 'fire-ice', 'space-waves', 'slope', 'gold-hunt', 'ice-tower'] },
         { id: 'strategy', name: 'Strategy', icon: '♟️', games: ['chess', 'coding-adventure', 'lego-adventure', 'lego-world'] }
     ];
@@ -237,7 +250,7 @@ const App = (() => {
 
             card.innerHTML = `
                 <div class="game-card-icon">
-                    <img src="assets/images/hub/${iconName}.svg" alt="${title}" onerror="this.src='assets/images/hub/default.svg'">
+                    <img src="assets/images/hub/${iconName}.svg?v=${ICON_VERSION}" alt="${title}" onerror="this.src='assets/images/hub/default.svg'">
                 </div>
                 <div class="game-card-info">
                     <h3 class="game-card-title">${title}</h3>
@@ -276,8 +289,6 @@ const App = (() => {
             'syllable-merging': '#00897B',
             'pattern': '#E040FB',
             'penalty': '#27AE60',
-            'canvas': '#E91E63',
-            'color-by-number': '#7E57C2',
             'emoji-maker': '#FFB703',
             'alphabet-runner': '#9B59B6',
             'alphabet-train': '#E8590C',
@@ -291,7 +302,13 @@ const App = (() => {
             'alphabet-picture-connect': '#2E9E45',
             'letter-case-connect': '#4D96FF',
             'number-word-connect': '#7C5CFC',
-            'count-connect': '#FFB627'
+            'count-connect': '#FFB627',
+            'animal-sounds': '#FFA726',
+            'opposites': '#26C6DA',
+            'feelings-match': '#FF6FAE',
+            'weather-match': '#42A5F5',
+            'number-sequence': '#66BB6A',
+            'odd-one-out': '#AB47BC'
         };
         return colors[id] || '#4AABE0';
     }
@@ -310,8 +327,6 @@ const App = (() => {
             'syllable-merging': 'linear-gradient(135deg, #E0FFFA 0%, #B2F5EA 50%, #80E8D8 100%)',
             'pattern': 'linear-gradient(135deg, #FCE9FF 0%, #F3C6FF 50%, #E59BFF 100%)',
             'penalty': 'linear-gradient(135deg, #E8FFE9 0%, #C8F7C5 50%, #9DEB9B 100%)',
-            'canvas': 'linear-gradient(135deg, #FFF5F8 0%, #FFD9E6 50%, #FFB3CC 100%)',
-            'color-by-number': 'linear-gradient(135deg, #F1ECFF 0%, #DCD0FF 50%, #C2ABFF 100%)',
             'emoji-maker': 'linear-gradient(135deg, #FFFBE6 0%, #FFF0B3 50%, #FFE082 100%)',
             'alphabet-train': 'linear-gradient(135deg, #FFF4E0 0%, #FFD3A8 50%, #FF9F5A 100%)',
             'alphabet-balloons': 'linear-gradient(135deg, #FFF0F5 0%, #FFD6E8 50%, #FFADD2 100%)',
@@ -324,7 +339,13 @@ const App = (() => {
             'alphabet-picture-connect': 'linear-gradient(135deg, #EFFFE9 0%, #C8F7C5 50%, #8CE89A 100%)',
             'letter-case-connect': 'linear-gradient(135deg, #E8F4FF 0%, #D6E9FF 50%, #FFE3F0 100%)',
             'number-word-connect': 'linear-gradient(135deg, #4B3F8C 0%, #3A3578 50%, #2A2D5C 100%)',
-            'count-connect': 'linear-gradient(135deg, #FFF8E1 0%, #FFEFC2 50%, #C8F7C5 100%)'
+            'count-connect': 'linear-gradient(135deg, #FFF8E1 0%, #FFEFC2 50%, #C8F7C5 100%)',
+            'animal-sounds': 'linear-gradient(135deg, #FFF8E1 0%, #FFE0B2 50%, #FFB74D 100%)',
+            'opposites': 'linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 50%, #4DD0E1 100%)',
+            'feelings-match': 'linear-gradient(135deg, #FFF0F7 0%, #FFD6EC 50%, #FFB8E0 100%)',
+            'weather-match': 'linear-gradient(135deg, #E3F2FD 0%, #90CAF9 50%, #42A5F5 100%)',
+            'number-sequence': 'linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 50%, #81C784 100%)',
+            'odd-one-out': 'linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 50%, #CE93D8 100%)'
         };
         return themes[id] || 'linear-gradient(180deg, #E8F4FD 0%, #F0F8FF 100%)';
     }
@@ -401,7 +422,7 @@ const App = (() => {
         const games = Object.keys(GameRegistry).map(id => ({
             id: id,
             name: i18n.games[id] || id,
-            iconPath: `assets/images/hub/${IconMap[id] || id}.svg`
+            iconPath: `assets/images/hub/${IconMap[id] || id}.svg?v=${ICON_VERSION}`
         }));
         return JSON.stringify({ games });
     }

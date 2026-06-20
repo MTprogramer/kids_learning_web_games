@@ -33,16 +33,20 @@ html, body {
     --lego-adventure-color: #FFC107;
     --lego-world-color: #FF5722;
     --penalty-color: #27AE60;
-    --canvas-color: #E91E63;
     --jump-collect-color: #FF9800;
     --fire-ice-color: #E74C3C;
     --space-waves-color: #7B5BFF;
     --slope-color: #00E8C0;
     --gold-hunt-color: #F4A93C;
     --ice-tower-color: #4FC3F7;
-    --color-by-number-color: #7E57C2;
     --emoji-maker-color: #FFB703;
     --tetris-color: #5C6BC0;
+    --animal-sounds-color: #FFA726;
+    --opposites-color: #26C6DA;
+    --feelings-match-color: #FF6FAE;
+    --weather-match-color: #42A5F5;
+    --number-sequence-color: #66BB6A;
+    --odd-one-out-color: #AB47BC;
 
     /* UI Colors */
     --bg-sky-top: #87CEEB;
