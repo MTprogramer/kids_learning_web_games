@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+    <rect width="128" height="128" rx="28" fill="#0f3460"/>
+
+    <circle cx="40" cy="46" r="22" fill="hsl(45, 70%, 60%)" stroke="#FFFFFF" stroke-width="3"/>
+    <text x="40" y="52" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="18" fill="#FFFFFF">+2</text>
+
+    <circle cx="86" cy="36" r="16" fill="hsl(180, 70%, 60%)" stroke="#FFFFFF" stroke-width="3"/>
+    <text x="86" y="41" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="14" fill="#FFFFFF">*3</text>
+
+    <circle cx="78" cy="86" r="26" fill="hsl(315, 70%, 60%)" stroke="#FFFFFF" stroke-width="3"/>
+    <text x="78" y="93" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="20" fill="#FFFFFF">-4</text>
+
+    <circle cx="32" cy="96" r="13" fill="hsl(90, 70%, 60%)" stroke="#FFFFFF" stroke-width="2.5"/>
+    <text x="32" y="100" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="12" fill="#FFFFFF">1</text>
+</svg>

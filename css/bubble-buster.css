@@ -1,0 +1,70 @@
+/* Bubble Buster */
+
+.bb-board {
+    position: relative;
+    width: min(100%, 520px);
+    max-height: 520px;
+    aspect-ratio: 1;
+    align-self: center;
+    margin: 0 auto;
+    background: #2c3e50;
+    border: 8px solid #5d4037;
+    border-radius: 24px;
+    box-shadow: var(--shadow-lg);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 12px;
+    padding: 18px;
+}
+
+.bb-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.bb-bubble {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    aspect-ratio: 1;
+    align-self: center;
+    justify-self: center;
+    border: none;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ff7675, #d63031);
+    color: white;
+    font-weight: 800;
+    font-size: clamp(1rem, 4vw, 1.4rem);
+    font-family: 'Fredoka', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.25), inset -4px -6px 0 rgba(0,0,0,0.1);
+    transition: transform 0.15s ease;
+}
+
+.bb-bubble:hover {
+    transform: scale(1.05);
+}
+
+.bb-bubble.selected {
+    transform: scale(1.12);
+    border: 4px solid #fdcb6e;
+}
+
+.bb-bubble.pop {
+    animation: bbPop 0.4s ease forwards;
+}
+
+.bb-bubble.wrong {
+    animation: wiggle 0.35s ease both;
+}
+
+@keyframes bbPop {
+    0% { transform: scale(1.12); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 1; }
+    100% { transform: scale(0.2); opacity: 0; }
+}

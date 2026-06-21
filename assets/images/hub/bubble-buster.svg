@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+    <defs>
+        <radialGradient id="bb-bubbleGrad" cx="30%" cy="30%" r="75%">
+            <stop offset="0%" stop-color="#ff7675"/>
+            <stop offset="100%" stop-color="#d63031"/>
+        </radialGradient>
+    </defs>
+    <rect width="128" height="128" rx="28" fill="#87CEEB"/>
+    <rect x="14" y="20" width="100" height="92" rx="14" fill="#2c3e50" stroke="#5d4037" stroke-width="6"/>
+
+    <circle cx="42" cy="48" r="20" fill="url(#bb-bubbleGrad)"/>
+    <text x="42" y="55" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="18" fill="#FFFFFF">7</text>
+
+    <circle cx="86" cy="48" r="20" fill="url(#bb-bubbleGrad)" stroke="#fdcb6e" stroke-width="3"/>
+    <text x="86" y="55" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="18" fill="#FFFFFF">13</text>
+
+    <circle cx="64" cy="90" r="20" fill="url(#bb-bubbleGrad)"/>
+    <text x="64" y="97" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="18" fill="#FFFFFF">20</text>
+</svg>

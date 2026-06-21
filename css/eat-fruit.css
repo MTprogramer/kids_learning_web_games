@@ -1,0 +1,110 @@
+/* Eat Fruit Game */
+
+.ef-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    width: min(100%, 1000px);
+    margin: 0 auto 10px;
+    padding: 0 8px;
+}
+
+.ef-score-info {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #ff4757;
+    background: rgba(255,255,255,0.9);
+    padding: 8px 18px;
+    border-radius: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ef-lives-info {
+    font-size: 1.2rem;
+    background: rgba(255,255,255,0.9);
+    padding: 8px 18px;
+    border-radius: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.ef-board {
+    position: relative;
+    width: min(100%, 1000px);
+    flex: 1;
+    min-height: 420px;
+    margin: 0 auto;
+    border-radius: 32px;
+    background: linear-gradient(180deg, #FF9AA2, #FFB7B2);
+    border: 3px solid rgba(255,255,255,0.95);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+.ef-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: none;
+    touch-action: none;
+}
+
+/* Fail / Try Again dialog */
+.kod-gameover {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(12, 35, 80, 0.5);
+    backdrop-filter: blur(6px);
+    border-radius: 32px;
+}
+
+.kod-gameover-card {
+    text-align: center;
+    padding: 36px 40px;
+    border-radius: var(--radius-lg, 24px);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.25);
+    animation: bounceIn 0.5s var(--ease-spring, ease) both;
+    max-width: 90%;
+}
+
+.kod-gameover-icon {
+    font-size: 3.5rem;
+    margin-bottom: 8px;
+}
+
+.kod-gameover-title {
+    font-size: clamp(1.5rem, 5vw, 2.2rem);
+    font-weight: 800;
+    margin: 4px 0 8px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+}
+
+.kod-gameover-sub {
+    font-size: 1.05rem;
+    margin: 0 0 20px;
+}
+
+.kod-gameover-btn {
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 12px 32px;
+    border-radius: var(--radius-md, 16px);
+    border: none;
+    cursor: pointer;
+    color: #ff4757;
+    background: #FFFFFF;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+}
+
+.kod-gameover-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.15);
+}
