@@ -106,6 +106,7 @@ const MemoryCards = (() => {
             card2.classList.add('matched');
             matchedPairs++;
             callbacks.onCorrect();
+            AudioManager.play('chime');
 
             // Sparkle effect
             const r1 = card1.getBoundingClientRect();
@@ -118,6 +119,7 @@ const MemoryCards = (() => {
 
             if (matchedPairs === totalPairs) {
                 const stars = calculateMemoryStars();
+                AudioManager.play('levelComplete');
                 setTimeout(() => callbacks.onComplete(stars), 500);
             }
         } else {

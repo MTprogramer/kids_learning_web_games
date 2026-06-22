@@ -122,6 +122,7 @@ const MathFusion = (() => {
                 b1.radius = 20 + Math.log2(Math.abs(b1.value) + 2) * 8;
                 b1.mismatchHits = 0;
                 createExplosion(b2.x, b2.y, b2.color);
+                AudioManager.play('pop');
                 fusions++;
                 scoreEl.textContent = fusions;
                 callbacks.onCorrect();
@@ -216,7 +217,10 @@ const MathFusion = (() => {
         }
 
         balls.forEach(b => {
-            if (b.value >= blastValue || b.mismatchHits >= maxMismatchHits) createExplosion(b.x, b.y, b.color);
+            if (b.value >= blastValue || b.mismatchHits >= maxMismatchHits) {
+                createExplosion(b.x, b.y, b.color);
+                AudioManager.play('blast');
+            }
         });
         balls = balls.filter(b => b.value < blastValue && b.mismatchHits < maxMismatchHits);
 

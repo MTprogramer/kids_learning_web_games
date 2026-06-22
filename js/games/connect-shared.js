@@ -91,6 +91,7 @@ const ConnectBoard = (() => {
                 matchedCount++;
 
                 opts.callbacks.onCorrect();
+                AudioManager.play('snap');
 
                 const r = btn.getBoundingClientRect();
                 Particles.sparkle(r.left + r.width / 2, r.top + r.height / 2, 8);
@@ -98,6 +99,7 @@ const ConnectBoard = (() => {
                 if (matchedCount >= total) {
                     busy = true;
                     board.classList.add('all-matched');
+                    AudioManager.play('levelComplete');
                     const boardRect = board.getBoundingClientRect();
                     Particles.sparkle(boardRect.left + boardRect.width / 2, boardRect.top + boardRect.height / 2, 18);
                     setTimeout(() => opts.onAllMatched(), 1100);
@@ -110,6 +112,7 @@ const ConnectBoard = (() => {
                 selected = null;
 
                 opts.callbacks.onWrong();
+                AudioManager.play('buzz');
 
                 setTimeout(() => {
                     leftBtn.classList.remove('wrong');

@@ -124,6 +124,7 @@ const OddOneOut = (() => {
             item.collected = true;
             item.el.classList.add('collected');
             callbacks.onCorrect();
+            AudioManager.play('pop');
 
             const rect = item.el.getBoundingClientRect();
             Particles.sparkle(rect.left + rect.width / 2, rect.top + rect.height / 2, 14);

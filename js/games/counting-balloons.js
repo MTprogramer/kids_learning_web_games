@@ -89,6 +89,7 @@ const CountingBalloons = (() => {
             el.classList.add('pop');
             el.disabled = true;
             callbacks.onCorrect();
+            AudioManager.play('pop');
 
             const rect = el.getBoundingClientRect();
             Particles.sparkle(rect.left + rect.width / 2, rect.top + rect.height / 2, 14);

@@ -86,6 +86,7 @@ const CountingTreasure = (() => {
             chestEl.disabled = true;
             chestEl.classList.add('open');
             callbacks.onCorrect();
+            AudioManager.play('coin');
 
             const rect = chestEl.getBoundingClientRect();
             Particles.sparkle(rect.left + rect.width / 2, rect.top, 18);

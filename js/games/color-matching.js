@@ -101,6 +101,7 @@ const ColorMatching = (() => {
                     btn.classList.add('correct');
                     correctFound++;
                     callbacks.onCorrect();
+                    AudioManager.play('pop');
 
                     const rect = btn.getBoundingClientRect();
                     Particles.sparkle(rect.left + rect.width / 2, rect.top + rect.height / 2, 5);

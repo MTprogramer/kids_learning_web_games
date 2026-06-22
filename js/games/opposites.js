@@ -105,6 +105,7 @@ const Opposites = (() => {
             dragEl.classList.add('placed');
             DragSystem.resetPosition(dragEl);
             callbacks.onCorrect();
+            AudioManager.play('chime');
 
             const rect = panRightEl.getBoundingClientRect();
             Particles.sparkle(rect.left + rect.width / 2, rect.top + rect.height / 2, 14);

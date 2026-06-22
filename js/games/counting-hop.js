@@ -98,6 +98,7 @@ const CountingHop = (() => {
             frog.classList.remove('hop');
             void frog.offsetWidth;
             frog.classList.add('hop');
+            AudioManager.play('flip');
 
             const rect = stoneEl.getBoundingClientRect();
             Particles.sparkle(rect.left + rect.width / 2, rect.top + rect.height / 2, 10);
@@ -105,6 +106,7 @@ const CountingHop = (() => {
             if (next === rangeEnd) {
                 busy = true;
                 callbacks.onCorrect();
+                AudioManager.play('levelComplete');
                 setTimeout(() => {
                     busy = false;
                     render();

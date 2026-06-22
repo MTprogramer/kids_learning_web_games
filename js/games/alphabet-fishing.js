@@ -90,6 +90,7 @@ const AlphabetFishing = (() => {
             fishEl.style.animation = '';
             fishEl.classList.add('caught');
             callbacks.onCorrect();
+            AudioManager.play('pop');
 
             const rect = fishEl.getBoundingClientRect();
             Particles.sparkle(rect.left + rect.width / 2, rect.top + rect.height / 2, 14);
@@ -100,6 +101,7 @@ const AlphabetFishing = (() => {
             }, 600);
         } else {
             fishEl.classList.add('splash');
+            AudioManager.play('splash');
             callbacks.onWrong();
             setTimeout(() => fishEl.classList.remove('splash'), 400);
         }

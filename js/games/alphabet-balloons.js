@@ -289,10 +289,12 @@ const AlphabetBalloons = (() => {
                 b.isPopped = true;
                 if (b.letter === targetChar) {
                     createPopEffect(b.x, b.y, b.color);
+                    AudioManager.play('pop');
                     callbacks.onCorrect();
                     pickNewTarget();
                 } else {
                     createFireBlastEffect(b.x, b.y);
+                    AudioManager.play('blast');
                     callbacks.onWrong();
                 }
                 break;

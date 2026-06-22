@@ -127,6 +127,7 @@ const AlphabetTrain = (() => {
             btn.classList.add('correct');
             btn.disabled = true;
             callbacks.onCorrect();
+            AudioManager.play('snap');
 
             const rect = btn.getBoundingClientRect();
             Particles.sparkle(rect.left + rect.width / 2, rect.top + rect.height / 2, 12);
@@ -160,6 +161,7 @@ const AlphabetTrain = (() => {
     }
 
     function showCelebration() {
+        AudioManager.play('levelComplete');
         container.innerHTML = '';
         const celebration = document.createElement('div');
         celebration.className = 'train-celebration';

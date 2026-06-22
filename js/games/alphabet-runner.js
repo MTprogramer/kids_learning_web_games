@@ -99,6 +99,7 @@ const AlphabetRunner = (() => {
                         bubble.style.transform = 'scale(1.12)';
                         bubble.style.opacity = '0.95';
                         callbacks.onCorrect();
+                        AudioManager.play('pop');
                         const rect = bubble.getBoundingClientRect();
                         Particles.sparkle(rect.left + rect.width / 2, rect.top + rect.height / 2, 10);
                         roundsPlayed++;

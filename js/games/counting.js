@@ -90,6 +90,7 @@ const Counting = (() => {
                     btn.classList.add('correct');
                     btn.disabled = true;
                     callbacks.onCorrect();
+                    AudioManager.play('chime');
 
                     const rect = btn.getBoundingClientRect();
                     Particles.sparkle(rect.left + rect.width / 2, rect.top + rect.height / 2, 8);

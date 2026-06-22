@@ -131,6 +131,7 @@ const EatFruit = (() => {
             scoreEl.textContent = score;
             monsterSquash = 40;
             createParticles(food.x, food.y);
+            AudioManager.play('coin');
             callbacks.onCorrect();
             food = spawnFood(false);
         } else if (food.y > canvas.height) {
@@ -163,6 +164,7 @@ const EatFruit = (() => {
         if (rafId) cancelAnimationFrame(rafId);
         rafId = null;
 
+        AudioManager.play('blast');
         callbacks.onWrong();
 
         if (window.reportToHost) {

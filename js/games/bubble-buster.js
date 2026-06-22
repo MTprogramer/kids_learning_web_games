@@ -163,6 +163,7 @@ const BubbleBuster = (() => {
 
         if (v1 + v2 === targetSum) {
             callbacks.onCorrect();
+            AudioManager.play('pop');
             [a, b].forEach(bubble => {
                 bubble.classList.add('pop');
                 bubble.disabled = true;
@@ -177,12 +178,15 @@ const BubbleBuster = (() => {
                 busy = false;
 
                 if (board.children.length === 1) {
+                    AudioManager.play('blast');
+                    AudioManager.play('levelComplete');
                     celebrationBlast();
                     setTimeout(render, 2000);
                 }
             }, 400);
         } else {
             callbacks.onWrong();
+            AudioManager.play('buzz');
             [a, b].forEach(bubble => bubble.classList.add('wrong'));
 
             setTimeout(() => {

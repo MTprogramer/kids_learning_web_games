@@ -99,6 +99,7 @@ const NumberSequence = (() => {
             dragEl.classList.add('placed');
             DragSystem.resetPosition(dragEl);
             callbacks.onCorrect();
+            AudioManager.play('whoosh');
 
             rocketEl.classList.add('launching');
             const rect = rocketEl.getBoundingClientRect();
